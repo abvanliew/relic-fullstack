@@ -1,0 +1,31 @@
+[package]
+name = "relic-fullstack"
+version = "0.1.0"
+authors = ["abvanliew <ab.vanliew@gmail.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bson = "2.13.0"
+dioxus = { version = "0.6.1", features = ["router", "fullstack"] }
+futures = { version = "0.3.31", optional = true }
+getrandom = { version = "0.2.15", features = ["js"] }
+mongodb = { version = "3.1.1", optional = true }
+serde = { version = "1.0.216", features = ["derive"] }
+tracing = "0.1.41"
+
+[features]
+default = []
+web = [ "dioxus/web" ]
+server = [ "dioxus/server", "mongodb", "dep:futures" ]
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"

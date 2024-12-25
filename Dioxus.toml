@@ -1,0 +1,14 @@
+[application]
+name = "relic-fullstack"
+default_platform = "web"
+
+[web.app]
+title = "relic-fullstack"
+
+# include `assets` in web platform
+[web.resource]
+style = []
+script = []
+
+[web.resource.dev]
+script = []
