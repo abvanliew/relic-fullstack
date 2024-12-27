@@ -4,7 +4,6 @@ use bson::doc;
 
 #[cfg(feature = "server")]
 use bson::oid::ObjectId;
-
 #[cfg(feature = "server")]
 use mongodb::{Client, Collection};
 #[cfg(feature = "server")]
@@ -26,18 +25,13 @@ pub async fn list_skills() -> Result<Vec<Skill>, ServerFnError> {
 
 #[server(GetSkill)]
 pub async fn get_skill( id: String ) -> Result<Skill, ServerFnError> {
-  tracing::info!( "connecting to database" );
   let client = Client::with_uri_str("mongodb://localhost:27017").await?;
-  tracing::info!( "client connected" );
   let skills_collection: Collection<Skill> = client.database("relic").collection("skills_paths");
-  tracing::info!( "searching collection" );
   let Ok( id_object ) = ObjectId::parse_str( id ) else {
     return Err( ServerFnError::ServerError( "Invalid Id".into() ) );
   };
-  tracing::info!( "parsing results" );
   let mut results = skills_collection
   .find( doc! { "_id": id_object }, ).await?;
-  // println!( "{:?}", results.to_string() );
   while let Some( skill ) = results.next().await {
     return Ok( skill? );
   }

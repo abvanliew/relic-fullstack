@@ -10,6 +10,7 @@ pub fn Skills() -> Element {
     Some( Ok( list ) ) => {
       rsx! {
         div {
+          class: "grid dim-title-details",
           for skill in list {
             SkillSummary { skill: skill.clone() }
           }
@@ -19,17 +20,13 @@ pub fn Skills() -> Element {
     Some(Err(err)) => {
       rsx! { "An error occurred when loading skills: {err}" }
     }
-    None => {
-      rsx! { "Loading skills" }
-    }
+    None => { rsx! { "Loading skills" } }
   }
 }
 
 #[component]
 pub fn SingleSkill( id: String ) -> Element {
-  tracing::info!( "calling server" );
   let response: Resource<Result<Skill, ServerFnError>> = use_resource( move || get_skill( id.clone() ) );
-  tracing::info!( "parsing response" );
   match &*response.read_unchecked() {
     Some( Ok( skill ) ) => {
       rsx! {
@@ -47,9 +44,17 @@ pub fn SingleSkill( id: String ) -> Element {
 fn SkillSummary( skill: ReadOnlySignal<Skill> ) -> Element {
   let title = skill.read().title.clone();
   let id = skill.read().oid.to_string();
+  let summary = skill.read().summary.clone().unwrap_or( "".into() );
   rsx!(
     div {
-      Link { to: Route::SingleSkill { id }, "{title}" }
+      class: "uv-title",
+      Link {
+        to: Route::SingleSkill { id }, "{title}"
+      }
+    }
+    div {
+      class: "uv-details",
+      "{summary}"
     }
   )
 }
@@ -63,8 +68,9 @@ fn SkillDescription( skill: ReadOnlySignal<Skill> ) -> Element {
       let cost = skill_ref.cost();
       let action = skill_ref.action.clone();
       rsx!(
-        div { "{title} [{tier} Tier]" }
-        div { "Training Cost: {cost}" }
+        div { "{title}" }
+        div { "{tier} Tier" }
+        div { "Cost: {cost}" }
         ActionDescription { action }
       )
     },
@@ -74,16 +80,66 @@ fn SkillDescription( skill: ReadOnlySignal<Skill> ) -> Element {
 
 #[component]
 fn ActionDescription( action: Action ) -> Element {
+  let debug = action.clone();
+  let class = match action.class {
+    Some( value ) => value.to_string(),
+    _ => "Unknown".into(),
+  };
   rsx!(
-    div{ "{action.display_type()}" }
+    div{ "{class}" }
     if let Some( duration ) = action.duration {
-      div { "Duration: {duration.display()}" }
+      div {
+        class: "row",
+        div { "Duration" }
+        div { "{duration}" }
+      }
     }
     if let Some( target ) = action.target {
-      div { "Target: {target}" }
+      div {
+        class: "row",
+        div { "Target" }
+        div { "{target}" }
+      }
     }
-    if let Some( body ) = action.body {
-      div { "{body}" }
+    if let Some( rules ) = action.rules {
+      for rule in rules {
+        RuleDescription { rule }
+      }
     }
+    div { "{debug:?}" }
   )
+}
+
+#[component]
+fn RuleDescription( rule: RuleElement ) -> Element {
+  match rule.class {
+    RuleClass::Text => {
+      let text: String = rule.text.unwrap_or_default();
+      rsx!( span { "{text}" } )
+    },
+    RuleClass::Roll => {
+      let Some( roll ) = rule.roll else { return rsx!() };
+      rsx!( span { "{roll}" } )
+    },
+    RuleClass::Outcome => {
+      let outcomes = rule.outcomes.unwrap_or_default();
+      rsx!(
+        div {
+          class: "grid dim-title-details",
+          for outcome in outcomes {
+            div {
+              class: "uv-title",
+              "{outcome.result}"
+            }
+            div {
+              class: "uv-details",
+              for rule in outcome.rules {
+                RuleDescription { rule }
+              }
+            }
+          }
+        }
+      )
+    },
+  }
 }
