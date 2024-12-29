@@ -2,7 +2,6 @@ use std::fmt;
 use serde::{ Deserialize, Serialize };
 
 use crate::character::prelude::*;
-
 use super::element::RuleElement;
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
@@ -10,11 +9,15 @@ pub struct Roll {
   pub class: RollClass,
   pub capability: Capability,
   pub defense: Defense,
+  pub each: Option<bool>
 }
 
 impl fmt::Display for Roll {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "Make a {} vs {} {} roll.", self.capability, self.defense, self.class )
+    match &self.each {
+      Some( true ) => write!( f, "Make a {} vs {} {} roll against each target.", self.capability, self.defense, self.class ),
+      _ => write!( f, "Make a {} vs {} {} roll against the target.", self.capability, self.defense, self.class ),
+    }
   }
 }
 

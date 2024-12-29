@@ -9,7 +9,7 @@ pub fn SkillList() -> Element {
     Some( Ok( skills ) ) => {
       rsx! {
         div {
-          class: "grid dim-skill-table",
+          class: "grid spacer dim-skill-table",
           SkillTable { skills: skills.to_owned() }
         }
       }
