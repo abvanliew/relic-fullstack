@@ -1,22 +1,9 @@
 use std::fmt;
 use serde::{ Deserialize, Serialize };
 
-use super::prelude::*;
+use crate::character::prelude::*;
 
-#[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
-pub enum RuleClass {
-  Text,
-  Roll,
-  Outcome,
-}
-
-#[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
-pub struct RuleElement {
-  pub class: RuleClass,
-  pub text: Option<String>,
-  pub roll: Option<Roll>,
-  pub outcomes: Option<Vec<RollOutcome>>,
-}
+use super::element::RuleElement;
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
 pub struct Roll {
@@ -47,6 +34,12 @@ impl fmt::Display for RollClass {
 }
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
+pub struct RollOutcome {
+  pub result: RollResult,
+  pub rules: Vec<RuleElement>,
+}
+
+#[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
 pub enum RollResult {
   Miss,
   Hit,
@@ -65,14 +58,8 @@ impl fmt::Display for RollResult {
       RollResult::HitWilling => "Hit/Willing",
       RollResult::Critical => "Critical",
       RollResult::Failure => "Failure",
-      RollResult::Success => "Sucess",
+      RollResult::Success => "Success",
       RollResult::CriticalSuccess => "Critical Success",
     } )
   }
-}
-
-#[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
-pub struct RollOutcome {
-  pub result: RollResult,
-  pub rules: Vec<RuleElement>,
 }

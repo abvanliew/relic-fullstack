@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
-use crate::relic::prelude::*;
 use bson::doc;
+
+use crate::skill::Skill;
 
 #[cfg(feature = "server")]
 use bson::oid::ObjectId;

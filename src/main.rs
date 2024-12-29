@@ -1,9 +1,12 @@
+mod character;
 mod panels;
-mod relic;
+mod path;
+mod rule;
 mod server;
+mod skill;
 
 use dioxus::prelude::*;
-use panels::{Navbar, Home, Skills, SingleSkill};
+use panels::*;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/main.css");
@@ -20,9 +23,13 @@ pub enum Route {
   Home {},
   #[nest("/skills")]
     #[route("/")]
-    Skills {},
+    SkillList {},
     #[route("/:id")]
     SingleSkill { id: String },
+  #[end_nest]
+  #[nest("/paths")]
+      #[route("/")]
+      PathList {},
 }
 
 #[component]

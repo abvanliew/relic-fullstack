@@ -1,8 +1,10 @@
 mod home;
 mod navbar;
-mod skills;
+mod path;
+mod skill;
 
 pub use home::Home;
 pub use navbar::Navbar;
-pub use skills::Skills;
-pub use skills::SingleSkill;
+pub use path::PathList;
+pub use skill::SkillList;
+pub use skill::SingleSkill;

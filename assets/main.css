@@ -8,88 +8,84 @@ body {
   font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif';
 }
 
+.card {
+  width: 650px;
+  border: 0.2rem solid #a9b5d2;
+  border-radius: 0.6rem;
+  padding: 0.16rem 0.5rem 0.8rem;
+}
+
 .grid {
   display: grid;
-  gap: 4px;
-  margin-inline: auto;
+  row-gap: 4px;
+  column-gap: 8px;
   grid-auto-rows: min-content;
   grid-template-rows: min-content;
 }
 
-.dim-title-details {
-  grid-template-columns: min-content 1fr;
-  grid-template-areas:
-    "title details";
+.dim-skill-table {
+  grid-template-columns: [title] min-content [cost] min-content [activation] min-content [details] 1fr [end];
 }
 
-.dim-title-property {
-  grid-template-columns: 1fr min-content;
-  grid-template-areas:
-    "title property";
+.dim-keyword-table {
+  grid-template-columns: [title] min-content [details] 1fr [property] min-content [end];
 }
 
-.uv-title {
-  grid-column-start: 1;
-  grid-column-end: 1;
-}
-.uv-details { grid-area: details; }
-.uv-property { grid-area: property; }
+.uv-title { grid-column: title; }
+.uv-cost { grid-column: cost; }
+.uv-activation { grid-column: activation; }
+.uv-details { grid-column: details / end; }
+.uv-property { grid-column: property; }
+.uv-full { grid-column: title / end; }
+.uv-title-property { grid-column: title / property; }
 
 .row {
   display: flex;
   flex-direction: row;
 }
 
-#hero {
-  margin: 0;
+.indent {
+  margin-left: 8px;
+}
+
+.spacer {
+  margin-top: 8px;
+}
+
+.underhang {
+  margin-bottom: 8px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.title {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
+  font-weight: 750;
+  font-size: 1.25rem;
+  text-decoration: underline;
 }
 
-#links {
-  width: 400px;
-  text-align: left;
-  font-size: x-large;
-  color: white;
-  display: flex;
-  flex-direction: column;
+.highlight {
+  font-weight: 600;
 }
 
-#links a {
-  color: white;
-  text-decoration: none;
-  margin-top: 20px;
-  margin: 10px 0px;
-  border: white 1px solid;
-  border-radius: 5px;
-  padding: 10px;
+.italics {
+  font-style: italic;
 }
 
-#links a:hover {
-  background-color: #1f1f1f;
-  cursor: pointer;
-}
-
-#header {
-  max-width: 1200px;
-}
-
-/* Navbar */
-#navbar {
-  display: flex;
-  flex-direction: row;
-}
-
-#navbar a {
+a {
   color: #ffffff;
   margin-right: 20px;
   text-decoration: none;
+  font-weight: 600;
   transition: color 0.2s ease;
 }
 
-#navbar a:hover {
+a:hover {
   cursor: pointer;
+  font-weight: 600;
   color: #91a4d2;
 }

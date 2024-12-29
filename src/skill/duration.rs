@@ -26,9 +26,9 @@ impl fmt::Display for Duration {
       None => 1,
     };
     let base: String = match ( &self.class, length != 1 ) {
-      ( DurationClass::NextTurnStart, _ ) => "Until the start of your next turn".into(),
-      ( DurationClass::NextTurnEnd, _ ) => "Until the end of your next turn".into(),
-      ( DurationClass::WhileReserved, _ ) => "While resources are reserved".into(),
+      ( DurationClass::NextTurnStart, _ ) => "Until the start of your next turn.".into(),
+      ( DurationClass::NextTurnEnd, _ ) => "Until the end of your next turn.".into(),
+      ( DurationClass::WhileReserved, _ ) => "While resources are reserved.".into(),
       ( DurationClass::Minutes, true ) => format!( "{length} Minutes" ),
       ( DurationClass::Minutes, false ) => format!( "1 Minute" ),
       ( DurationClass::Hours, true ) => format!( "{length} Hours" ),

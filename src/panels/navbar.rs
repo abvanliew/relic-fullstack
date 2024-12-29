@@ -1,14 +1,14 @@
 use dioxus::prelude::*;
-
 use crate::Route;
 
 #[component]
 pub fn Navbar() -> Element {
   rsx! {
     div {
-      id: "navbar",
+      class: "row underhang",
       Link { to: Route::Home {}, "Home" }
-      Link { to: Route::Skills {}, "Skills" }
+      Link { to: Route::SkillList {}, "Skills" }
+      Link { to: Route::PathList {}, "Paths" }
     }
     Outlet::<Route> {}
   }
