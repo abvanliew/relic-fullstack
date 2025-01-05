@@ -1,4 +1,6 @@
 mod character;
+mod component;
+mod equipment;
 mod panels;
 mod path;
 mod rule;
@@ -28,8 +30,13 @@ pub enum Route {
     SingleSkill { id: String },
   #[end_nest]
   #[nest("/paths")]
-      #[route("/")]
-      PathList {},
+    #[route("/")]
+    PathList {},
+  #[end_nest]
+  #[route("/builder")]
+  CharacterBuilder {},
+  #[route("/sheet")]
+  CharacterSheet {},
 }
 
 #[component]

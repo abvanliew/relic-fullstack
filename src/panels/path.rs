@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
+use crate::path::components::PathDescription;
 use crate::server::prelude::*;
 use crate::path::Path;
-use crate::skill::prelude::SkillTable;
 
 #[component]
 pub fn PathList() -> Element {
@@ -10,20 +10,14 @@ pub fn PathList() -> Element {
     Some( Ok( paths ) ) => {
       rsx! {
         div {
-          class: "grid dim-skill-table",
+          class: "grid dim-paths",
           for path in paths {
-            div { class: "title spacer dim-full", "{path.title}" }
-            if let Some( summary ) = &path.summary {
-              div { class: "dim-full", "{summary}" }
-            }
-            if let Some( skills ) = &path.skills {
-              SkillTable { skills: skills.to_owned() }
-            }
+            PathDescription { path: path.to_owned() }
           }
         }
       }
     }
-    Some(Err(err)) => {
+    Some( Err(err) ) => {
       rsx! { "An error occurred when loading paths: {err}" }
     }
     None => { rsx! { "Loading paths" } }

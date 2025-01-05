@@ -10,7 +10,7 @@ pub fn SkillDescription( skill: ReadOnlySignal<Skill> ) -> Element {
   let action = skill.read().action.clone();
   rsx!(
     div {
-      class: "card grid dim-keyword-table",
+      class: "card grid dim-keywords",
       div { class: "uv-title-property title nowrap", "{title}" }
       div { class: "uv-property", 
         div { class: "nowrap italics", "{tier} - {training_cost}" }

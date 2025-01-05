@@ -50,6 +50,39 @@ impl Resource {
       Resource::MajorMana => "d10 **1-4",
     }.into()
   }
+
+  // pub fn flow( &self ) -> Flow {
+  //   match self {
+  //       Resource::Anointment => Flow::Innate,
+  //       Resource::Animalism => Flow::Innate,
+  //       Resource::Sanguine => Flow::Innate,
+  //       Resource::Rage => Flow::Innate,
+  //       Resource::Mastery => Flow::Resonance,
+  //       Resource::Channel => Flow::Resonance,
+  //       Resource::Ki => Flow::Resonance,
+  //       Resource::Virtuoso => Flow::Resonance,
+  //       Resource::MinorMana => Flow::Magic,
+  //       Resource::ModerateMana => Flow::Magic,
+  //       Resource::MajorMana => Flow::Magic,
+  //   }
+  // }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub enum Flow {
+  Innate,
+  Resonance,
+  Magic,
+}
+
+impl fmt::Display for Flow {
+  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
+    write!( f, "{}", match self {
+      Flow::Innate => "Innate",
+      Flow::Resonance => "Resonance",
+      Flow::Magic => "Magic",
+    } )
+  }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]

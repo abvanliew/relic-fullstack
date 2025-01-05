@@ -28,6 +28,7 @@ pub struct Skill {
 
 pub mod prelude {
   pub use super::Skill;
+  pub use super::aspect::TrainingCost;
   pub use super::activation::Action;
   pub use super::duration::Duration;
   pub use super::component::{SkillDescription, SkillTable};

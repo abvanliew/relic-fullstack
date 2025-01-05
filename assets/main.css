@@ -8,10 +8,22 @@ body {
   font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif';
 }
 
+.hidden {
+  display: none;
+}
+
 .card {
   width: 650px;
   border: 0.2rem solid #a9b5d2;
   border-radius: 0.6rem;
+  padding: 0.16rem 0.5rem 0.8rem;
+}
+
+.tile {
+  width: 100px;
+  height: 100px;
+  border: 0.1rem solid #a9b5d2;
+  border-radius: 0.4rem;
   padding: 0.16rem 0.5rem 0.8rem;
 }
 
@@ -23,12 +35,23 @@ body {
   grid-template-rows: min-content;
 }
 
-.dim-skill-table {
-  grid-template-columns: [title] min-content [cost] min-content [activation] min-content [details] 1fr [end];
+.tiles {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 4px;
+  column-gap: 8px;
 }
 
-.dim-keyword-table {
-  grid-template-columns: [title] min-content [details] 1fr [property] min-content [end];
+.dim-skills {
+  grid-template-columns: [title] min-content [title-end cost] min-content [activation] min-content [details] 1fr [end];
+}
+
+.dim-paths {
+  grid-template-columns: [title] min-content [title-end activation] min-content [details] 1fr [end];
+}
+
+.dim-keywords {
+  grid-template-columns: [title] min-content [title-end details] 1fr [property] min-content [end];
 }
 
 .uv-title { grid-column: title; }
@@ -36,7 +59,9 @@ body {
 .uv-activation { grid-column: activation; }
 .uv-details { grid-column: details / end; }
 .uv-property { grid-column: property; }
-.uv-full { grid-column: title / end; }
+
+.uv-full { grid-column: 1 / -1; width: 100%; }
+.uv-after-title { grid-column: title-end / end; }
 .uv-title-property { grid-column: title / property; }
 
 .row {
@@ -56,6 +81,10 @@ body {
   margin-bottom: 8px;
 }
 
+.under-border {
+  border-bottom: 0.2rem dotted #a9b5d2;
+}
+
 .nowrap {
   white-space: nowrap;
 }
@@ -72,8 +101,16 @@ body {
   font-weight: 600;
 }
 
+.underline {
+  text-decoration: underline;
+}
+
 .italics {
   font-style: italic;
+}
+
+.small-text {
+  font-size: 0.65rem;
 }
 
 a {

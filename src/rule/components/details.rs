@@ -13,7 +13,7 @@ pub fn RuleDescription( rule: RuleElement ) -> Element {
     ( _, _, Some( outcomes ) ) => {
       rsx!(
         div {
-          class: "indent grid dim-keyword-table",
+          class: "indent grid dim-keywords",
           for outcome in outcomes {
             div {
               class: "uv-title highlight",

@@ -1,5 +1,11 @@
 pub mod components;
+mod keystone;
+mod feature;
+mod skills;
 
+use feature::Feature;
+
+use keystone::Keystone;
 use serde::{Deserialize, Serialize};
 use bson::oid::ObjectId;
 
@@ -15,4 +21,7 @@ pub struct Path {
   pub title: String,
   pub summary: Option<String>,
   pub skills: Option<Vec<Skill>>,
+  pub features: Option<Vec<Feature>>,
+  pub keystones: Option<Vec<Keystone>>,
+  pub inherient: Option<bool>,
 }

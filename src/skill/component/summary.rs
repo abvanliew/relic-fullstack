@@ -3,16 +3,16 @@ use crate::Route;
 use crate::skill::prelude::*;
 
 #[component]
-pub fn SkillTable( skills: Vec<Skill> ) -> Element {
+pub fn SkillTable( skills: Vec<Skill>, training: bool ) -> Element {
   rsx! {
     for skill in skills {
-      SkillSummary { skill: skill.to_owned() }
+      SkillSummary { skill: skill.to_owned(), training }
     }
   }
 }
 
 #[component]
-pub fn SkillSummary( skill: ReadOnlySignal<Skill> ) -> Element {
+pub fn SkillSummary( skill: ReadOnlySignal<Skill>, training: bool ) -> Element {
   let title = skill.read().title.clone();
   let id = skill.read().id.to_string();
   let training_cost = skill.read().training_cost.to_string();
@@ -25,10 +25,12 @@ pub fn SkillSummary( skill: ReadOnlySignal<Skill> ) -> Element {
         to: Route::SingleSkill { id }, "{title}"
       }
     }
+  if training {
     div {
       class: "uv-cost nowrap",
       "{training_cost}"
     }
+  }
     div {
       class: "uv-activation nowrap",
       "{activation}"
