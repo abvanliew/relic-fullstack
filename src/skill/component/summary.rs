@@ -41,3 +41,16 @@ pub fn SkillSummary( skill: ReadOnlySignal<Skill>, training: bool ) -> Element {
     }
   )
 }
+
+#[component]
+pub fn SkillTile( skill: ReadOnlySignal<Skill> ) -> Element {
+  let title = skill.read().title.clone();
+  let activation = skill.read().action.activation();
+  rsx!(
+    div { "{title}" }
+    div { "{activation}" }
+    if let Some( summary ) = &skill.read().summary {
+      div { "{summary}" }
+    }
+  )
+}

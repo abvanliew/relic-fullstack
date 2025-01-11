@@ -1,7 +1,15 @@
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::character;
+use crate::character::prelude::*;
+
+use super::Path;
+
+impl Path {
+  pub fn resource_pool_modifiers( &self ) -> Vec<PoolModifier> {
+    self.keystones.clone().unwrap_or_default().into_iter().filter_map( |k| k.resource_pool ).collect()
+  }
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -10,16 +18,7 @@ pub struct Keystone {
   pub summary: Option<String>,
   pub path_feature: Option<bool>,
   pub path_half_feature: Option<bool>,
-  pub resource_pool: Option<ResourcePoolModifier>
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct ResourcePoolModifier {
-  pub resoruce: character::Resource,
-  pub base_flow: i32,
-  pub base_pool: i32,
-  pub mod_pool: i32,
+  pub resource_pool: Option<PoolModifier>
 }
 
 #[component]

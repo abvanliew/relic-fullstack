@@ -18,7 +18,7 @@ pub async fn list_skills() -> Result<Vec<Skill>, ServerFnError> {
   .find( doc! {}, ).await?;
   let mut skill_list: Vec<Skill> = Vec::new();
   while let Some( result ) = results.next().await {
-    let Ok( skill ) = result else { continue; };
+    let Ok( skill ) = result else { tracing::error!( "Unable to load skill {:?}", result ); continue; };
     skill_list.push( skill );
   }
   Ok( skill_list )

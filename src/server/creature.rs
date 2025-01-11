@@ -19,7 +19,6 @@ pub async fn list_creatures() -> Result<Vec<Character>, ServerFnError> {
   let mut character_list: Vec<Character> = Vec::new();
   while let Some( result ) = results.next().await {
     let Ok( character ) = result else { continue; };
-    // tracing::debug!( "{character:?}" );
     character_list.push( character );
   }
   Ok( character_list )

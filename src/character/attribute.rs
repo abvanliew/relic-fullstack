@@ -2,6 +2,8 @@ use dioxus::prelude::*;
 
 use std::fmt;
 use serde::{Deserialize, Serialize};
+use crate::rule::prelude::*;
+
 use self::AttributeType::{Capability as CapabilityType,Defense as DefenseType};
 use self::Capability::{Manipulation,Physique,Spirit,Warfare};
 use self::Defense::{Dodge,Fortitude,Insight,Resolve,Tenacity};
@@ -121,15 +123,20 @@ pub fn AttributeDetails( attributes: AttributeSet ) -> Element {
   )
 }
 
-#[component]
-fn Modifier( value: i32 ) -> Element {
-  rsx! {
-    span {
-      match value >= 0 {
-        true => format!( "+{value}" ),
-        false => format!( "{value}" ),
-      }
-    }
+#[derive(Debug, Clone, PartialEq)]
+pub enum AttributeClass {
+  Capability,
+  Defense,
+  Expertise,
+}
+
+impl fmt::Display for AttributeClass {
+  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
+    write!( f, "{}", match self {
+      AttributeClass::Capability => "Capability",
+      AttributeClass::Defense => "Defense",
+      AttributeClass::Expertise => "Expertise",
+    } )
   }
 }
 

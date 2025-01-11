@@ -1,3 +1,5 @@
+use std::result;
+
 use dioxus::prelude::*;
 use bson::doc;
 
@@ -18,7 +20,7 @@ pub async fn list_path_skills() -> Result<Vec<Path>, ServerFnError> {
   .find( doc! {}, ).await?;
   let mut path_list: Vec<Path> = Vec::new();
   while let Some( result ) = results.next().await {
-    let Ok( path ) = result else { continue; };
+    let Ok( path ) = result else { tracing::error!( "Unable to load path {:?}", result ); continue; };
     path_list.push( path );
   }
   Ok( path_list )

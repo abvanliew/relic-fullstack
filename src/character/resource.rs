@@ -1,6 +1,26 @@
 use std::fmt;
 use serde::{Deserialize, Serialize};
 
+use crate::rule::prelude::Bonus;
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct ResourceSet {
+  pub innate: Option<i32>,
+  pub anointment: Option<i32>,
+  pub animalism: Option<i32>,
+  pub sanguine: Option<i32>,
+  pub rage: Option<i32>,
+  pub resonance: Option<i32>,
+  pub mastery: Option<i32>,
+  pub channel: Option<i32>,
+  pub ki: Option<i32>,
+  pub virtuoso: Option<i32>,
+  pub magic: Option<i32>,
+  pub minor_mana: Option<i32>,
+  pub moderate_mana: Option<i32>,
+  pub major_mana: Option<i32>,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum Resource {
   Anointment,
@@ -112,4 +132,12 @@ impl fmt::Display for ResourceCost {
 
 fn cost_format( cost: i32, name: String, drain: String, per_charge: bool ) -> String {
   format!( "{} {} ({}{}){}", cost, name, cost, drain, if per_charge { " per charge" } else { "" } )
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct PoolModifier {
+  pub resource: Resource,
+  pub flow: Bonus,
+  pub pool: Bonus,
 }

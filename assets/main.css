@@ -4,12 +4,9 @@ body {
   background-color: #0f1116;
   font-size: 1rem;
   font-style: normal;
-  color: #ffffff;
+  color: #fff;
   font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif';
-}
-
-.hidden {
-  display: none;
+  opacity: 1;
 }
 
 .card {
@@ -20,11 +17,25 @@ body {
 }
 
 .tile {
-  width: 100px;
-  height: 100px;
-  border: 0.1rem solid #a9b5d2;
-  border-radius: 0.4rem;
+  width: 240px;
+  height: 80px;
   padding: 0.16rem 0.5rem 0.8rem;
+}
+
+.unselected {
+  margin: 2px;
+  border: 1px solid #a9b5d2;
+  border-radius: 0.4rem;
+}
+
+.selected {
+  margin: 0px;
+  border: 3px solid #d1ab3a;
+  border-radius: 0.4rem;
+}
+
+.disabled {
+  color: #aaa;
 }
 
 .grid {
@@ -42,6 +53,10 @@ body {
   column-gap: 8px;
 }
 
+.dim-sidebar {
+  grid-template-columns: [main] 1fr [side] max-content [end];
+}
+
 .dim-skills {
   grid-template-columns: [title] min-content [title-end cost] min-content [activation] min-content [details] 1fr [end];
 }
@@ -54,6 +69,15 @@ body {
   grid-template-columns: [title] min-content [title-end details] 1fr [property] min-content [end];
 }
 
+.uv-main {
+  grid-column: main / side;
+  grid-row: 1;
+}
+.uv-side {
+  grid-column: side / end;
+  grid-row: 1;
+}
+
 .uv-title { grid-column: title; }
 .uv-cost { grid-column: cost; }
 .uv-activation { grid-column: activation; }
@@ -63,6 +87,17 @@ body {
 .uv-full { grid-column: 1 / -1; width: 100%; }
 .uv-after-title { grid-column: title-end / end; }
 .uv-title-property { grid-column: title / property; }
+
+.dim-training {
+  grid-template-columns: [rank] max-content [expert] 1fr [adept] 1fr [endurance] 1fr [resonance] 1fr [innate] 1fr [magic] 1fr;
+}
+.uv-rank { grid-column: rank; }
+.uv-expert { grid-column: expert; }
+.uv-adept { grid-column: adept; }
+.uv-endurance { grid-column: endurance; }
+.uv-resonance { grid-column: resonance; }
+.uv-innate { grid-column: innate; }
+.uv-magic { grid-column: magic; }
 
 .row {
   display: flex;
@@ -81,8 +116,12 @@ body {
   margin-bottom: 8px;
 }
 
-.under-border {
+.dotted-underline {
   border-bottom: 0.2rem dotted #a9b5d2;
+}
+
+.padded {
+  padding: .16rem .5rem .8rem;
 }
 
 .nowrap {
@@ -110,7 +149,7 @@ body {
 }
 
 .small-text {
-  font-size: 0.65rem;
+  font-size: 0.85rem;
 }
 
 a {
@@ -125,4 +164,9 @@ a:hover {
   cursor: pointer;
   font-weight: 600;
   color: #91a4d2;
+}
+
+.hidden {
+  opacity: 0;
+  display: none;
 }

@@ -16,6 +16,7 @@ pub struct Target {
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum TargetClass {
   Custom,
+  Yourself,
   Touch,
   Weapon,
   Range,
@@ -63,6 +64,7 @@ impl fmt::Display for Target {
       &self.size,
       &self.limit,
     ) {
+      ( TargetClass::Yourself, _, _, _ ) => "Yourself".into(),
       ( TargetClass::EachTriggering, _, _, _, ) => format!(
         "Each triggering {}",
         self.selection.clone().unwrap_or_default().singular()

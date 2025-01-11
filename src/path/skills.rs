@@ -8,6 +8,13 @@ impl Path {
       skill.training_cost == TrainingCost::Inherient
     ).collect()
   }
+  pub fn skills_spells_full( &self ) -> Vec<Skill> {
+    self.skills.clone().unwrap_or_default().into_iter()
+    .filter( |skill|
+      skill.training_cost == TrainingCost::Full ||
+      skill.training_cost == TrainingCost::Spell
+    ).collect()
+  }
 
   pub fn skills_full( &self ) -> Vec<Skill> {
     self.skills.clone().unwrap_or_default().into_iter()

@@ -9,7 +9,7 @@ use super::TrainingCost;
 #[serde(rename_all = "camelCase")]
 pub struct Feature {
   pub training_cost: TrainingCost,
-  pub single_attribute: Option<AttributeMask>,
+  pub attribute: Option<AttributeMask>,
   pub bonus_hp: Option<i32>,
   pub bonus_expertise: Option<i32>,
   pub spell_knowledge: Option<SpellKnowledge>,
