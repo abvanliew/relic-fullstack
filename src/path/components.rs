@@ -52,7 +52,7 @@ pub fn PathTile( path: ReadOnlySignal<Path> ) -> Element {
   rsx!(
     div { "{title}" }
     if let Some( summary ) = path().summary {
-      div { "{summary}" }
+      div { class: "small-text", "{summary}" }
     }
   )
 }

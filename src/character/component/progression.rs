@@ -1,14 +1,20 @@
-use std::{cmp, collections::HashSet};
+use std::cmp;
+use std::collections::{HashSet, HashMap};
 use dioxus::prelude::*;
 
-use crate::character::{attribute::{AttributeSignal, AttributeType::{self, Capability, Defense}}, training::{self, main_training_growth, TrainingClass, TrainingGrowth, TrainingPanel, TrainingSignal}};
-use crate::skill::{component::SkillTile, Skill};
-use crate::path::components::PathTile;
-
 use crate::path::Path;
+use crate::path::components::PathTile;
+use crate::rule::prelude::*;
+use crate::skill::Skill;
+use crate::skill::component::SkillTile;
+
+use crate::character;
+use crate::character::prelude::*;
+use crate::character::training::{main_training_growth, TrainingClass, TrainingGrowth, TrainingModifiers, TrainingPanel, TrainingSignal};
+use crate::character::attribute::{AttributeSignal, Attribute::{self, Capability, Defense}};
 use crate::character::progression::CharacterGrowth;
-use crate::character::prelude::Capability::{Manipulation,Physique,Spirit,Warfare};
-use crate::character::prelude::Defense::{Dodge,Fortitude,Insight,Resolve,Tenacity};
+use crate::character::prelude::Capability::{Manipulation, Physique, Spirit, Warfare};
+use crate::character::prelude::Defense::{Dodge, Fortitude, Insight, Resolve, Tenacity};
 
 #[derive(Debug, Clone)]
 struct PathContext {
@@ -20,18 +26,27 @@ struct SkillContext {
   pub ids: Signal<HashSet<String>>
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct FlowResources {
+  pub flow: Bonus,
+  pub pools: HashMap<character::ResourcePool, Bonus>,
+}
+
 #[component]
 pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
-  // let mut path_id = use_signal( || "".to_string() );
   let full_features = vec![
-    FeatureTest { title: "HP +1".into(), summary: None }
+    FeatureTest { title: "HP +1".into(), summary: None },
+    FeatureTest { title: "+1 Attribute".into(), summary: None },
   ];
   let half_features = vec![
-    FeatureTest { title: "Expertise +1 rank".into(), summary: None }
+    FeatureTest { title: "+1 Expertise".into(), summary: None },
   ];
   let mut level = use_signal( || 1 );
+  let mut minimize_paths = use_signal( || false );
   let mut attrib_signal = AttributeSignal::use_context_provider();
-  let training_signal = TrainingSignal::use_context_provider();
+  let training_signals = TrainingSignal::use_context_provider();
+  let growth = main_training_growth();
+  let mut growth_modifiers: Signal<TrainingModifiers> = use_signal( || TrainingModifiers::default() );
   let stats = CharacterGrowth::default().stats( level() );
   use_effect( move || attrib_signal.cap( stats.max_ranks ) );
   let path_ids_selected: Signal<HashSet<String>> = use_signal( || HashSet::new() );
@@ -39,78 +54,105 @@ pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
   let skill_ids_selected: Signal<HashSet<String>> = use_signal( || HashSet::new() );
   use_context_provider( || SkillContext { ids: skill_ids_selected } );
   let mut skills_full: Signal<Vec<Skill>> = use_signal( || Vec::new() );
+  let mut pool_modifiers: Signal<Vec<PoolModifier>> = use_signal( || Vec::new() );
   let path_copy = paths.clone();
+  let mut flow_resources: Signal<HashMap<Flow,FlowResources>> = use_signal( || HashMap::new() );
   use_effect( move || {
-    let mut path_skills: Vec<Skill> = Vec::new();
+    let mut skills: Vec<Skill> = Vec::new();
+    let mut modifiers: Vec<PoolModifier> = Vec::new();
+    let mut resources: HashMap<Flow,FlowResources> = HashMap::new();
     for id in path_ids_selected() {
       let Some( path ) = find_path( path_copy.clone(), id.clone() ) else { continue; };
-      path_skills.extend( path.skills_spells_full() )
+      skills.extend( path.skills_spells_full() );
+      modifiers.extend( path.resource_pool_modifiers() );
     }
-    path_skills.dedup_by_key(|p| p.id.to_string() );
-    skills_full.set( path_skills );
+    for modifier in modifiers.clone() {
+      let flow = modifier.resource.flow();
+      let entry = resources.entry( flow ).or_default();
+      entry.flow += modifier.flow;
+      let pool = entry.pools.entry( modifier.resource ).or_default();
+      *pool += modifier.pool;
+    }
+    skills.dedup_by_key(|p| p.id.to_string() );
+    skills_full.set( skills );
+    pool_modifiers.set( modifiers );
+    flow_resources.set( resources );
+    growth_modifiers.set( growth.modifiers( training_signals ) );
   } );
   let path_count: i32 = path_ids_selected().len().try_into().unwrap_or( i32::MAX );
   let full_count: i32 = skill_ids_selected().len().try_into().unwrap_or( i32::MAX );
-  let remaining = stats.attributes - attrib_signal.sum();
+  let ( sum_cap, sum_def ) = attrib_signal.cap_def();
+  let remaining = stats.attributes - sum_cap - sum_def;
   let path_min = stats.iniatite.path_min;
   let path_max = stats.iniatite.path_max;
+  let path_optional = path_max - path_min;
   let full_min = stats.iniatite.features - path_max + path_min;
   let full_max = stats.iniatite.features;
   let half_min = stats.iniatite.half_features;
   let half_max = half_min + 2 * ( full_max );
-  let path_enabled = path_count < path_max;
+  let path_selected = path_count < path_max;
+  let path_enabled = path_selected;
+  let has_innate = flow_resources().contains_key( &Flow::Innate );
+  let has_resonance = flow_resources().contains_key( &Flow::Resonance );
+  let has_magic = flow_resources().contains_key( &Flow::Magic );
+  let total_hp = stats.hp + growth_modifiers().hp.unwrap_or( 0 );
+  let total_con = 4 + growth_modifiers().con.unwrap_or( 0 );
   rsx! {
     div {
-      class: "grid dim-sidebar",
+      class: "grid dim-keywords",
+      div { class: "uv-title", "Level" }
       div {
-        class: "uv-main",
-        div {
-          class: "grid dim-keywords",
-          div { class: "uv-title", "Level" }
-          div { class: "uv-after-title", select {
-            onchange: move |event| { level.set( event.value().parse().unwrap_or( 1 ) ); },
-            for lvl in 1..=12 { option { value: lvl, label: lvl, selected: level() == lvl, } }
-          } }
-        }
-        div {
-          class: "tiles",
-          div {
-            class: "uv-full small-text dotted-underline spacer",
-            "Paths: {path_min} - {path_max} [{path_count}]"
+        class: "uv-after-title",
+        select {
+          onchange: move |event| { level.set( event.value().parse().unwrap_or( 1 ) ); },
+          for lvl in 1..=12 {
+            option { value: lvl, label: lvl, selected: level() == lvl, }
           }
-          for path in paths {
-            PathSelector { path, enabled: path_enabled }
-          }
-          div {
-            class: "uv-full small-text dotted-underline spacer",
-            "Full Features: {full_min} - {full_max} [{full_count}]"
-          }
-          for skill in skills_full() {
-            SkillSelector { skill }
-          }
-          for feature in full_features {
-            FeatureSelector { feature }
-          }
-          div {
-            class: "uv-full small-text dotted-underline spacer",
-            "Half Features: {half_min} - {half_max}"
-          }
-          for feature in half_features {
-            FeatureSelector { feature }
-          }
-        }
-        TrainingRanks { level: level() }
-      }
-      div {
-        class: "uv-sidebar",
-        div {
-          class: "grid dim-keywords",
-          AttributeDistribution { remaining, min: 0, max: stats.max_ranks, total: stats.attributes }
-          div { class: "uv-full spacer" }
-          div { class: "uv-title highlight","HP" }
-          div { class: "uv-after-title", "{stats.hp}" }
         }
       }
+    }
+    div {
+      class: "tiles",
+      div {
+        class: "uv-full small-text dotted-underline spacer",
+        onclick: move |_| { minimize_paths.set( !minimize_paths() ); },
+        "Paths - Required {path_min}, Optional {path_optional} [{path_count}, {path_selected}, {minimize_paths}]"
+      }
+      for path in paths {
+        PathSelector { path, enabled: path_enabled }
+      }
+    }
+    TrainingRanks { level: level(), has_innate, has_resonance, has_magic }
+    div {
+      class: "tiles",
+      div {
+        class: "uv-full small-text dotted-underline spacer",
+        "Full Features: {full_min} - {full_max} [{full_count}]"
+      }
+      for skill in skills_full() {
+        SkillSelector { skill }
+      }
+      for feature in full_features {
+        FeatureSelector { feature }
+      }
+      div {
+        class: "uv-full small-text dotted-underline spacer",
+        "Half Features: {half_min} - {half_max}"
+      }
+      for feature in half_features {
+        FeatureSelector { feature }
+      }
+    }
+    div {
+      class: "grid dim-keywords",
+      AttributeDistribution { remaining, min: 0, max: stats.max_ranks, total: stats.attributes }
+      div { class: "uv-full spacer" }
+      div { class: "uv-title highlight", "HP" }
+      div { class: "uv-after-title", "{total_hp}" }
+      div { class: "uv-title highlight", "Con" }
+      div { class: "uv-after-title", "{total_con}" }
+      div { class: "uv-full", "{growth_modifiers:?}" }
+      ResourceFlowPools { resources: flow_resources }
     }
   }
 }
@@ -123,7 +165,26 @@ fn find_path( paths: Vec<Path>, id: String ) -> Option<Path> {
 }
 
 #[component]
-pub fn TrainingRanks( level: i32 ) -> Element {
+pub fn ResourceFlowPools( resources: ReadOnlySignal<HashMap<Flow,FlowResources>> ) -> Element {
+  rsx!(
+    for flow in Flow::ordered() {
+      if let Some( flow_resource ) = resources().get( &flow ) {
+        div { class: "uv-full spacer" }
+        div { class: "uv-title highlight", "{flow} Flow" }
+        div { class: "uv-after-title highlight", "{flow_resource.flow}" }
+        for resource in character::ResourcePool::ordered() {
+          if let Some( pool ) = flow_resource.pools.get( &resource ) {
+            div { class: "uv-title", "{resource}" }
+            div { class: "uv-after-title", "{pool}" }
+          }
+        }
+      }
+    }
+  )
+}
+
+#[component]
+pub fn TrainingRanks( level: i32, has_innate: bool, has_resonance: bool, has_magic: bool ) -> Element {
   let growth = main_training_growth();
   let training = use_context::<TrainingSignal>();
   let sum = training.sum();
@@ -135,51 +196,36 @@ pub fn TrainingRanks( level: i32 ) -> Element {
       div { class: "uv-expert", "Expert" }
       div { class: "uv-adept", "Adept" }
       div { class: "uv-endurance", "Endurance" }
-      div { class: "uv-resonance", "Resonance" }
-      div { class: "uv-innate", "Innate" }
-      div { class: "uv-magic", "Magic" }
+      div { class: if has_innate { "uv-innate" } else { "uv-innate disabled" }, "Innate" }
+      div { class: if has_resonance { "uv-resonance" } else { "uv-resonance disabled" }, "Resonance" }
+      div { class: if has_magic { "uv-magic" } else { "uv-magic disabled" }, "Magic" }
       for i in 1..=ranks_shown {
         TrainingSelector {
           class: TrainingClass::Expert,
-          rank: i.into(),
-          growth: growth.clone(),
-          level,
-          available: true,
+          rank: i.into(), growth: growth.clone(), level, available: true,
         }
         TrainingSelector {
           class: TrainingClass::Adept,
-          rank: i.into(),
-          growth: growth.clone(),
-          level,
-          available: true,
+          rank: i.into(), growth: growth.clone(), level, available: true,
         }
         TrainingSelector {
           class: TrainingClass::Endurance,
-          rank: i.into(),
-          growth: growth.clone(),
-          level,
-          available: true,
-        }
-        TrainingSelector {
-          class: TrainingClass::Resonance,
-          rank: i.into(),
-          growth: growth.clone(),
-          level,
-          available: false,
+          rank: i.into(), growth: growth.clone(), level, available: true,
         }
         TrainingSelector {
           class: TrainingClass::Innate,
-          rank: i.into(),
-          growth: growth.clone(),
-          level,
-          available: false,
+          rank: i.into(), growth: growth.clone(), level,
+          available: has_innate,
+        }
+        TrainingSelector {
+          class: TrainingClass::Resonance,
+          rank: i.into(), growth: growth.clone(), level,
+          available: has_resonance,
         }
         TrainingSelector {
           class: TrainingClass::Magic,
-          rank: i.into(),
-          growth: growth.clone(),
-          level,
-          available: false,
+          rank: i.into(), growth: growth.clone(), level,
+          available: has_magic,
         }
       }
       if ranks_shown < 18 {
@@ -214,10 +260,10 @@ pub fn TrainingSelector( class: TrainingClass, rank: i32, growth: TrainingGrowth
   rsx!(
     div {
       class: match ( selected, enabled ) {
-        ( true, true ) => format!( "{uv} selected padded" ),
-        ( true, false ) => format!( "{uv} selected disabled padded" ),
-        ( false, true ) => format!( "{uv} unselected padded" ),
-        ( false, false ) => format!( "{uv} unselected disabled padded" ),
+        ( true, true ) => format!( "{uv} small-text selected padded" ),
+        ( true, false ) => format!( "{uv} small-text selected disabled padded" ),
+        ( false, true ) => format!( "{uv} small-text unselected padded" ),
+        ( false, false ) => format!( "{uv} small-text unselected disabled padded" ),
       },
       onclick: move |_| {
         let mut new_value = match ( selected, enabled, top ) {
@@ -239,12 +285,12 @@ pub fn AttributeDistribution( remaining: i32, min: i32, max: i32, total: i32 ) -
   rsx!(
     div { class: "uv-title", "Remaining" }
     div { class: "uv-after-title", "{remaining}" }
-    div { class: "uv-title highlight spacer", "Capabilities" }
+    div { class: "uv-full highlight spacer", "Capabilities" }
     AttributeSelector { attribute: Capability(Physique), min, max, total }
     AttributeSelector { attribute: Capability(Warfare), min, max, total }
     AttributeSelector { attribute: Capability(Spirit), min, max, total }
     AttributeSelector { attribute: Capability(Manipulation), min, max, total }
-    div { class: "uv-title highlight spacer", "Defenses" }
+    div { class: "uv-full highlight spacer", "Defenses" }
     AttributeSelector { attribute: Defense(Tenacity), min, max, total }
     AttributeSelector { attribute: Defense(Fortitude), min, max, total }
     AttributeSelector { attribute: Defense(Resolve), min, max, total }
@@ -254,7 +300,7 @@ pub fn AttributeDistribution( remaining: i32, min: i32, max: i32, total: i32 ) -
 }
 
 #[component]
-pub fn AttributeSelector( attribute: AttributeType, min: i32, max: i32, total: i32 ) -> Element {
+pub fn AttributeSelector( attribute: Attribute, min: i32, max: i32, total: i32 ) -> Element {
   let attributes = use_context::<AttributeSignal>();
   let mut signal = attributes.get( &attribute );
   let cur_max = cmp::min( max, total - attributes.sum() + signal() );
@@ -318,10 +364,6 @@ pub fn SkillSelector( skill: Skill ) -> Element {
       class: match selected() {
         true => "tile selected",
         false => "tile unselected",
-        // ( true, true ) => "tile selected",
-        // ( true, false ) => "tile selected disabled",
-        // ( false, true ) => "tile unselected",
-        // ( false, false ) => "tile hidden",
       },
       onclick: move |_| {
         let mut value = skill_list().clone();
@@ -378,25 +420,3 @@ pub fn FeatureSelector( feature: FeatureTest ) -> Element {
     }
   )
 }
-
-
-
-// fn selection_stats( selections: &Vec<Selection> ) -> SelectionStats {
-//   let mut stats = SelectionStats::default();
-//   for selection in selections {
-//     match ( &selection.class, selection.id ) {
-//       ( Some( SelectionClass::Path ), Some( _ ) ) => stats.paths += 1,
-//       ( Some( SelectionClass::FullFeature ), Some( _ ) ) => stats.features += 1,
-//       ( Some( SelectionClass::HalfFeature ), Some( _ ) ) => stats.half_features += 1,
-//       _ => ()
-//     }
-//   }
-//   return stats;
-// }
-
-// #[derive(Default)]
-// struct SelectionStats {
-//   pub paths: i32,
-//   pub features: i32,
-//   pub half_features: i32,
-// }

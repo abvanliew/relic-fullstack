@@ -18,7 +18,6 @@ body {
 
 .tile {
   width: 240px;
-  height: 80px;
   padding: 0.16rem 0.5rem 0.8rem;
 }
 
@@ -42,8 +41,8 @@ body {
   display: grid;
   row-gap: 4px;
   column-gap: 8px;
-  grid-auto-rows: min-content;
-  grid-template-rows: min-content;
+  grid-auto-rows: max-content;
+  grid-template-rows: max-content;
 }
 
 .tiles {
@@ -58,15 +57,15 @@ body {
 }
 
 .dim-skills {
-  grid-template-columns: [title] min-content [title-end cost] min-content [activation] min-content [details] 1fr [end];
+  grid-template-columns: [title] max-content [title-end cost] max-content [activation] max-content [details] 1fr [end];
 }
 
 .dim-paths {
-  grid-template-columns: [title] min-content [title-end activation] min-content [details] 1fr [end];
+  grid-template-columns: [title] max-content [title-end activation] max-content [details] 1fr [end];
 }
 
 .dim-keywords {
-  grid-template-columns: [title] min-content [title-end details] 1fr [property] min-content [end];
+  grid-template-columns: [title] max-content [title-end details] 1fr [property] max-content [end];
 }
 
 .uv-main {
@@ -89,9 +88,8 @@ body {
 .uv-title-property { grid-column: title / property; }
 
 .dim-training {
-  grid-template-columns: [rank] max-content [expert] 1fr [adept] 1fr [endurance] 1fr [resonance] 1fr [innate] 1fr [magic] 1fr;
+  grid-template-columns: [expert] 1fr [adept] 1fr [endurance] 1fr [innate] 1fr [resonance] 1fr [magic] 1fr;
 }
-.uv-rank { grid-column: rank; }
 .uv-expert { grid-column: expert; }
 .uv-adept { grid-column: adept; }
 .uv-endurance { grid-column: endurance; }

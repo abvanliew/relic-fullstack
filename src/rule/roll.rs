@@ -9,14 +9,16 @@ pub struct Roll {
   pub class: RollClass,
   pub capability: Capability,
   pub defense: Defense,
-  pub each: Option<bool>
+  pub each: Option<bool>,
+  pub keyword: Option<String>,
 }
 
 impl fmt::Display for Roll {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
+    let keyword = self.keyword.clone().unwrap_or( "".into() );
     match &self.each {
-      Some( true ) => write!( f, "Make a {} vs {} {} roll against each target.", self.capability, self.defense, self.class ),
-      _ => write!( f, "Make a {} vs {} {} roll against the target.", self.capability, self.defense, self.class ),
+      Some( true ) => write!( f, "Make a {} vs {} {} {} roll against each target.", self.capability, self.defense, keyword, self.class ),
+      _ => write!( f, "Make a {} vs {} {} {} roll against the target.", self.capability, self.defense, keyword, self.class ),
     }
   }
 }

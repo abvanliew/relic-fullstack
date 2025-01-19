@@ -2,11 +2,19 @@ use dioxus::prelude::*;
 
 use std::fmt;
 use serde::{Deserialize, Serialize};
-use crate::rule::prelude::*;
 
-use self::AttributeType::{Capability as CapabilityType,Defense as DefenseType};
+use crate::rule::components::Modifier;
+
+use self::Attribute::{Capability as CapabilityClass,Defense as DefenseClass};
 use self::Capability::{Manipulation,Physique,Spirit,Warfare};
 use self::Defense::{Dodge,Fortitude,Insight,Resolve,Tenacity};
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct AttributeMask {
+  pub capabilities: Option<Vec<Capability>>,
+  pub defenses: Option<Vec<Defense>>,
+}
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default)]
 pub struct AttributeSet {
@@ -79,17 +87,17 @@ impl AttributeSignal {
     if (self.dodge)() > value { self.dodge.set( value ); }
   }
 
-  pub fn get( &self, attribute: &AttributeType ) -> Signal<i32> {
+  pub fn get( &self, attribute: &Attribute ) -> Signal<i32> {
     match attribute {
-      CapabilityType(Physique) => self.physique,
-      CapabilityType(Warfare) => self.warfare,
-      CapabilityType(Spirit) => self.spirit,
-      CapabilityType(Manipulation) => self.manipulation,
-      DefenseType(Tenacity) => self.tenacity,
-      DefenseType(Fortitude) => self.fortitude,
-      DefenseType(Resolve) => self.resolve,
-      DefenseType(Insight) => self.insight,
-      DefenseType(Dodge) => self.dodge,
+      CapabilityClass(Physique) => self.physique,
+      CapabilityClass(Warfare) => self.warfare,
+      CapabilityClass(Spirit) => self.spirit,
+      CapabilityClass(Manipulation) => self.manipulation,
+      DefenseClass(Tenacity) => self.tenacity,
+      DefenseClass(Fortitude) => self.fortitude,
+      DefenseClass(Resolve) => self.resolve,
+      DefenseClass(Insight) => self.insight,
+      DefenseClass(Dodge) => self.dodge,
     }
   }
 
@@ -97,6 +105,11 @@ impl AttributeSignal {
     (self.physique)() + (self.warfare)() + (self.spirit)() + (self.manipulation)() +
     (self.tenacity)() + (self.fortitude)() + (self.resolve)() + (self.insight)() + (self.dodge)()
   }
+
+  pub fn cap_def( &self ) -> ( i32, i32 ) { (
+    (self.physique)() + (self.warfare)() + (self.spirit)() + (self.manipulation)(),
+    (self.tenacity)() + (self.fortitude)() + (self.resolve)() + (self.insight)() + (self.dodge)(),
+  ) }
 }
 
 #[component]
@@ -124,33 +137,33 @@ pub fn AttributeDetails( attributes: AttributeSet ) -> Element {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum AttributeClass {
+pub enum RankClass {
   Capability,
   Defense,
   Expertise,
 }
 
-impl fmt::Display for AttributeClass {
+impl fmt::Display for RankClass {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
     write!( f, "{}", match self {
-      AttributeClass::Capability => "Capability",
-      AttributeClass::Defense => "Defense",
-      AttributeClass::Expertise => "Expertise",
+      RankClass::Capability => "Capability",
+      RankClass::Defense => "Defense",
+      RankClass::Expertise => "Expertise",
     } )
   }
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum AttributeType {
+pub enum Attribute {
   Capability( Capability ),
   Defense( Defense ),
 }
 
-impl fmt::Display for AttributeType {
+impl fmt::Display for Attribute {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
     write!( f, "{}", match self {
-      AttributeType::Capability(capability) => format!( "{capability}" ),
-      AttributeType::Defense(defense) => format!( "{defense}" ),
+      Attribute::Capability(capability) => format!( "{capability}" ),
+      Attribute::Defense(defense) => format!( "{defense}" ),
     } )
   }
 }

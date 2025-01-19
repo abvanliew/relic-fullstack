@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::character;
-use crate::character::prelude::*;
+use crate::character::ResourcePool;
 
 use super::TrainingCost;
 
@@ -9,11 +8,10 @@ use super::TrainingCost;
 #[serde(rename_all = "camelCase")]
 pub struct Feature {
   pub training_cost: TrainingCost,
-  pub attribute: Option<AttributeMask>,
   pub bonus_hp: Option<i32>,
   pub bonus_expertise: Option<i32>,
   pub spell_knowledge: Option<SpellKnowledge>,
-  pub resource_pool: Option<character::Resource>,
+  pub resource_pool: Option<ResourcePool>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -37,11 +35,4 @@ pub enum SpellTier {
 pub enum SpellStyle {
   Slot,
   Spontaneous,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct AttributeMask {
-  pub capabilities: Option<Vec<Capability>>,
-  pub defenses: Option<Vec<Defense>>,
 }
