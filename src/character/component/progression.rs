@@ -4,15 +4,15 @@ use dioxus::prelude::*;
 
 use crate::path::Path;
 use crate::path::components::PathTile;
+use crate::progression::component::TrainingSignal;
+use crate::progression::prelude::*;
 use crate::rule::prelude::*;
 use crate::skill::Skill;
 use crate::skill::component::SkillTile;
 
 use crate::character;
 use crate::character::prelude::*;
-use crate::character::training::{main_training_growth, TrainingClass, TrainingGrowth, TrainingModifiers, TrainingPanel, TrainingSignal};
 use crate::character::attribute::{AttributeSignal, Attribute::{self, Capability, Defense}};
-use crate::character::progression::CharacterGrowth;
 use crate::character::prelude::Capability::{Manipulation, Physique, Spirit, Warfare};
 use crate::character::prelude::Defense::{Dodge, Fortitude, Insight, Resolve, Tenacity};
 
@@ -33,7 +33,7 @@ pub struct FlowResources {
 }
 
 #[component]
-pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
+fn CharacterProgression( paths: Vec<Path> ) -> Element {
   let full_features = vec![
     FeatureTest { title: "HP +1".into(), summary: None },
     FeatureTest { title: "+1 Attribute".into(), summary: None },
@@ -45,10 +45,11 @@ pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
   let mut minimize_paths = use_signal( || false );
   let mut attrib_signal = AttributeSignal::use_context_provider();
   let training_signals = TrainingSignal::use_context_provider();
-  let growth = main_training_growth();
+  let growth = training_growth_track();
   let mut growth_modifiers: Signal<TrainingModifiers> = use_signal( || TrainingModifiers::default() );
-  let stats = CharacterGrowth::default().stats( level() );
-  use_effect( move || attrib_signal.cap( stats.max_ranks ) );
+  // let stats = CharacterGrowth::default().stats( level() );
+  let stats = character_growth_track().stats( level() );
+  use_effect( move || attrib_signal.cap( stats.max_ranks.try_into().unwrap_or( 0 ) ) );
   let path_ids_selected: Signal<HashSet<String>> = use_signal( || HashSet::new() );
   use_context_provider( || PathContext { ids: path_ids_selected } );
   let skill_ids_selected: Signal<HashSet<String>> = use_signal( || HashSet::new() );
@@ -82,7 +83,7 @@ pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
   let path_count: i32 = path_ids_selected().len().try_into().unwrap_or( i32::MAX );
   let full_count: i32 = skill_ids_selected().len().try_into().unwrap_or( i32::MAX );
   let ( sum_cap, sum_def ) = attrib_signal.cap_def();
-  let remaining = stats.attributes - sum_cap - sum_def;
+  let remaining = stats.attributes - (sum_cap + sum_def).try_into().unwrap_or( 0 );
   let path_min = stats.iniatite.path_min;
   let path_max = stats.iniatite.path_max;
   let path_optional = path_max - path_min;
@@ -90,12 +91,12 @@ pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
   let full_max = stats.iniatite.features;
   let half_min = stats.iniatite.half_features;
   let half_max = half_min + 2 * ( full_max );
-  let path_selected = path_count < path_max;
+  let path_selected = path_count < path_max.try_into().unwrap_or( 0 );
   let path_enabled = path_selected;
   let has_innate = flow_resources().contains_key( &Flow::Innate );
   let has_resonance = flow_resources().contains_key( &Flow::Resonance );
   let has_magic = flow_resources().contains_key( &Flow::Magic );
-  let total_hp = stats.hp + growth_modifiers().hp.unwrap_or( 0 );
+  let total_hp = stats.hp + (growth_modifiers().hp.unwrap_or( 0 )).try_into().unwrap_or( 0 );
   let total_con = 4 + growth_modifiers().con.unwrap_or( 0 );
   rsx! {
     div {
@@ -145,7 +146,12 @@ pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
     }
     div {
       class: "grid dim-keywords",
-      AttributeDistribution { remaining, min: 0, max: stats.max_ranks, total: stats.attributes }
+      AttributeDistribution {
+        remaining: remaining.try_into().unwrap_or( 0 ),
+        min: 0,
+        max: stats.max_ranks.try_into().unwrap_or( 0 ),
+        total: stats.attributes.try_into().unwrap_or( 0 )
+      }
       div { class: "uv-full spacer" }
       div { class: "uv-title highlight", "HP" }
       div { class: "uv-after-title", "{total_hp}" }
@@ -184,8 +190,8 @@ pub fn ResourceFlowPools( resources: ReadOnlySignal<HashMap<Flow,FlowResources>>
 }
 
 #[component]
-pub fn TrainingRanks( level: i32, has_innate: bool, has_resonance: bool, has_magic: bool ) -> Element {
-  let growth = main_training_growth();
+pub fn TrainingRanks( level: usize, has_innate: bool, has_resonance: bool, has_magic: bool ) -> Element {
+  let growth = training_growth_track();
   let training = use_context::<TrainingSignal>();
   let sum = training.sum();
   let ranks_shown = 6 *( ( level + 5 ) / 6 );
@@ -241,12 +247,12 @@ pub fn TrainingRanks( level: i32, has_innate: bool, has_resonance: bool, has_mag
 }
 
 #[component]
-pub fn TrainingSelector( class: TrainingClass, rank: i32, growth: TrainingGrowth, level: i32, available: bool ) -> Element {
+pub fn TrainingSelector( class: TrainingClass, rank: usize, growth: TrainingGrowth, level: usize, available: bool ) -> Element {
   let mut training = use_context::<TrainingSignal>();
   let selected_rank = training.get( &class );
   let min: i32 = 0;
-  let max: i32 = level - training.sum() + selected_rank;
-  let top = selected_rank == rank;
+  let max: i32 = level.try_into().unwrap_or( 0 ) - training.sum() + selected_rank;
+  let top = selected_rank == rank.try_into().unwrap_or( 0 );
   let uv = match class {
     TrainingClass::Expert => "uv-expert",
     TrainingClass::Adept => "uv-adept",
@@ -255,8 +261,8 @@ pub fn TrainingSelector( class: TrainingClass, rank: i32, growth: TrainingGrowth
     TrainingClass::Innate => "uv-innate",
     TrainingClass::Magic => "uv-magic",
   };
-  let selected = rank <= selected_rank;
-  let enabled = available && rank <= max;
+  let selected = rank <= selected_rank.try_into().unwrap_or( 0 );
+  let enabled = available && rank.try_into().unwrap_or( 0 ) <= max;
   rsx!(
     div {
       class: match ( selected, enabled ) {
@@ -269,13 +275,13 @@ pub fn TrainingSelector( class: TrainingClass, rank: i32, growth: TrainingGrowth
         let mut new_value = match ( selected, enabled, top ) {
           ( true, true, true ) => rank - 1,
           ( _, true, _ ) => rank,
-          ( true, false, _ ) => max,
-          _ => selected_rank,
+          ( true, false, _ ) => max.try_into().unwrap_or( 0 ),
+          _ => selected_rank.try_into().unwrap_or( 0 ),
         };
-        if new_value < min { new_value = min; }
-        training.set( &class, new_value )
+        if new_value < min.try_into().unwrap_or( 0 ) { new_value = min.try_into().unwrap_or( 0 ); }
+        training.set( &class, new_value.try_into().unwrap_or( 0 ) )
       },
-      TrainingPanel { growth, class: class.clone(), rank }
+      TrainingPanel { class: class.clone(), rank: rank.try_into().unwrap_or( 0 ) }
     }
   )
 }

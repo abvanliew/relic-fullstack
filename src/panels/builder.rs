@@ -1,8 +1,8 @@
 use dioxus::prelude::*;
 
+use crate::progression::component::*;
 use crate::server::prelude::list_path_skills;
 use crate::path::Path;
-use crate::character::component::*;
 
 #[component]
 pub fn CharacterBuilder() -> Element {

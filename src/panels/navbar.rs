@@ -10,7 +10,6 @@ pub fn Navbar() -> Element {
       Link { to: Route::SkillList {}, "Skills" }
       Link { to: Route::PathList {}, "Paths" }
       Link { to: Route::CharacterBuilder {}, "Builder" }
-      Link { to: Route::CharacterSheet {}, "Sheet" }
     }
     Outlet::<Route> {}
   }

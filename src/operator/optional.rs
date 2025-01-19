@@ -1,6 +1,6 @@
 use std::cmp::max;
 
-pub fn opt_sum( lhs: Option<i32>, rhs: Option<i32> ) -> Option<i32> {
+pub fn opt_sum<Integer: std::ops::Add<Output = Integer>>( lhs: Option<Integer>, rhs: Option<Integer> ) -> Option<Integer> {
   return match ( lhs, rhs ) {
     ( None, None ) => None,
     ( Some( value ), None ) => Some( value ),
@@ -9,7 +9,7 @@ pub fn opt_sum( lhs: Option<i32>, rhs: Option<i32> ) -> Option<i32> {
   };
 }
 
-pub fn opt_max( lhs: Option<i32>, rhs: Option<i32> ) -> Option<i32> {
+pub fn opt_max<Integer: std::cmp::Ord>( lhs: Option<Integer>, rhs: Option<Integer> ) -> Option<Integer> {
   return match ( lhs, rhs ) {
     ( None, None ) => None,
     ( Some( value ), None ) => Some( value ),

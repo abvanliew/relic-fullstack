@@ -4,6 +4,7 @@ mod equipment;
 mod operator;
 mod panels;
 mod path;
+mod progression;
 mod rule;
 mod server;
 mod skill;
@@ -36,8 +37,6 @@ pub enum Route {
   #[end_nest]
   #[route("/builder")]
   CharacterBuilder {},
-  #[route("/sheet")]
-  CharacterSheet {},
 }
 
 #[component]
