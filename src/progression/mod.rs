@@ -2,6 +2,7 @@ pub mod component;
 
 mod fixed;
 mod growth;
+mod qualifier;
 mod track;
 mod training;
 

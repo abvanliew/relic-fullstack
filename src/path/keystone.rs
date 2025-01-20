@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::character::prelude::*;
 
-use super::Path;
+use super::{Bonus, Path};
 
 impl Path {
   pub fn resource_pool_modifiers( &self ) -> Vec<PoolModifier> {
@@ -18,7 +18,12 @@ pub struct Keystone {
   pub summary: Option<String>,
   pub path_feature: Option<bool>,
   pub path_half_feature: Option<bool>,
-  pub resource_pool: Option<PoolModifier>
+  pub resource_pool: Option<PoolModifier>,
+  pub one_of: Option<Vec<Keystone>>,
+  pub spell_slot: Option<Bonus<u8>>,
+  pub cantrip_slot: Option<Bonus<u8>>,
+  pub spell_known: Option<Bonus<u8>>,
+  pub cantrip_known: Option<Bonus<u8>>,
 }
 
 #[component]

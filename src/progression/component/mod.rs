@@ -2,7 +2,6 @@ mod builder;
 mod effects;
 mod level;
 mod path;
-mod rank;
 mod training;
 
 pub use builder::CharacterProgression;

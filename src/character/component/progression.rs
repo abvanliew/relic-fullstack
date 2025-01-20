@@ -28,8 +28,8 @@ struct SkillContext {
 
 #[derive(Debug, Clone, Default)]
 pub struct FlowResources {
-  pub flow: Bonus,
-  pub pools: HashMap<character::ResourcePool, Bonus>,
+  pub flow: Bonus<u8>,
+  pub pools: HashMap<character::ResourcePool, Bonus<u8>>,
 }
 
 #[component]

@@ -23,12 +23,12 @@ impl CharacterGrowth {
         Tier::Master => &mut stats.master,
       };
       if let Some( value ) = level_growth.paths {
-        tier_stats.path_min += value;
-        tier_stats.path_max += value;
+        tier_stats.path_min += value.try_into().unwrap_or( 0 );
+        tier_stats.path_max += value.try_into().unwrap_or( 0 );
       }
       if let Some( value ) = level_growth.path_features {
-        tier_stats.path_max += value;
-        tier_stats.features += value;
+        tier_stats.path_max += value.try_into().unwrap_or( 0 );
+        tier_stats.features += value.try_into().unwrap_or( 0 );
       }
       if let Some( value ) = level_growth.features { tier_stats.features += value; }
       if let Some( value ) = level_growth.half_features { tier_stats.half_features += value; }
@@ -36,6 +36,27 @@ impl CharacterGrowth {
       count += 1;
     }
     return stats;
+  }
+
+  pub fn get_path_qualifiers( &self, level: usize ) -> ( u8, u8 ) {
+    let mut paths: u8 = 0;
+    let mut path_features: u8 = 0;
+    let mut tier = Tier::Initiate;
+    let mut count = 1;
+    for level_growth in self.levels.clone() {
+      if let Some( value ) = level_growth.tier { tier = value; }
+      match tier {
+        Tier::Initiate => {
+          if let Some( value ) = level_growth.paths { paths += value; }
+          if let Some( value ) = level_growth.path_features { path_features += value; }
+        },
+        Tier::Journeyman => { break; },
+        Tier::Master => { break; },
+      };
+      if count >= level { break; }
+      count += 1;
+    }
+    return ( paths, path_features );
   }
 }
 
@@ -46,8 +67,8 @@ pub struct LevelGrowth {
   pub max_ranks: Option<u32>,
   pub attributes: Option<u32>,
   pub expertise: Option<u32>,
-  pub paths: Option<usize>,
-  pub path_features: Option<usize>,
+  pub paths: Option<u8>,
+  pub path_features: Option<u8>,
   pub features: Option<usize>,
   pub half_features: Option<usize>,
   pub capstones: Option<usize>,

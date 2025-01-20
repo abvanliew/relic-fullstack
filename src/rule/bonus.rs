@@ -1,47 +1,54 @@
 use serde::{Deserialize, Serialize};
 use std::ops::{Add, AddAssign};
-use std::fmt;
+use std::fmt::{Display, Formatter, Result};
 use crate::operator::{opt_max, opt_sum};
+use std::cmp::Ord;
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
-pub struct Bonus {
-  pub base: Option<i32>,
-  pub bonus: Option<i32>,
+pub struct Bonus<Integer>
+where Integer: Clone + Ord + Add<Output = Integer> + Display + Default + Copy {
+  pub base: Option<Integer>,
+  pub bonus: Option<Integer>,
 }
 
-impl Default for Bonus {
+impl<Integer> Default for Bonus<Integer>
+where Integer: Clone + Ord + Add<Output = Integer> + Display + Default + Copy {
   fn default() -> Self {
-    Self { base: Some( 0 ), bonus: None }
+    Self { base: Some( Integer::default() ), bonus: None }
   }
 }
 
-impl fmt::Display for Bonus {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl<Integer> Display for Bonus<Integer>
+where Integer: Clone + Ord + Add<Output = Integer> + Display + Default + Copy {
+  fn fmt(&self, f: &mut Formatter<'_>) -> Result {
     write!( f, "{}", self.value() )
   }
 }
 
-impl Add for Bonus {
-  type Output = Self;
+impl<Integer> Add for Bonus<Integer>
+where Integer: Clone + Ord + Add<Output = Integer> + Display + Default + Copy {
+  type Output = Bonus<Integer>;
 
   fn add( self, rhs: Self ) -> Self::Output {
     Self { base: opt_max( self.base, rhs.base ), bonus: opt_sum( self.bonus, rhs.bonus) }
   }
 }
 
-impl AddAssign for Bonus {
+impl<Integer> AddAssign for Bonus<Integer>
+where Integer: Clone + Ord + Add<Output = Integer> + Display + Default + Copy {
   fn add_assign(&mut self, rhs: Self) {
     *self = self.clone() + rhs;
   }
 }
 
-impl Bonus {
-  pub fn value( &self ) -> i32  {
-    return match ( self.base, self.bonus ) {
-      ( Some( base ), Some( bonus ) ) => base + bonus,
-      ( Some( base ), None ) => base,
-      ( None, Some( bonus ) ) => bonus,
-      _ => 0,
+impl<Integer> Bonus<Integer>
+where Integer: Clone + Ord + Add<Output = Integer> + Display + Default + Copy {
+  pub fn value( &self ) -> Integer  {
+    return match ( &self.base, &self.bonus ) {
+      ( Some( base ), Some( bonus ) ) => *base + *bonus,
+      ( Some( base ), None ) => *base,
+      ( None, Some( bonus ) ) => *bonus,
+      _ => Integer::default(),
     };
   }
 }

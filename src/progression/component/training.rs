@@ -1,34 +1,73 @@
+use builder::BuildContext;
 use dioxus::prelude::*;
 
 use crate::progression::prelude::*;
 use crate::progression::component::*;
 
 #[component]
-pub fn TrainingSelector( class: TrainingClass, rank: usize ) -> Element {
+pub fn TrainingRanks() -> Element {
   let level = use_context::<LevelContext>().level;
+  let build = use_context::<BuildContext>();
+  let ranks_shown = 6 *( ( level() + 5 ) / 6 );
+  rsx!(
+    div {
+      class: "grid dim-training",
+      div { class: "uv-full dotted-underline small-text spacer", "Training Ranks: {level}" }
+      div { class: "uv-expert", "Expert" }
+      div { class: "uv-adept", "Adept" }
+      div { class: "uv-endurance", "Endurance" }
+      div { class: if build.has_innate() { "uv-innate" } else { "uv-innate disabled" }, "Innate" }
+      div { class: if build.has_resonance() { "uv-resonance" } else { "uv-resonance disabled" }, "Resonance" }
+      div { class: if build.has_magic() { "uv-magic" } else { "uv-magic disabled" }, "Magic" }
+      for rank in 1..=ranks_shown {
+        for class in TrainingClass::ordered() {
+          TrainingSelector { class, rank, }
+        }
+      }
+      if ranks_shown < 18 {
+        div { class: "uv-expert", "..." }
+        div { class: "uv-adept", "..." }
+        div { class: "uv-endurance", "..." }
+        div { class: if build.has_innate() { "uv-innate" } else { "uv-innate disabled" }, "..." }
+        div { class: if build.has_resonance() { "uv-resonance" } else { "uv-resonance disabled" }, "..." }
+        div { class: if build.has_magic() { "uv-magic" } else { "uv-magic disabled" }, "..." }
+      }
+    }
+  )
+}
+
+#[component]
+pub fn TrainingSelector( class: TrainingClass, rank: usize ) -> Element {
+  let build = use_context::<BuildContext>();
+  // let level = use_context::<LevelContext>().level;
+  // let track = use_context::<TrackContext>();
+
   // let mut training = use_context::<TrainingSignal>();
   // let selected_rank = training.get( &class );
   // let min: i32 = 0;
   // let max: i32 = level.try_into().unwrap_or( 0 ) - training.sum() + selected_rank;
   // let top = selected_rank == rank.try_into().unwrap_or( 0 );
-  // let uv = match class {
-  //   TrainingClass::Expert => "uv-expert",
-  //   TrainingClass::Adept => "uv-adept",
-  //   TrainingClass::Endurance => "uv-endurance",
-  //   TrainingClass::Resonance => "uv-resonance",
-  //   TrainingClass::Innate => "uv-innate",
-  //   TrainingClass::Magic => "uv-magic",
-  // };
   // let selected = rank <= selected_rank.try_into().unwrap_or( 0 );
   // let enabled = available && rank.try_into().unwrap_or( 0 ) <= max;
+
+  let selected = false;
+  let enabled = build.has_training( &class );
+  let uv = match &class {
+    TrainingClass::Expert => "uv-expert",
+    TrainingClass::Adept => "uv-adept",
+    TrainingClass::Endurance => "uv-endurance",
+    TrainingClass::Resonance => "uv-resonance",
+    TrainingClass::Innate => "uv-innate",
+    TrainingClass::Magic => "uv-magic",
+  };
   rsx!(
     div {
-      // class: match ( selected, enabled ) {
-      //   ( true, true ) => format!( "{uv} small-text selected padded" ),
-      //   ( true, false ) => format!( "{uv} small-text selected disabled padded" ),
-      //   ( false, true ) => format!( "{uv} small-text unselected padded" ),
-      //   ( false, false ) => format!( "{uv} small-text unselected disabled padded" ),
-      // },
+      class: match ( selected, enabled ) {
+        ( true, true ) => format!( "{uv} small-text selected padded" ),
+        ( true, false ) => format!( "{uv} small-text selected disabled padded" ),
+        ( false, true ) => format!( "{uv} small-text unselected padded" ),
+        ( false, false ) => format!( "{uv} small-text unselected disabled padded" ),
+      },
       // onclick: move |_| {
       //   let mut new_value = match ( selected, enabled, top ) {
       //     ( true, true, true ) => rank - 1,
