@@ -15,7 +15,8 @@ impl CharacterGrowth {
       if let Some( value ) = level_growth.max_ranks { stats.max_ranks += value; }
       if let Some( value ) = level_growth.attributes { stats.attributes += value; }
       if let Some( value ) = level_growth.expertise { stats.expertise += value; }
-      if let Some( value ) = level_growth.capstones { stats.capstones += value; }
+      if let Some( value ) = level_growth.max_training { stats.max_training += value; }
+      if let Some( value ) = level_growth.training { stats.training += value; }
       if let Some( value ) = level_growth.tier { tier = value; }
       let tier_stats = match tier {
         Tier::Initiate => &mut stats.iniatite,
@@ -38,9 +39,9 @@ impl CharacterGrowth {
     return stats;
   }
 
-  pub fn get_path_qualifiers( &self, level: usize ) -> ( u8, u8 ) {
-    let mut paths: u8 = 0;
-    let mut path_features: u8 = 0;
+  pub fn get_path_qualifiers( &self, level: usize ) -> ( u32, u32 ) {
+    let mut paths: u32 = 0;
+    let mut path_features: u32 = 0;
     let mut tier = Tier::Initiate;
     let mut count = 1;
     for level_growth in self.levels.clone() {
@@ -67,26 +68,28 @@ pub struct LevelGrowth {
   pub max_ranks: Option<u32>,
   pub attributes: Option<u32>,
   pub expertise: Option<u32>,
-  pub paths: Option<u8>,
-  pub path_features: Option<u8>,
+  pub paths: Option<u32>,
+  pub path_features: Option<u32>,
   pub features: Option<usize>,
   pub half_features: Option<usize>,
-  pub capstones: Option<usize>,
+  pub training: Option<u32>,
+  pub max_training: Option<u32>,
 }
 
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, PartialEq)]
 pub struct LevelStats {
   pub hp: u32,
   pub max_ranks: u32,
   pub attributes: u32,
   pub expertise: u32,
-  pub capstones: usize,
+  pub max_training: u32,
+  pub training: u32,
   pub iniatite: TierStats,
   pub journeyman: TierStats,
   pub master: TierStats,
 }
 
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, PartialEq)]
 pub struct TierStats {
   pub path_min: usize,
   pub path_max: usize,

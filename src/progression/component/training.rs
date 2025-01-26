@@ -39,19 +39,14 @@ pub fn TrainingRanks() -> Element {
 #[component]
 pub fn TrainingSelector( class: TrainingClass, rank: usize ) -> Element {
   let build = use_context::<BuildContext>();
-  // let level = use_context::<LevelContext>().level;
-  // let track = use_context::<TrackContext>();
-
-  // let mut training = use_context::<TrainingSignal>();
-  // let selected_rank = training.get( &class );
-  // let min: i32 = 0;
-  // let max: i32 = level.try_into().unwrap_or( 0 ) - training.sum() + selected_rank;
-  // let top = selected_rank == rank.try_into().unwrap_or( 0 );
-  // let selected = rank <= selected_rank.try_into().unwrap_or( 0 );
-  // let enabled = available && rank.try_into().unwrap_or( 0 ) <= max;
-
-  let selected = false;
-  let enabled = build.has_training( &class );
+  let level = use_context::<LevelContext>().level;
+  let sum = build.total_training();
+  let selected_rank = build.get_training_rank( &class );
+  let min = build.previous_training.get( &class );
+  let max: u32 = level().try_into().unwrap_or( 0 ) - sum + selected_rank;
+  let top = selected_rank == rank.try_into().unwrap_or( 0 );
+  let selected = rank <= selected_rank.try_into().unwrap_or( 0 );
+  let enabled = build.has_training( &class ) && rank.try_into().unwrap_or( 0 ) <= max;
   let uv = match &class {
     TrainingClass::Expert => "uv-expert",
     TrainingClass::Adept => "uv-adept",
@@ -68,16 +63,16 @@ pub fn TrainingSelector( class: TrainingClass, rank: usize ) -> Element {
         ( false, true ) => format!( "{uv} small-text unselected padded" ),
         ( false, false ) => format!( "{uv} small-text unselected disabled padded" ),
       },
-      // onclick: move |_| {
-      //   let mut new_value = match ( selected, enabled, top ) {
-      //     ( true, true, true ) => rank - 1,
-      //     ( _, true, _ ) => rank,
-      //     ( true, false, _ ) => max.try_into().unwrap_or( 0 ),
-      //     _ => selected_rank.try_into().unwrap_or( 0 ),
-      //   };
-      //   if new_value < min.try_into().unwrap_or( 0 ) { new_value = min.try_into().unwrap_or( 0 ); }
-      //   training.set( &class, new_value.try_into().unwrap_or( 0 ) )
-      // },
+      onclick: move |_| {
+        let mut new_value = match ( selected, enabled, top ) {
+          ( true, true, true ) => rank - 1,
+          ( _, true, _ ) => rank,
+          ( true, false, _ ) => max.try_into().unwrap_or( 0 ),
+          _ => selected_rank.try_into().unwrap_or( 0 ),
+        };
+        if new_value < min.try_into().unwrap_or( 0 ) { new_value = min.try_into().unwrap_or( 0 ); }
+        build.current_training().set( &class, new_value.try_into().unwrap_or( 0 ) )
+      },
       TrainingPanel { class: class.clone(), rank }
     }
   )
@@ -85,28 +80,30 @@ pub fn TrainingSelector( class: TrainingClass, rank: usize ) -> Element {
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct TrainingSignal {
-  pub expert: Signal<i32>,
-  pub adept: Signal<i32>,
-  pub endurance: Signal<i32>,
-  pub innate: Signal<i32>,
-  pub resonance: Signal<i32>,
-  pub magic: Signal<i32>,
+  pub expert: Signal<u32>,
+  pub adept: Signal<u32>,
+  pub endurance: Signal<u32>,
+  pub innate: Signal<u32>,
+  pub resonance: Signal<u32>,
+  pub magic: Signal<u32>,
 }
 
 impl TrainingSignal {
-  pub fn use_context_provider()-> Self {
+  pub fn use_context_provider() -> Self {
+    return use_context_provider( || TrainingSignal::new_signal() );
+  }
+
+  pub fn new_signal()-> Self {
     let expert = use_signal( || 0 );
     let adept = use_signal( || 0 );
     let endurance = use_signal( || 0 );
     let resonance = use_signal( || 0 );
     let innate = use_signal( || 0 );
     let magic = use_signal( || 0 );
-    use_context_provider( ||
-      Self{ expert, adept, endurance, resonance, innate, magic }
-    )
+    return Self{ expert, adept, endurance, resonance, innate, magic }
   }
 
-  pub fn get( &self, class: &TrainingClass ) -> i32 {
+  pub fn get( &self, class: &TrainingClass ) -> u32 {
     return match class {
       TrainingClass::Expert => (self.expert)(),
       TrainingClass::Adept => (self.adept)(),
@@ -117,7 +114,7 @@ impl TrainingSignal {
     };
   }
 
-  pub fn set( &mut self, class: &TrainingClass, value: i32 ) {
+  pub fn set( &mut self, class: &TrainingClass, value: u32 ) {
     match class {
       TrainingClass::Expert => self.expert.set( value ),
       TrainingClass::Adept => self.adept.set( value ),
@@ -128,7 +125,21 @@ impl TrainingSignal {
     };
   }
 
-  pub fn sum( &self ) -> i32 {
+  pub fn set_from( &mut self, values: [u32; 6] ) {
+    for i in 0..6 {
+      match i {
+        0 => self.expert.set( values[i] ),
+        1 => self.adept.set( values[i] ),
+        2 => self.endurance.set( values[i] ),
+        3 => self.innate.set( values[i] ),
+        4 => self.resonance.set( values[i] ),
+        5 => self.magic.set( values[i] ),
+        _ => ()
+      }
+    }
+  }
+
+  pub fn sum( &self ) -> u32 {
     return (self.expert)() + (self.adept)() + (self.endurance)() + (self.resonance)() + (self.innate)() + (self.magic)();
   }
 }

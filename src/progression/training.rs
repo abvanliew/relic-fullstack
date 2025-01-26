@@ -60,7 +60,7 @@ impl TrainingGrowth {
       let ( rank_class, flow ) = class.components();
       let growths = self.list( &class );
       let rank = signals.get( &class );
-      mods += training_modifiers( rank, growths, rank_class, flow );
+      mods += training_modifiers( rank.into(), growths, rank_class, flow );
     }
     return mods;
   }
@@ -78,7 +78,7 @@ impl TrainingGrowth {
 }
 
 pub fn training_modifiers(
-  rank: i32,
+  rank: u32,
   growths: &Vec<CharacterBonus>,
   rank_class: Option<RankClass>,
   flow: Option<Flow>

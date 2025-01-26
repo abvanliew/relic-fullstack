@@ -110,6 +110,6 @@ fn cost_format( cost: i32, name: String, drain: String, per_charge: bool ) -> St
 #[serde(rename_all = "camelCase")]
 pub struct PoolModifier {
   pub resource: ResourcePool,
-  pub flow: Bonus<u8>,
-  pub pool: Bonus<u8>,
+  pub flow: Bonus<u32>,
+  pub pool: Bonus<u32>,
 }

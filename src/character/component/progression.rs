@@ -28,8 +28,8 @@ struct SkillContext {
 
 #[derive(Debug, Clone, Default)]
 pub struct FlowResources {
-  pub flow: Bonus<u8>,
-  pub pools: HashMap<character::ResourcePool, Bonus<u8>>,
+  pub flow: Bonus<u32>,
+  pub pools: HashMap<character::ResourcePool, Bonus<u32>>,
 }
 
 #[component]
@@ -250,8 +250,8 @@ pub fn TrainingRanks( level: usize, has_innate: bool, has_resonance: bool, has_m
 pub fn TrainingSelector( class: TrainingClass, rank: usize, growth: TrainingGrowth, level: usize, available: bool ) -> Element {
   let mut training = use_context::<TrainingSignal>();
   let selected_rank = training.get( &class );
-  let min: i32 = 0;
-  let max: i32 = level.try_into().unwrap_or( 0 ) - training.sum() + selected_rank;
+  let min: u32 = 0;
+  let max: u32 = (level.try_into().unwrap_or( 0 ) - training.sum() + selected_rank).into();
   let top = selected_rank == rank.try_into().unwrap_or( 0 );
   let uv = match class {
     TrainingClass::Expert => "uv-expert",

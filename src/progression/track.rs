@@ -27,6 +27,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         max_ranks: Some( 5 ),
         attributes: Some( 19 ),
         expertise: Some( 20 ),
+        max_training: Some( 1 ),
+        training: Some( 1 ),
         paths: Some( 1 ),
         path_features: Some( 1 ),
         ..Default::default()
@@ -36,6 +38,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         hp: Some( 1 ),
         attributes: Some( 1 ),
         expertise: Some( 1 ),
+        max_training: Some( 1 ),
+        training: Some( 2 ),
         path_features: Some( 1 ),
         features: Some( 1 ),
         ..Default::default()
@@ -45,6 +49,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         hp: Some( 1 ),
         attributes: Some( 2 ),
         expertise: Some( 2 ),
+        max_training: Some( 1 ),
+        training: Some( 1 ),
         path_features: Some( 1 ),
         half_features: Some( 1 ),
         ..Default::default()
@@ -56,6 +62,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         attributes: Some( 1 ),
         expertise: Some( 1 ),
         features: Some( 1 ),
+        max_training: Some( 1 ),
+        training: Some( 2 ),
         ..Default::default()
       },
       // Level 5
@@ -64,6 +72,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         attributes: Some( 2 ),
         expertise: Some( 2 ),
         features: Some( 1 ),
+        max_training: Some( 1 ),
+        training: Some( 1 ),
         half_features: Some( 1 ),
         ..Default::default()
       },
@@ -72,6 +82,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         hp: Some( 1 ),
         attributes: Some( 2 ),
         expertise: Some( 1 ),
+        max_training: Some( 1 ),
+        training: Some( 2 ),
         features: Some( 1 ),
         ..Default::default()
       },
@@ -82,6 +94,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         max_ranks: Some( 1 ),
         attributes: Some( 1 ),
         expertise: Some( 2 ),
+        max_training: Some( 1 ),
+        training: Some( 1 ),
         paths: Some( 1 ),
         features: Some( 1 ),
         ..Default::default()
@@ -91,6 +105,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         hp: Some( 1 ),
         attributes: Some( 1 ),
         expertise: Some( 1 ),
+        max_training: Some( 1 ),
+        training: Some( 2 ),
         path_features: Some( 1 ),
         half_features: Some( 1 ),
         ..Default::default()
@@ -100,6 +116,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         hp: Some( 1 ),
         attributes: Some( 2 ),
         expertise: Some( 2 ),
+        max_training: Some( 1 ),
+        training: Some( 1 ),
         path_features: Some( 1 ),
         ..Default::default()
       },
@@ -109,6 +127,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         hp: Some( 1 ),
         attributes: Some( 1 ),
         expertise: Some( 1 ),
+        max_training: Some( 1 ),
+        training: Some( 2 ),
         features: Some( 1 ),
         ..Default::default()
       },
@@ -118,6 +138,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         attributes: Some( 2 ),
         expertise: Some( 2 ),
         features: Some( 1 ),
+        max_training: Some( 1 ),
+        training: Some( 1 ),
         half_features: Some( 1 ),
         ..Default::default()
       },
@@ -126,6 +148,8 @@ pub fn character_growth_track() -> CharacterGrowth {
         hp: Some( 1 ),
         attributes: Some( 2 ),
         expertise: Some( 1 ),
+        max_training: Some( 1 ),
+        training: Some( 2 ),
         features: Some( 1 ),
         ..Default::default()
       },
