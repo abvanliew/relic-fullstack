@@ -2,7 +2,7 @@ use std::fmt;
 use serde::{ Deserialize, Serialize };
 
 use crate::character::prelude::*;
-use super::element::RuleElement;
+use super::snippet::RuleSnippet;
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
 pub struct Roll {
@@ -41,7 +41,7 @@ impl fmt::Display for RollClass {
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
 pub struct RollOutcome {
   pub result: RollResult,
-  pub rules: Vec<RuleElement>,
+  pub rules: Vec<RuleSnippet>,
 }
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]

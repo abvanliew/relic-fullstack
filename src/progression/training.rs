@@ -6,7 +6,7 @@ use crate::operator::opt_sum;
 use crate::progression::track::*;
 use crate::rule::components::Modifier;
 use crate::character::prelude::*;
-use crate::progression::component::TrainingSignal;
+// use crate::progression::component::TrainingSignal;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum TrainingClass {
@@ -54,16 +54,16 @@ impl TrainingGrowth {
     return Some( bonus.clone() );
   }
 
-  pub fn modifiers( &self, signals: TrainingSignal ) -> TrainingModifiers {
-    let mut mods = TrainingModifiers::default();
-    for class in TrainingClass::ordered() {
-      let ( rank_class, flow ) = class.components();
-      let growths = self.list( &class );
-      let rank = signals.get( &class );
-      mods += training_modifiers( rank.into(), growths, rank_class, flow );
-    }
-    return mods;
-  }
+  // pub fn modifiers( &self, signals: TrainingSignal ) -> TrainingModifiers {
+  //   let mut mods = TrainingModifiers::default();
+  //   for class in TrainingClass::ordered() {
+  //     let ( rank_class, flow ) = class.components();
+  //     let growths = self.list( &class );
+  //     let rank = signals.get( &class );
+  //     mods += training_modifiers( rank.into(), growths, rank_class, flow );
+  //   }
+  //   return mods;
+  // }
 
   fn list( &self, class: &TrainingClass ) -> &Vec<CharacterBonus> {
     return match class {

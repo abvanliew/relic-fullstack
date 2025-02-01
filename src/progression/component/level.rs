@@ -1,10 +1,12 @@
 use dioxus::prelude::*;
 
+// use crate::progression::growth::LevelStats;
+// use crate::progression::track::TrackContext;
 use crate::progression::fixed::{MAX_LEVEL, MIN_LEVEL};
 
 #[derive(Debug, Clone)]
 pub struct LevelContext {
-  pub level: Signal<usize>
+  pub level: Signal<usize>,
 }
 
 impl LevelContext {

@@ -14,7 +14,7 @@ pub struct Action {
   pub cost: Option<ResourceCost>,
   pub duration: Option<Duration>,
   pub target: Option<Target>,
-  pub rules: Option<Vec<RuleElement>>,
+  pub rules: Option<Vec<RuleSnippet>>,
 }
 
 impl Action {

@@ -11,6 +11,7 @@ pub struct Duration {
   pub expendable: Option<bool>,
   pub upkeep: Option<bool>,
   pub upkeep_cost: Option<ResourceCost>,
+  pub custom: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -21,6 +22,7 @@ pub enum DurationClass {
   Minutes,
   Hours,
   Days,
+  Custom,
 }
 
 impl fmt::Display for Duration {
@@ -39,6 +41,7 @@ impl fmt::Display for Duration {
       ( DurationClass::Hours, false ) => format!( "1 Hour" ),
       ( DurationClass::Days, true ) => format!( "{length} Days" ),
       ( DurationClass::Days, false ) => format!( "1 Day" ),
+      ( DurationClass::Custom, _ ) => format!( "{}", self.custom.clone().unwrap_or( "".into() ) ),
     };
     if self.expendable.is_some() && self.expendable.unwrap() {
       base = format!( "{base} or until expended" )
