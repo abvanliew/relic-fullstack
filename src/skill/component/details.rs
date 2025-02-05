@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use crate::rule::components::RuleDescription;
+use crate::rule::prelude::*;
 use crate::skill::prelude::*;
 
 #[component]
@@ -27,7 +27,7 @@ fn ActionProperties( action: Action ) -> Element {
     div{ class: "uv-full nowrap", "{activation}" }
     if let Some( condition ) = action.condition {
       div { class: "uv-title nowrap highlight", "Condition" }
-      div { class: "uv-details", "{condition}" }
+      div { class: "uv-details", SnippetSetDetails { rules: condition } }
     }
     if let Some( cost ) = action.cost {
       div { class: "uv-title nowrap highlight", "Cost" }
@@ -44,9 +44,7 @@ fn ActionProperties( action: Action ) -> Element {
     if let Some( rules ) = action.rules {
       div {
         class: "uv-full",
-        for rule in rules {
-          RuleDescription { rule }
-        }
+        SnippetSetDetails { rules }
       }
     }
   )

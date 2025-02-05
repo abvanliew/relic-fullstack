@@ -9,11 +9,56 @@ body {
   opacity: 1;
 }
 
+ul {
+  margin: 0px;
+  padding-left: 20px;
+}
+
+.float-anchor {
+  display: inline;
+  position: relative;
+}
+
+.term:hover .floating-panel {
+  opacity: 1.0;
+}
+
+.floating-panel {
+  opacity: 0.0;
+  position: absolute;
+  overflow: hidden;
+  top: 21px;
+  left: -12px;
+  width: max-content;
+  max-width: 600px;
+  height: min-content;
+  border: 0.1rem solid #a9b5d2;
+  border-radius: 0.4rem;
+  background: #0f1116;
+  padding: 0.3rem 0.6rem 0.6rem;
+  -webkit-transition: opacity 500ms ease-in-out;
+  -moz-transition: opacity 500ms ease-in-out;
+  -ms-transition: opacity 500ms ease-in-out;
+  -o-transition: opacity 500ms ease-in-out;
+  transition: opacity 500ms ease-in-out;
+}
+
+.bold {
+  font-weight: bold;
+}
+
 .card {
   width: 650px;
   border: 0.2rem solid #a9b5d2;
   border-radius: 0.6rem;
   padding: 0.16rem 0.5rem 0.8rem;
+}
+
+.card-small {
+  border: 0.1rem solid #a9b5d2;
+  border-radius: 0.4rem;
+  padding: 0.6rem 0.4rem 0.9rem;
+  margin-top: 0.6rem;
 }
 
 .tile {

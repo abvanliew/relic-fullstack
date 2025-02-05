@@ -1,8 +1,9 @@
 use std::fmt;
+use dioxus::prelude::*;
 use serde::{ Deserialize, Serialize };
 
-use crate::character::prelude::*;
-use super::snippet::RuleSnippet;
+use crate::{character::prelude::*, rule::snippet::SnippetDetails};
+use super::snippet::Snippet;
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
 pub struct Roll {
@@ -41,7 +42,7 @@ impl fmt::Display for RollClass {
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
 pub struct RollOutcome {
   pub result: RollResult,
-  pub rules: Vec<RuleSnippet>,
+  pub rules: Vec<Snippet>,
 }
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
@@ -67,4 +68,30 @@ impl fmt::Display for RollResult {
       RollResult::CriticalSuccess => "Critical Success",
     } )
   }
+}
+
+#[component]
+pub fn RollSnippet( roll: Roll ) -> Element {
+  rsx!( span { "{roll}" } )
+}
+
+#[component]
+pub fn OutcomesSnippet( outcomes: Vec<RollOutcome> ) -> Element {
+  rsx!(
+    div {
+      class: "indent grid dim-keywords",
+      for outcome in outcomes {
+        div {
+          class: "uv-title highlight",
+          "{outcome.result}"
+        }
+        div {
+          class: "uv-details",
+          for rule in outcome.rules {
+            SnippetDetails { rule }
+          }
+        }
+      }
+    }
+  )
 }

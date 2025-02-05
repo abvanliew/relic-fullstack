@@ -1,6 +1,7 @@
 mod character;
 mod component;
 mod equipment;
+mod keyword;
 mod operator;
 mod panels;
 mod path;

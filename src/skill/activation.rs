@@ -10,11 +10,11 @@ use crate::skill::prelude::*;
 pub struct Action {
   pub class: Activation,
   pub initial: Option<bool>,
-  pub condition: Option<String>,
+  pub condition: Option<Vec<Snippet>>,
   pub cost: Option<ResourceCost>,
   pub duration: Option<Duration>,
   pub target: Option<Target>,
-  pub rules: Option<Vec<RuleSnippet>>,
+  pub rules: Option<Vec<Snippet>>,
 }
 
 impl Action {
