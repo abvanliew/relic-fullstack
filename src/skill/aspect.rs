@@ -1,6 +1,8 @@
-use std::fmt;
+use std::{collections::HashSet, fmt};
 use serde::{Deserialize, Serialize};
 use bson::oid::ObjectId;
+
+use super::Skill;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub enum TrainingCost {
@@ -46,4 +48,10 @@ pub struct SkillOrdering {
 pub struct PathRef {
   id: ObjectId,
   title: String,
+}
+
+impl Skill {
+  pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
+    return self.action.get_keyword_ids();
+  }
 }

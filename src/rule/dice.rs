@@ -11,8 +11,8 @@ pub enum Die {
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct DiceSet {
-  die: Die,
   amount: i32,
+  die: Die,
 }
 
 pub type DiceGroup = Vec<DiceSet>;

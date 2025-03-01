@@ -85,25 +85,38 @@ pub struct ResourceCost {
   charge_cost: Option<i32>,
 }
 
-impl fmt::Display for ResourceCost {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
+impl ResourceCost {
+  pub fn format( &self, drain: bool ) -> String {
     let mut components: Vec<String> = Vec::new();
+    let drain_option = if drain { Some( self.resource.drain() ) } else { None };
     if let Some( base ) = self.base_cost {
       components.push(
-        cost_format( base, self.resource.to_string(), self.resource.drain(), false )
+        cost_format( base, self.resource.to_string(), drain_option.clone(), false )
       );
     }
     if let Some( charge ) = self.charge_cost {
       components.push(
-        cost_format( charge, self.resource.to_string(), self.resource.drain(), true )
+        cost_format( charge, self.resource.to_string(), drain_option, true )
       );
     }
-    write!( f, "{}", components.join( " plus " ) )
+    return components.join( " plus " );
+  }
+
+  pub fn simple( &self ) -> String { return self.format( false ); }
+}
+
+impl fmt::Display for ResourceCost {
+  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
+    write!( f, "{}", self.format( true ) )
   }
 }
 
-fn cost_format( cost: i32, name: String, drain: String, per_charge: bool ) -> String {
-  format!( "{} {} ({}{}){}", cost, name, cost, drain, if per_charge { " per charge" } else { "" } )
+fn cost_format( cost: i32, name: String, drain: Option<String>, per_charge: bool ) -> String {
+  let drain_details = match &drain {
+    Some( text ) => format!( " ({}{})", cost, text ),
+    _ => "".into()
+  };
+  format!( "{} {}{}{}", cost, name, drain_details, if per_charge { " per charge" } else { "" } )
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]

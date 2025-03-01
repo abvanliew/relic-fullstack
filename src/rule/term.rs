@@ -1,11 +1,13 @@
 use serde::{ Deserialize, Serialize };
 use dioxus::prelude::*;
+use bson::oid::ObjectId;
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
+#[serde(rename_all = "camelCase")]
 pub struct RuleTerm {
   pub title: String,
   pub blurb: String,
-  pub keyword_id: Option<String>,
+  pub keyword_id: Option<ObjectId>,
 }
 
 #[component]

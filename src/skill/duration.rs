@@ -31,24 +31,25 @@ impl fmt::Display for Duration {
       Some( amount ) => amount,
       None => 1,
     };
-    let mut base: String = match ( &self.class, length != 1 ) {
-      ( DurationClass::NextTurnStart, _ ) => "Until the start of your next turn".into(),
-      ( DurationClass::NextTurnEnd, _ ) => "Until the end of your next turn".into(),
-      ( DurationClass::WhileReserved, _ ) => "While resources are reserved".into(),
-      ( DurationClass::Minutes, true ) => format!( "{length} Minutes" ),
-      ( DurationClass::Minutes, false ) => format!( "1 Minute" ),
-      ( DurationClass::Hours, true ) => format!( "{length} Hours" ),
-      ( DurationClass::Hours, false ) => format!( "1 Hour" ),
-      ( DurationClass::Days, true ) => format!( "{length} Days" ),
-      ( DurationClass::Days, false ) => format!( "1 Day" ),
-      ( DurationClass::Custom, _ ) => format!( "{}", self.custom.clone().unwrap_or( "".into() ) ),
+    let mut base: String = match ( &self.class, length != 1, &self.upkeep_cost ) {
+      ( DurationClass::Custom, _, _ ) => format!( "{}", self.custom.clone().unwrap_or( "".into() ) ),
+      ( DurationClass::NextTurnStart, _, _ ) => "Until the start of the next round".into(),
+      ( DurationClass::NextTurnEnd, _, _ ) => "Until the end of the next round".into(),
+      ( DurationClass::WhileReserved, _, Some( cost ) ) => format!( "While {} is reserved", cost.simple() ),
+      ( DurationClass::Minutes, true, _ ) => format!( "{length} Minutes" ),
+      ( DurationClass::Minutes, false, _ ) => format!( "1 Minute" ),
+      ( DurationClass::Hours, true, _ ) => format!( "{length} Hours" ),
+      ( DurationClass::Hours, false, _ ) => format!( "1 Hour" ),
+      ( DurationClass::Days, true, _ ) => format!( "{length} Days" ),
+      ( DurationClass::Days, false, _ ) => format!( "1 Day" ),
+      ( _, _ , _ ) => format!( "Undefined" ),
     };
     if self.expendable.is_some() && self.expendable.unwrap() {
       base = format!( "{base} or until expended" )
     }
-    match ( &self.upkeep, &self.upkeep_cost ) {
-      ( _, Some( cost ) ) => { base = format!( "{base}, upkeep: {cost}" ) },
-      ( Some( _ ), _ ) => { base = format!( "{base}, upkeep at cost" ) },
+    match ( &self.upkeep, &self.upkeep_cost, self.class != DurationClass::WhileReserved ) {
+      ( _, Some( cost ), true ) => { base = format!( "{base}, upkeep: {cost}" ) },
+      ( Some( _ ), _, true ) => { base = format!( "{base}, upkeep at cost" ) },
       _ => ()
     }
     return write!( f, "{base}." )

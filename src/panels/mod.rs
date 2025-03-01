@@ -1,11 +1,13 @@
 mod builder;
 mod home;
+mod keyword;
 mod navbar;
 mod path;
 mod skill;
 
 pub use builder::CharacterBuilder;
 pub use home::Home;
+pub use keyword::KeywordList;
 pub use navbar::Navbar;
 pub use path::PathList;
 pub use skill::SkillList;

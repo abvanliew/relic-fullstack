@@ -7,10 +7,41 @@ pub struct Target {
   pub class: TargetClass,
   pub custom: Option<String>,
   pub selection: Option<Selection>,
+  pub custom_selection: Option<String>,
   pub range: Option<i32>,
   pub size: Option<i32>,
   pub limit: Option<i32>,
   pub suffix: Option<String>,
+}
+
+impl Target {
+  pub fn singular( &self ) -> String {
+    match ( &self.selection, &self.custom_selection ) {
+      ( _, Some( text ) ) => text.clone(),
+      ( Some( Selection::Creature ), _ ) => "creature".into(),
+      ( Some( Selection::Ally ), _ ) => "ally".into(),
+      ( Some( Selection::Enemy ), _ ) => "enemy".into(),
+      _ => "undefined".into(),
+    }
+  }
+
+  pub fn plural( &self ) -> String {
+    match ( &self.selection, &self.custom_selection ) {
+      ( _, Some( text ) ) => text.clone(),
+      ( Some( Selection::Creature ), _ ) => "creatures".into(),
+      ( Some( Selection::Ally ), _ ) => "allies".into(),
+      ( Some( Selection::Enemy ), _ ) => "enemies".into(),
+      _ => "undefined".into(),
+    }
+  }
+
+  pub fn article( &self ) -> String {
+    match &self.selection {
+      Some( Selection::Creature ) => "A",
+      Some( Selection::Ally ) | Some( Selection::Enemy ) => "An",
+      _ => "Some"
+    }.into()
+  }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -35,24 +66,6 @@ pub enum Selection {
   Enemy,
 }
 
-impl Selection {
-  pub fn singular( &self ) -> String {
-    match self {
-      Selection::Creature => "creature",
-      Selection::Ally => "ally",
-      Selection::Enemy => "enemy",
-    }.into()
-  }
-
-  pub fn plural( &self ) -> String {
-    match self {
-      Selection::Creature => "creatures",
-      Selection::Ally => "allies",
-      Selection::Enemy => "enemies",
-    }.into()
-  }
-}
-
 impl fmt::Display for Target {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
     if let Some( custom ) = &self.custom {
@@ -67,24 +80,38 @@ impl fmt::Display for Target {
       ( TargetClass::Yourself, _, _, _ ) => "Yourself".into(),
       ( TargetClass::EachTriggering, _, _, _, ) => format!(
         "Each triggering {}",
-        self.selection.clone().unwrap_or_default().singular()
+        self.singular()
       ),
       ( TargetClass::Touch, _, _, None, ) => format!(
-        "One {} within reach",
-        self.selection.clone().unwrap_or_default().singular()
+        "{} {} within reach",
+        self.article(),
+        self.singular(),
       ),
       ( TargetClass::Weapon, _, _, None, ) => format!(
-        "One {} within weapon reach",
-        self.selection.clone().unwrap_or_default().singular()
+        "{} {} within weapon reach",
+        self.article(),
+        self.singular(),
       ),
       ( TargetClass::Weapon, _, _, Some( limit ), ) => format!(
         "Up to {} {} within weapon reach",
         limit,
-        if *limit != 0 { self.selection.clone().unwrap_or_default().plural() } else { self.selection.clone().unwrap_or_default().singular() }
+        if *limit != 0 { self.plural() } else { self.singular() }
+      ),
+      ( TargetClass::Range, Some( range ), _, None, ) => format!(
+        "{} {} within range {}",
+        self.article(),
+        self.singular(),
+        range,
       ),
       ( TargetClass::Burst, Some( range ), _, None, ) => format!(
         "All {} within range {}",
-        self.selection.clone().unwrap_or_default().plural(),
+        self.plural(),
+        range,
+      ),
+      ( TargetClass::Burst, Some( range ), _, Some( limit ), ) => format!(
+        "Up to {} {} within range {}",
+        limit,
+        if *limit != 0 { self.plural() } else { self.singular() },
         range,
       ),
       _ => format!( "undefined" ),

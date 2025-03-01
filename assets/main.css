@@ -27,10 +27,9 @@ ul {
   opacity: 0.0;
   position: absolute;
   overflow: hidden;
-  top: 21px;
-  left: -12px;
+  top: 100%;
   width: max-content;
-  max-width: 600px;
+  max-width: 500px;
   height: min-content;
   border: 0.1rem solid #a9b5d2;
   border-radius: 0.4rem;
@@ -48,7 +47,7 @@ ul {
 }
 
 .card {
-  width: 650px;
+  width: 550px;
   border: 0.2rem solid #a9b5d2;
   border-radius: 0.6rem;
   padding: 0.16rem 0.5rem 0.8rem;
@@ -195,6 +194,10 @@ ul {
 
 .italics {
   font-style: italic;
+}
+
+.centered {
+  text-align: center;
 }
 
 .small-text {

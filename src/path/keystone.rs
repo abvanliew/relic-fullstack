@@ -3,13 +3,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::character::prelude::*;
 
-use super::{Bonus, Path};
+use super::Bonus;
 
-impl Path {
-  pub fn resource_pool_modifiers( &self ) -> Vec<PoolModifier> {
-    self.keystones.clone().unwrap_or_default().into_iter().filter_map( |k| k.resource_pool ).collect()
-  }
-}
+// impl Path {
+//   pub fn resource_pool_modifiers( &self ) -> Vec<PoolModifier> {
+//     self.keystones.clone().unwrap_or_default().into_iter().filter_map( |k| k.resource_pool ).collect()
+//   }
+// }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]

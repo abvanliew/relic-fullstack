@@ -38,6 +38,8 @@ pub enum Route {
   #[end_nest]
   #[route("/builder")]
   CharacterBuilder {},
+  #[route("/keywords")]
+  KeywordList {},
 }
 
 #[component]

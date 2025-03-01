@@ -1,3 +1,4 @@
+mod keyword;
 mod path;
 mod skill;
 

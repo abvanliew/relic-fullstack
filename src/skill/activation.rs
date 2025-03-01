@@ -1,4 +1,6 @@
+use std::collections::HashSet;
 use std::fmt;
+use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
 use crate::character::prelude::*;
@@ -23,6 +25,21 @@ impl Action {
       Some( true ) => format!( "Initial {}", self.class ),
       _ => format!( "{}", self.class ),
     }
+  }
+  
+  pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
+    let mut ids: HashSet<ObjectId> = HashSet::new();
+    if let Some( condition ) = &self.condition {
+      for rule in condition {
+        ids.extend( rule.get_keyword_ids() );
+      }
+    }
+    if let Some( condition ) = &self.condition {
+      for rule in condition {
+        ids.extend( rule.get_keyword_ids() );
+      }
+    }
+    return ids;
   }
 }
 

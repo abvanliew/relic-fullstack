@@ -20,19 +20,19 @@ pub fn SkillSummary( skill: ReadOnlySignal<Skill>, training: bool ) -> Element {
   let summary = skill.read().summary.clone().unwrap_or( "".into() );
   rsx!(
     div {
-      class: "uv-title nowrap",
+      class: "uv-title",
       Link {
         to: Route::SingleSkill { id }, "{title}"
       }
     }
-  if training {
-    div {
-      class: "uv-cost nowrap",
-      "{training_cost}"
+    if training {
+      div {
+        class: "uv-cost centered",
+        "{training_cost}"
+      }
     }
-  }
     div {
-      class: "uv-activation nowrap",
+      class: "uv-activation centered",
       "{activation}"
     }
     div {

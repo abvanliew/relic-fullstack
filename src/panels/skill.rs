@@ -10,6 +10,10 @@ pub fn SkillList() -> Element {
       rsx! {
         div {
           class: "grid spacer dim-skills",
+          div { class: "uv-title underline", "Title" }
+          div { class: "uv-cost underline centered", "Training Cost" }
+          div { class: "uv-activation underline centered", "Activation" }
+          div { class: "uv-details underline",  "Summary" }
           SkillTable { skills: skills.to_owned(), training: true }
         }
       }

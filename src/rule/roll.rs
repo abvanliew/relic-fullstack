@@ -1,8 +1,9 @@
-use std::fmt;
+use std::{collections::HashSet, fmt};
+use bson::oid::ObjectId;
 use dioxus::prelude::*;
-use serde::{ Deserialize, Serialize };
+use serde::{Deserialize, Serialize};
 
-use crate::{character::prelude::*, rule::snippet::SnippetDetails};
+use crate::{character::prelude::*, rule::snippet::SnippetSetDetails};
 use super::snippet::Snippet;
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
@@ -43,6 +44,16 @@ impl fmt::Display for RollClass {
 pub struct RollOutcome {
   pub result: RollResult,
   pub rules: Vec<Snippet>,
+}
+
+impl RollOutcome {
+  pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
+    let mut ids: HashSet<ObjectId> = HashSet::new();
+    for rule in &self.rules {
+      ids.extend( rule.get_keyword_ids() );
+    }
+    return ids;
+  }
 }
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
@@ -87,9 +98,7 @@ pub fn OutcomesSnippet( outcomes: Vec<RollOutcome> ) -> Element {
         }
         div {
           class: "uv-details",
-          for rule in outcome.rules {
-            SnippetDetails { rule }
-          }
+          SnippetSetDetails { rules: outcome.rules }
         }
       }
     }
