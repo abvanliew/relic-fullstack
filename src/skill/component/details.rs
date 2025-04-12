@@ -15,6 +15,9 @@ pub fn SkillDescription( skill: ReadOnlySignal<Skill> ) -> Element {
       div { class: "uv-property", 
         div { class: "nowrap italics", "{tier} - {training_cost}" }
       }
+      if let Some( description ) = skill.read().description.clone() {
+        div { class: "uv-full", "{description}" }
+      }
       ActionProperties { action }
     }
   )

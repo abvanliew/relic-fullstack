@@ -36,7 +36,7 @@ pub enum EditingState {
   Concept,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct SkillOrdering {
   category: i32,

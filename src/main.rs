@@ -40,6 +40,10 @@ pub enum Route {
   CharacterBuilder {},
   #[route("/keywords")]
   KeywordList {},
+  #[route("/sheets/")]
+  CharacterSheetList {},
+  #[route("/all_skills")]
+  FullSkillList {},
 }
 
 #[component]

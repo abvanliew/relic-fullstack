@@ -133,7 +133,7 @@ ul {
 .uv-details { grid-column: details / end; }
 .uv-property { grid-column: property; }
 
-.uv-full { grid-column: 1 / -1; width: 100%; }
+.uv-full { grid-column: 1 / -1; }
 .uv-after-title { grid-column: title-end / end; }
 .uv-title-property { grid-column: title / property; }
 
@@ -150,6 +150,19 @@ ul {
 .row {
   display: flex;
   flex-direction: row;
+}
+
+.row-wrap {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .indent {

@@ -8,8 +8,10 @@ pub fn Navbar() -> Element {
       class: "row underhang",
       Link { to: Route::Home {}, "Home" }
       Link { to: Route::SkillList {}, "Skills" }
+      Link { to: Route::FullSkillList {}, "Skills Display" }
       Link { to: Route::PathList {}, "Paths" }
       Link { to: Route::CharacterBuilder {}, "Builder" }
+      Link { to: Route::CharacterSheetList {}, "Sheets" }
     }
     Outlet::<Route> {}
   }

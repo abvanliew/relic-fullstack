@@ -17,7 +17,7 @@ pub struct AttributeMask {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default)]
-pub struct AttributeSet {
+pub struct AttributeRanks {
   pub physique: i32,
   pub warfare: i32,
   pub spirit: i32,
@@ -113,26 +113,50 @@ impl AttributeSignal {
 }
 
 #[component]
-pub fn AttributeDetails( attributes: AttributeSet ) -> Element {
+pub fn AttributeDetails( attributes: AttributeRanks ) -> Element {
   rsx!(
     div { "Capabilites" }
-    div { "Physique" }
-    div { Modifier { value: attributes.physique } }
-    div { "Warfare" }
-    div { Modifier { value: attributes.warfare } }
-    div { "Spirit" }
-    div { Modifier { value: attributes.spirit } }
-    div { "Manipulation" }
-    div { Modifier { value: attributes.manipulation } }
+    div {
+      class: "row",
+      div { "Physique" }
+      div { Modifier { value: attributes.physique } }
+    }
+    div {
+      class: "row",
+      div { "Warfare" }
+      div { Modifier { value: attributes.warfare } }
+    }
+    div {
+      class: "row",
+      div { "Spirit" }
+      div { Modifier { value: attributes.spirit } }
+    }
+    div {
+      class: "row",
+      div { "Manipulation" }
+      div { Modifier { value: attributes.manipulation } }
+    }
     div { "Defenses" }
-    div { "Tenacity" }
-    div { "{attributes.tenacity + 10}" }
-    div { "Fortitude" }
-    div { "{attributes.fortitude + 10}" }
-    div { "Resolve" }
-    div { "{attributes.resolve + 10}" }
-    div { "Insight" }
-    div { "{attributes.insight + 10}" }
+    div {
+      class: "row",
+      div { "Tenacity" }
+      div { "{attributes.tenacity + 10}" }
+    }
+    div {
+      class: "row",
+      div { "Fortitude" }
+      div { "{attributes.fortitude + 10}" }
+    }
+    div {
+      class: "row",
+      div { "Resolve" }
+      div { "{attributes.resolve + 10}" }
+    }
+    div {
+      class: "row",
+      div { "Insight" }
+      div { "{attributes.insight + 10}" }
+    }
   )
 }
 

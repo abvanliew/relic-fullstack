@@ -40,3 +40,25 @@ pub fn SingleSkill( id: String ) -> Element {
     None => { rsx! { "Loading skill" } },
   }
 }
+
+
+#[component]
+pub fn FullSkillList() -> Element {
+  let response: Resource<Result<Vec<Skill>, ServerFnError>> = use_resource( move || list_skills() );
+  return match &*response.read_unchecked() {
+    Some( Ok( skills ) ) => {
+      rsx! {
+        div {
+          class: "row-wrap",
+          for skill in skills {
+            SkillDescription { skill: skill.clone() }
+          }
+        }
+      }
+    }
+    Some(Err(err)) => {
+      rsx! { "An error occurred when loading skills: {err}" }
+    }
+    None => { rsx! { "Loading skills" } }
+  }
+}

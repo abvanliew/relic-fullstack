@@ -19,6 +19,20 @@ pub struct Action {
   pub rules: Option<Vec<Snippet>>,
 }
 
+impl Default for Action {
+  fn default() -> Self {
+    Self {
+      class: Activation::Boon,
+      initial: Default::default(),
+      condition: Default::default(),
+      cost: Default::default(),
+      duration: Default::default(),
+      target: Default::default(),
+      rules: Default::default(),
+    }
+  }
+}
+
 impl Action {
   pub fn activation( &self ) -> String {
     return match self.initial {
