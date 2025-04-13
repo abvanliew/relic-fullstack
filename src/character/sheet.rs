@@ -7,7 +7,7 @@ use crate::equipment::armor::Armor;
 use crate::equipment::weapon::Weapon;
 use crate::path::Path;
 use crate::rule::components::Modifier;
-use crate::skill::prelude::{SkillDescription, SkillTable};
+use crate::skill::prelude::SkillDescription;
 use crate::skill::Skill;
 
 use super::attribute::*;

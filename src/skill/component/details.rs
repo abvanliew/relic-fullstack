@@ -27,7 +27,7 @@ pub fn SkillDescription( skill: ReadOnlySignal<Skill> ) -> Element {
 fn ActionProperties( action: Action ) -> Element {
   let activation = action.activation();
   rsx!(
-    div{ class: "uv-full nowrap", "{activation}" }
+    div{ class: "uv-full nowrap highlight", "{activation}" }
     if let Some( condition ) = action.condition {
       div { class: "uv-title nowrap highlight", "Condition" }
       div { class: "uv-details", SnippetSetDetails { rules: condition } }

@@ -7,20 +7,35 @@ use crate::{character::prelude::*, rule::snippet::SnippetSetDetails};
 use super::snippet::Snippet;
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
+#[serde(rename_all = "camelCase")]
 pub struct Roll {
   pub class: RollClass,
-  pub capability: Capability,
-  pub defense: Defense,
+  pub capability: Option<Capability>,
+  pub defense: Option<Defense>,
   pub each: Option<bool>,
   pub keyword: Option<String>,
+  pub custom_target: Option<String>,
+  pub difficulty: Option<String>,
 }
 
 impl fmt::Display for Roll {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
     let keyword = self.keyword.clone().unwrap_or( "".into() );
-    match &self.each {
-      Some( true ) => write!( f, "Make a {} vs {} {} {} roll against each target.", self.capability, self.defense, keyword, self.class ),
-      _ => write!( f, "Make a {} vs {} {} {} roll against the target.", self.capability, self.defense, keyword, self.class ),
+    let target = self.custom_target.clone().unwrap_or( "target".into() );
+    let capability: String = match &self.capability {
+      Some( capability ) => capability.to_string(),
+      None => "undefined".into(),
+    };
+    let defense: String = match &self.defense {
+      Some( defense ) => defense.to_string(),
+      None => "undefined".into(),
+    };
+    let class = self.class.clone();
+    let difficulty = self.difficulty.clone().unwrap_or( "undefined".into() );
+    match ( &self.class, &self.each ) {
+      ( RollClass::LuckCheck, _ ) => write!( f, "Make a {keyword} {class} difficulty {difficulty}." ),
+      ( _, Some( true ) ) => write!( f, "Make a {capability} vs {defense} {keyword} {class} roll against each {target}." ),
+      _ => write!( f, "Make a {capability} vs {defense} {keyword} {class} roll against the {target}." ),
     }
   }
 }
@@ -29,6 +44,7 @@ impl fmt::Display for Roll {
 pub enum RollClass {
   Attack,
   Check,
+  LuckCheck,
 }
 
 impl fmt::Display for RollClass {
@@ -36,6 +52,7 @@ impl fmt::Display for RollClass {
     write!( f, "{}", match self {
       RollClass::Attack => "Attack",
       RollClass::Check => "Check",
+      RollClass::LuckCheck => "Luck Check",
     } )
   }
 }

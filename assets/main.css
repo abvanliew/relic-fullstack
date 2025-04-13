@@ -53,6 +53,15 @@ ul {
   padding: 0.16rem 0.5rem 0.8rem;
 }
 
+@media print {
+  .card {
+    break-inside: avoid;
+  }
+  .card-small {
+    break-inside: avoid;
+  }
+}
+
 .card-small {
   border: 0.1rem solid #a9b5d2;
   border-radius: 0.4rem;
@@ -198,7 +207,7 @@ ul {
 }
 
 .highlight {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .underline {

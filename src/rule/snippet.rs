@@ -19,6 +19,7 @@ pub struct Snippet {
   pub effect: Option<StatusEffect>,
   pub term: Option<RuleTerm>,
   pub items: Option<Vec<Vec<Snippet>>>,
+  pub p: Option<bool>,
 }
 
 impl Snippet {
@@ -61,7 +62,7 @@ pub fn SnippetSetDetails( rules: Vec<Snippet> ) -> Element {
 pub fn SnippetDetails( rule: Snippet ) -> Element {
   rsx!(
     if let Some( text ) = rule.text {
-      TextSnippet { text }
+      TextSnippet { text, p: rule.p }
     }
     if let Some( term ) = rule.term {
       TermSnippet { term }
@@ -82,8 +83,11 @@ pub fn SnippetDetails( rule: Snippet ) -> Element {
 }
 
 #[component]
-pub fn TextSnippet( text: String ) -> Element {
-  rsx!( span { "{text}" } )
+pub fn TextSnippet( text: String, p: Option<bool> ) -> Element {
+  return match &p {
+    Some( true ) => rsx!( div { "{text}" } ),
+    _ => rsx!( span { "{text}" } )
+  }
 }
 
 #[component]
