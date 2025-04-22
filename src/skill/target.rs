@@ -18,20 +18,18 @@ impl Target {
   pub fn singular( &self ) -> String {
     match ( &self.selection, &self.custom_selection ) {
       ( _, Some( text ) ) => text.clone(),
-      ( Some( Selection::Creature ), _ ) => "creature".into(),
       ( Some( Selection::Ally ), _ ) => "ally".into(),
       ( Some( Selection::Enemy ), _ ) => "enemy".into(),
-      _ => "undefined".into(),
+      _ => "creature".into(),
     }
   }
 
   pub fn plural( &self ) -> String {
     match ( &self.selection, &self.custom_selection ) {
       ( _, Some( text ) ) => text.clone(),
-      ( Some( Selection::Creature ), _ ) => "creatures".into(),
       ( Some( Selection::Ally ), _ ) => "allies".into(),
       ( Some( Selection::Enemy ), _ ) => "enemies".into(),
-      _ => "undefined".into(),
+      _ => "creatures".into(),
     }
   }
 
@@ -109,10 +107,16 @@ impl fmt::Display for Target {
         range,
       ),
       ( TargetClass::Burst, Some( range ), _, Some( limit ), ) => format!(
-        "Up to {} {} within range {}",
-        limit,
+        "Up to {limit} {} within range {range}",
         if *limit != 0 { self.plural() } else { self.singular() },
-        range,
+      ),
+      ( TargetClass::Line, _, Some( size ), _, ) => format!(
+        "All {} in a Line {size} spaces long",
+        self.plural(),
+      ),
+      ( TargetClass::Cone, _, Some( size ), _, ) => format!(
+        "All {} in a Cone size {size}",
+        self.plural(),
       ),
       _ => format!( "undefined" ),
     };

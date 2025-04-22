@@ -5,6 +5,6 @@ use serde::{Deserialize, Serialize};
 pub struct Armor {
   pub title: String,
   pub physical_resistance: i32,
-  pub max_dodge: Option<i32>,
+  pub tenacity_requirement: i32,
   pub speed_penalty: Option<i32>,
 }

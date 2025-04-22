@@ -26,7 +26,6 @@ pub struct AttributeRanks {
   pub fortitude: i32,
   pub resolve: i32,
   pub insight: i32,
-  pub dodge: i32,
 }
 
 // impl AttributeSet {

@@ -6,23 +6,23 @@ use super::{flow::Flow, ResourcePool};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct TrainingRanks {
-  pub expert: i32,
-  pub adept: i32,
-  pub endurance: i32,
-  pub innate: i32,
-  pub resonnance: i32,
-  pub magic: i32,
+  pub expert: Option<i32>,
+  pub adept: Option<i32>,
+  pub endurance: Option<i32>,
+  pub innate: Option<i32>,
+  pub resonnance: Option<i32>,
+  pub magic: Option<i32>,
 }
 
 impl fmt::Display for TrainingRanks {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
     let mut ranks: Vec<String> = Vec::new();
-    if self.expert > 0 { ranks.push( format!( "Expert {}", self.expert ) ); }
-    if self.adept > 0 { ranks.push( format!( "Adept {}", self.adept ) ); }
-    if self.endurance > 0 { ranks.push( format!( "Endurance {}", self.endurance ) ); }
-    if self.innate > 0 { ranks.push( format!( "Innate {}", self.innate ) ); }
-    if self.resonnance > 0 { ranks.push( format!( "Resonnance {}", self.resonnance ) ); }
-    if self.magic > 0 { ranks.push( format!( "Magic {}", self.magic ) ); }
+    if let Some( expert ) = self.expert { ranks.push( format!( "Expert {expert}" ) ); }
+    if let Some( adept ) = self.adept { ranks.push( format!( "Adept {adept}" ) ); }
+    if let Some( endurance ) = self.endurance { ranks.push( format!( "Endurance {endurance}" ) ); }
+    if let Some( innate ) = self.innate { ranks.push( format!( "Innate {innate}" ) ); }
+    if let Some( resonnance ) = self.resonnance { ranks.push( format!( "Resonnance {resonnance}" ) ); }
+    if let Some( magic ) = self.magic { ranks.push( format!( "Magic {magic}" ) ); }
     write!( f, "{}", ranks.join( ", " ) )
   }
 }
@@ -39,7 +39,6 @@ pub struct FlowStat {
   pub flow: Flow,
   pub base: i32,
   pub pools: Vec<ResourceStat>,
-  pub skills: Vec<ObjectId>,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]

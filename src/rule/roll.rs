@@ -34,8 +34,8 @@ impl fmt::Display for Roll {
     let difficulty = self.difficulty.clone().unwrap_or( "undefined".into() );
     match ( &self.class, &self.each ) {
       ( RollClass::LuckCheck, _ ) => write!( f, "Make a {keyword} {class} difficulty {difficulty}." ),
-      ( _, Some( true ) ) => write!( f, "Make a {capability} vs {defense} {keyword} {class} roll against each {target}." ),
-      _ => write!( f, "Make a {capability} vs {defense} {keyword} {class} roll against the {target}." ),
+      ( _, Some( true ) ) => write!( f, "Make a {capability} vs {defense} {keyword} {class} against each {target}." ),
+      _ => write!( f, "Make a {capability} vs {defense} {keyword} {class} against the {target}." ),
     }
   }
 }

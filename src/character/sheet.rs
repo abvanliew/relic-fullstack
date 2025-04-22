@@ -2,6 +2,7 @@ use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use bson::oid::ObjectId;
 
+use crate::character::expertise::ExpertiseComponent;
 use crate::character::resistance::ResistanceDetails;
 use crate::equipment::armor::Armor;
 use crate::equipment::weapon::Weapon;
@@ -12,6 +13,7 @@ use crate::skill::Skill;
 
 use super::attribute::*;
 use super::aspects::{BodyStats, FlowStat, TrainingRanks};
+use super::expertise::ExpertiseEntry;
 use super::resistance::Resistances;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
@@ -30,6 +32,7 @@ pub struct CharacterSheet {
   pub armor: Option<Armor>,
   pub weapons: Option<Vec<Weapon>>,
   pub resistances: Option<Resistances>,
+  pub expertise: Option<Vec<ExpertiseEntry>>,
 }
 
 #[component]
@@ -51,7 +54,6 @@ pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>
   }
   let joined_paths = path_names.join(", ");
   let attributes = sheet.attributes.clone();
-  let resistances = sheet.resistances.clone().unwrap_or_default();
   let armor: Option<Armor> = sheet.armor.clone();
   let mut selected_skills: Vec<Skill> = Vec::new();
   selected_skills.resize( sheet.skills.len(), Skill::default() );
@@ -65,27 +67,68 @@ pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>
       break;
     }
   }
+  let hp = sheet.body.hp;
+  let ( dodge, speed, armor_equiped, armored_resistances ) =
+    calc_dodge_speed_resistances(
+      attributes.tenacity,
+      sheet.body.speed,
+      sheet.resistances.clone().unwrap_or_default(),
+      &sheet.armor,
+    );
   rsx!(
     // "{sheet:?}"
     // "{selected_skills:?}"
     div {
       class: "column",
-      // icon and player details
       div {
         class: "row",
-        div { "Name: {sheet.name}" }
-        div { "Level: {sheet.level}" }
+        div { class: "highlight", "{sheet.name}" }
+      }
+      div {
+        class: "row",
+        div { "Level {sheet.level}" }
         if path_names.len() > 0 {
-          div { "Paths: {joined_paths}"}
+          div { "Paths: {joined_paths}" }
         }
         div { "Training: {sheet.training}" }
       }
       div {
         class: "row",
-        AttributeBlock { attributes, resistances, armor }
+        AttributeBlock { attributes, dodge }
+        div {
+          class: "column",
+          div { class: "subtitle", "Resistances" }
+          if let Some( worn_armor ) = armor {
+            div {
+              span { class: "highlight", "Armor:" }
+              span { class: if !armor_equiped { "disabled" }, " {worn_armor.title}" }
+            }
+          }
+          ResistanceDetails { resistances: armored_resistances }
+        }
+        div {
+          class: "column",
+          div { class: "subtitle", "Expertise" }
+          if let Some( expertise ) = sheet.expertise {
+            for entry in expertise {
+              ExpertiseComponent { entry }
+            }
+          }
+        }
       }
       div {
-        class: "row-wrap",
+        class: "row",
+        div {
+          class: "column",
+          div { class: "subtitle", "Body" }
+          div { "Speed {speed}" }
+          ConstitutionRow { constitution: 4 }
+          div { "Health {hp}" }
+          div { class: "hp-box" }
+        }
+      }
+      div {
+        class: "row-wrap margin-top",
         for skill in selected_skills {
           SkillDescription { skill }
         }
@@ -95,42 +138,41 @@ pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>
 }
 
 #[component]
-pub fn DodgeValue( armor: Option<Armor>, dodge: i32 ) -> Element {
-  let ( current_dodge, uncapped ) = match armor {
-    Some( worn_armor) => match worn_armor.max_dodge {
-      Some( max_dodge ) => if dodge <= max_dodge {
-        ( dodge, None ) } else { ( max_dodge, Some( dodge ) )
-      },
-      None => ( dodge, None ),
-    },
-    None => ( dodge, None ),
-  };
-  rsx!(
-    "{current_dodge + 10}"
-    if let Some( original ) = uncapped {
-      " ({original + 10})"
-    }
-  )
-}
-
-#[component]
 pub fn AttributeRow( name: String, element: Element ) -> Element {
   rsx!(
     div {
-      class: "row",
-      div { "{name}" }
+      class: "row full",
+      div {
+        class: "full highlight",
+        "{name}"
+      }
       div { { element } }
     }
   )
 }
 
-#[component]
-pub fn AttributeBlock( attributes: AttributeRanks, resistances: Resistances, armor: Option<Armor> ) -> Element {
+fn calc_dodge_speed_resistances( tenacity: i32, speed: i32, resistances: Resistances, armor: &Option<Armor>, ) -> ( i32, i32, bool, Resistances ) {
+  if armor.is_none() || armor.as_ref().unwrap().tenacity_requirement > tenacity {
+    return ( tenacity, speed, false, resistances );
+  }
+  let worn_armor = armor.as_ref().unwrap();
+  let net_tenacity = tenacity - worn_armor.tenacity_requirement;
+  let speed_penalty = worn_armor.speed_penalty.unwrap_or( 0 );
+  let ( dodge, net_speed) = match net_tenacity.cmp( &speed_penalty ) {
+    std::cmp::Ordering::Less => ( 0, speed - speed_penalty + net_tenacity ),
+    std::cmp::Ordering::Equal => ( 0, speed ),
+    std::cmp::Ordering::Greater => ( net_tenacity - speed_penalty, speed ),
+  };
   let armored_resistances = resistances.with_armor( &armor );
+  return ( dodge, net_speed, true, armored_resistances );
+}
+
+#[component]
+pub fn AttributeBlock( attributes: AttributeRanks, dodge: i32 ) -> Element {
   rsx!(
     div {
       class: "column",
-      div { "Capabilites" }
+      div { class: "subtitle", "Capabilites" }
       AttributeRow {
         name: "Physique",
         element: rsx!( Modifier { value: attributes.physique } ),
@@ -150,7 +192,7 @@ pub fn AttributeBlock( attributes: AttributeRanks, resistances: Resistances, arm
     }
     div {
       class: "column",
-      div { "Defenses" }
+      div { class: "subtitle", "Defenses" }
       AttributeRow {
         name: "Tenacity",
         element: rsx!( "{attributes.tenacity + 10}" ),
@@ -169,19 +211,24 @@ pub fn AttributeBlock( attributes: AttributeRanks, resistances: Resistances, arm
       }
       AttributeRow {
         name: "Dodge",
-        element: rsx!( DodgeValue { armor, dodge: attributes.dodge } ),
+        element: rsx!( "{dodge + 10}" ),
       }
     }
+  )
+}
+
+
+#[component]
+pub fn ConstitutionRow( constitution: i32 ) -> Element {
+  rsx!(
+    div { "Constituion {constitution}" }
     div {
-      class: "column",
-      div { "Armor" }
-      ResistanceDetails { resistances: armored_resistances }
-    }
-    div {
-      class: "column",
-      div { "Speed 6" }
-      div { "Health & Con" }
-      div { "Expertise" }
+      class: "row-wrap small-gap",
+      if constitution > 0 {
+        for _ in 0..constitution {
+          div { class: "box" }
+        }
+      }
     }
   )
 }
