@@ -11,6 +11,7 @@ use crate::skill::prelude::*;
 #[serde(rename_all = "camelCase")]
 pub struct Action {
   pub class: Activation,
+  pub keywords: Option<String>,
   pub initial: Option<bool>,
   pub condition: Option<Vec<Snippet>>,
   pub cost: Option<ResourceCost>,
@@ -23,6 +24,7 @@ impl Default for Action {
   fn default() -> Self {
     Self {
       class: Activation::Boon,
+      keywords: Default::default(),
       initial: Default::default(),
       condition: Default::default(),
       cost: Default::default(),

@@ -5,16 +5,20 @@ use serde::{Deserialize, Serialize};
 use bson::oid::ObjectId;
 
 use crate::character::expertise::ExpertiseComponent;
+use crate::character::flow::FlowResourcesBlock;
+// use crate::character::prelude::*;
+// use crate::rule::prelude::*;
 use crate::character::resistance::ResistanceDetails;
 use crate::equipment::armor::Armor;
-use crate::equipment::weapon::Weapon;
+use crate::equipment::weapon::{Weapon, WeaponEntry};
 use crate::skill::prelude::*;
 use crate::path::Path;
 use crate::rule::components::Modifier;
 
 use super::attribute::*;
-use super::aspects::{BodyStats, FlowStat, TrainingRanks};
+use super::aspects::{BodyStats, TrainingRanks};
 use super::expertise::ExpertiseEntry;
+use super::flow::FlowStat;
 use super::resistance::Resistances;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
@@ -76,14 +80,14 @@ pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>
       sheet.resistances.clone().unwrap_or_default(),
       &sheet.armor,
     );
+  let opt_weapons = sheet.weapons;
+  let opt_flows = sheet.flows;
   rsx!(
-    // "{sheet:?}"
-    // "{selected_skills:?}"
     div {
       class: "column",
       div {
         class: "row",
-        div { class: "highlight", "{sheet.name}" }
+        div { class: "heavier", "{sheet.name}" }
       }
       div {
         class: "row",
@@ -126,6 +130,22 @@ pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>
           ConstitutionRow { constitution: 4 }
           div { "Health {hp}" }
           div { class: "hp-box" }
+        }
+        if let Some( weapons ) = opt_weapons {
+          div {
+            class: "column",
+            div { class: "subtitle", "Weapons" }
+            for weapon in weapons {
+              WeaponEntry { weapon }
+            }
+          }
+        }
+        if let Some( flows ) = opt_flows {
+          div {
+            class: "column",
+            div { class: "subtitle", "Resources" }
+            FlowResourcesBlock { flows }
+          }
         }
       }
       div {

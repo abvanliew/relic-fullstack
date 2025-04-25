@@ -19,9 +19,9 @@ pub fn ResistanceDetails( resistances: Resistances ) -> Element {
         name: "Physical", element: rsx!( "{resistances.get_category( &DamageCategory::Physical )}" )
       }
     }
-    SubResistance { details: resistances.show_damage( &Damage::Bashing ), display: display_physical() }
-    SubResistance { details: resistances.show_damage( &Damage::Slashing ), display: display_physical() }
-    SubResistance { details: resistances.show_damage( &Damage::Piercing ), display: display_physical() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Bashing ), display: display_physical() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Slashing ), display: display_physical() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Piercing ), display: display_physical() }
     div {
       class: "row full",
       onclick: move |_| { display_elemental.with_mut(|x| *x = !*x); },
@@ -29,11 +29,11 @@ pub fn ResistanceDetails( resistances: Resistances ) -> Element {
         name: "Elemental", element: rsx!( "{resistances.get_category( &DamageCategory::Elemental )}" )
       }
     }
-    SubResistance { details: resistances.show_damage( &Damage::Fire ), display: display_elemental() }
-    SubResistance { details: resistances.show_damage( &Damage::Cold ), display: display_elemental() }
-    SubResistance { details: resistances.show_damage( &Damage::Lighting ), display: display_elemental() }
-    SubResistance { details: resistances.show_damage( &Damage::Thunder ), display: display_elemental() }
-    SubResistance { details: resistances.show_damage( &Damage::Acid ), display: display_elemental() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Fire ), display: display_elemental() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Cold ), display: display_elemental() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Lighting ), display: display_elemental() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Thunder ), display: display_elemental() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Acid ), display: display_elemental() }
     div {
       class: "row full",
       onclick: move |_| { display_esoteric.with_mut(|x| *x = !*x); },
@@ -41,10 +41,10 @@ pub fn ResistanceDetails( resistances: Resistances ) -> Element {
         name: "Esoteric", element: rsx!( "{resistances.get_category( &DamageCategory::Esoteric )}" )
       }
     }
-    SubResistance { details: resistances.show_damage( &Damage::Force ), display: display_esoteric() }
-    SubResistance { details: resistances.show_damage( &Damage::Radiant ), display: display_esoteric() }
-    SubResistance { details: resistances.show_damage( &Damage::Necrotic ), display: display_esoteric() }
-    SubResistance { details: resistances.show_damage( &Damage::Psionic ), display: display_esoteric() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Force ), display: display_esoteric() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Radiant ), display: display_esoteric() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Necrotic ), display: display_esoteric() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Psionic ), display: display_esoteric() }
   )
 }
 
@@ -102,20 +102,20 @@ impl Resistances {
     }
   }
 
-  fn damage_ref( &self, damage: &Damage ) -> &Option<i32> {
+  fn damage_ref( &self, damage: &DamageClass ) -> &Option<i32> {
     match damage {
-      Damage::Bashing => &self.bashing,
-      Damage::Slashing => &self.slashing,
-      Damage::Piercing => &self.piercing,
-      Damage::Fire => &self.fire,
-      Damage::Cold => &self.cold,
-      Damage::Lighting => &self.lighting,
-      Damage::Thunder => &self.thunder,
-      Damage::Acid => &self.acid,
-      Damage::Force => &self.force,
-      Damage::Radiant => &self.radiant,
-      Damage::Necrotic => &self.necrotic,
-      Damage::Psionic => &self.psionic,
+      DamageClass::Bashing => &self.bashing,
+      DamageClass::Slashing => &self.slashing,
+      DamageClass::Piercing => &self.piercing,
+      DamageClass::Fire => &self.fire,
+      DamageClass::Cold => &self.cold,
+      DamageClass::Lighting => &self.lighting,
+      DamageClass::Thunder => &self.thunder,
+      DamageClass::Acid => &self.acid,
+      DamageClass::Force => &self.force,
+      DamageClass::Radiant => &self.radiant,
+      DamageClass::Necrotic => &self.necrotic,
+      DamageClass::Psionic => &self.psionic,
     }
   }
 
@@ -123,7 +123,7 @@ impl Resistances {
     return self.category_ref( category ).unwrap_or( BASE_RESIST )
   }
 
-  pub fn show_damage( &self, damage: &Damage ) -> ( String, i32, bool ) {
+  pub fn show_damage( &self, damage: &DamageClass ) -> ( String, i32, bool ) {
     return match self.damage_ref( damage ) {
       Some( resist) => ( damage.to_string(), *resist, true ),
       None => ( damage.to_string(), self.get_category( &damage.category() ), false ),
@@ -138,8 +138,9 @@ pub enum DamageCategory {
   Esoteric,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub enum Damage {
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
+pub enum DamageClass {
+  #[default]
   Bashing,
   Slashing,
   Piercing,
@@ -154,45 +155,45 @@ pub enum Damage {
   Psionic,
 }
 
-impl fmt::Display for Damage {
+impl fmt::Display for DamageClass {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
     write!( f, "{}", match self {
-        Damage::Acid => "Acid",
-        Damage::Bashing => "Bashing",
-        Damage::Slashing => "Slashing",
-        Damage::Piercing => "Piercing",
-        Damage::Fire => "Fire",
-        Damage::Cold => "Cold",
-        Damage::Lighting => "Lighting",
-        Damage::Thunder => "Thunder",
-        Damage::Force => "Force",
-        Damage::Radiant => "Radiant",
-        Damage::Necrotic => "Necrotic",
-        Damage::Psionic => "Psionic",
+        DamageClass::Acid => "Acid",
+        DamageClass::Bashing => "Bashing",
+        DamageClass::Slashing => "Slashing",
+        DamageClass::Piercing => "Piercing",
+        DamageClass::Fire => "Fire",
+        DamageClass::Cold => "Cold",
+        DamageClass::Lighting => "Lighting",
+        DamageClass::Thunder => "Thunder",
+        DamageClass::Force => "Force",
+        DamageClass::Radiant => "Radiant",
+        DamageClass::Necrotic => "Necrotic",
+        DamageClass::Psionic => "Psionic",
     } )
   }
 }
 
-impl Damage {
+impl DamageClass {
   fn category( &self ) -> DamageCategory {
     match self {
       // Physical
-      Damage::Bashing => DamageCategory::Physical,
-      Damage::Slashing => DamageCategory::Physical,
-      Damage::Piercing => DamageCategory::Physical,
+      DamageClass::Bashing => DamageCategory::Physical,
+      DamageClass::Slashing => DamageCategory::Physical,
+      DamageClass::Piercing => DamageCategory::Physical,
   
       // Elemental
-      Damage::Fire => DamageCategory::Elemental,
-      Damage::Cold => DamageCategory::Elemental,
-      Damage::Lighting => DamageCategory::Elemental,
-      Damage::Thunder => DamageCategory::Elemental,
-      Damage::Acid => DamageCategory::Elemental,
+      DamageClass::Fire => DamageCategory::Elemental,
+      DamageClass::Cold => DamageCategory::Elemental,
+      DamageClass::Lighting => DamageCategory::Elemental,
+      DamageClass::Thunder => DamageCategory::Elemental,
+      DamageClass::Acid => DamageCategory::Elemental,
   
       // Esoteric
-      Damage::Force => DamageCategory::Esoteric,
-      Damage::Radiant => DamageCategory::Esoteric,
-      Damage::Necrotic => DamageCategory::Esoteric,
-      Damage::Psionic => DamageCategory::Esoteric,
+      DamageClass::Force => DamageCategory::Esoteric,
+      DamageClass::Radiant => DamageCategory::Esoteric,
+      DamageClass::Necrotic => DamageCategory::Esoteric,
+      DamageClass::Psionic => DamageCategory::Esoteric,
     }
   }
 }

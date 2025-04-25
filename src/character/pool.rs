@@ -30,9 +30,9 @@ impl fmt::Display for ResourcePool {
       ResourcePool::Ki => "Ki",
       ResourcePool::Mastery => "Mastery",
       ResourcePool::Virtuoso => "Virtuoso",
-      ResourcePool::MinorMana => "Mana",
-      ResourcePool::ModerateMana => "Mana",
-      ResourcePool::MajorMana => "Mana",
+      ResourcePool::MinorMana => "Minor Mana",
+      ResourcePool::ModerateMana => "Moderate Mana",
+      ResourcePool::MajorMana => "Major Mana",
     } )
   }
 }

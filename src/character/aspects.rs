@@ -33,16 +33,3 @@ pub struct BodyStats {
   pub constitution: i32,
   pub speed: i32,
 }
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct FlowStat {
-  pub flow: Flow,
-  pub base: i32,
-  pub pools: Vec<ResourceStat>,
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct ResourceStat {
-  pub resource: ResourcePool,
-  pub base: i32,
-}

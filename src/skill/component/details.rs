@@ -18,7 +18,7 @@ pub fn SkillDescription( skill: ReadOnlySignal<Skill>, keywords: ReadOnlySignal<
         class: "card grid dim-keywords",
         div { class: "uv-title-property title nowrap", "{title}" }
         div { class: "uv-property", 
-          div { class: "nowrap italics", "{tier} - {training_cost}" }
+          div { class: "nowrap italics", "{tier} {training_cost}" }
         }
         if let Some( description ) = skill.read().description.clone() {
           div { class: "uv-full", "{description}" }
@@ -38,7 +38,15 @@ pub fn SkillDescription( skill: ReadOnlySignal<Skill>, keywords: ReadOnlySignal<
 fn ActionProperties( action: Action, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
   let activation = action.activation();
   rsx!(
-    div{ class: "uv-full nowrap highlight", "{activation}" }
+    div{
+      class: "uv-full row",
+      div {
+        class: "highlight", "{activation}"
+      }
+      if let Some( keywords ) = action.keywords {
+        div { class: "italics", " - {keywords}" }
+      }
+    }
     if let Some( condition ) = action.condition {
       div { class: "uv-title nowrap highlight", "Condition" }
       div { class: "uv-details", SnippetSetDetails { rules: condition, keywords } }

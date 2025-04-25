@@ -1,9 +1,7 @@
 use std::{collections::HashSet, fmt};
 use serde::{Deserialize, Serialize};
 use bson::oid::ObjectId;
-
 use crate::rule::prelude::Snippet;
-
 use super::Skill;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
@@ -20,8 +18,8 @@ impl fmt::Display for TrainingCost {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
     write!( f, "{}", match self {
       TrainingCost::Inherient => "Inherient",
-      TrainingCost::Full => "Full Feature",
-      TrainingCost::Half => "Half Feature",
+      TrainingCost::Full => "Feature",
+      TrainingCost::Half => "Minor Feature",
       TrainingCost::Keystone => "Keystone",
       TrainingCost::Cantrip => "Cantrip",
       TrainingCost::Spell => "Spell",

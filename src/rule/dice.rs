@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+use dioxus::prelude::*;
+use std::fmt;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum Die {
@@ -9,10 +11,34 @@ pub enum Die {
   D12,
 }
 
+impl fmt::Display for Die {
+  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
+    write!( f, "{}", match self {
+      Die::D4 => "d4",
+      Die::D6 => "d6",
+      Die::D8 => "d8",
+      Die::D10 => "d10",
+      Die::D12 => "d12",
+    } )
+  }
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct DiceSet {
-  amount: i32,
-  die: Die,
+  pub amount: i32,
+  pub die: Die,
+}
+
+impl fmt::Display for DiceSet {
+  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
+    write!( f, "{}{}", self.amount, self.die )
+  }
 }
 
 pub type DiceGroup = Vec<DiceSet>;
+
+#[component]
+pub fn DiceGroupEntry( group: ReadOnlySignal<DiceGroup> ) -> Element {
+  let display = group.iter().map(|d| d.to_string() ).collect::<Vec<String>>().join( " + " );
+  return rsx!( span { "{display}" } );
+}

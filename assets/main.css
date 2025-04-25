@@ -15,6 +15,7 @@ ul {
 }
 
 
+
 .row {
   display: flex;
   flex-direction: row;
@@ -56,6 +57,10 @@ ul {
 
 .spacer {
   margin-top: 8px;
+}
+
+.small-spacer {
+  margin-top: 4px;
 }
 
 .underhang {
@@ -232,6 +237,13 @@ ul {
 .uv-innate { grid-column: innate; }
 .uv-magic { grid-column: magic; }
 
+.dim-resources {
+  grid-template-columns: [title] max-content [flow] max-content [divider] min-content [reserves] minmax(150px,max-content);
+}
+.uv-title-flow { grid-column: title / divider; }
+.uv-flow { grid-column: flow; }
+.uv-divider { grid-column: divider; }
+.uv-reserves { grid-column: reserves; }
 
 .dotted-underline {
   border-bottom: 0.2rem dotted #a9b5d2;
@@ -239,6 +251,16 @@ ul {
 
 .solid-underline {
   border-bottom: 0.1rem solid #a9b5d2;
+}
+
+.min-height {
+  min-height: 16px;
+}
+
+.thin {
+  border: 0.05rem solid #a9b5d2;
+  width: 0px;
+  margin-bottom: 12px;
 }
 
 .lh {
@@ -267,6 +289,11 @@ ul {
   text-decoration: underline;
 }
 
+.heavier {
+  font-size: 1.1rem;
+  font-weight: 750;
+}
+
 .highlight {
   font-weight: 700;
 }
@@ -281,6 +308,14 @@ ul {
 
 .centered {
   text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+.content-right {
+  justify-content: right;
 }
 
 .small-text {
