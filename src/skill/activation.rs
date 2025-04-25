@@ -43,14 +43,14 @@ impl Action {
   
   pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
-    if let Some( condition ) = &self.condition {
-      for rule in condition {
-        ids.extend( rule.get_keyword_ids() );
+    if let Some( snippets ) = &self.condition {
+      for snippet in snippets {
+        ids.extend( snippet.get_keyword_ids() );
       }
     }
-    if let Some( condition ) = &self.condition {
-      for rule in condition {
-        ids.extend( rule.get_keyword_ids() );
+    if let Some( snippets ) = &self.rules {
+      for snippet in snippets {
+        ids.extend( snippet.get_keyword_ids() );
       }
     }
     return ids;

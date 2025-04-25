@@ -1,36 +1,47 @@
+use std::collections::HashMap;
+
 use dioxus::prelude::*;
 use crate::rule::prelude::*;
 use crate::skill::prelude::*;
 
 #[component]
-pub fn SkillDescription( skill: ReadOnlySignal<Skill> ) -> Element {
+pub fn SkillDescription( skill: ReadOnlySignal<Skill>, keywords: ReadOnlySignal<HashMap<String,Keyword>>, show_terms: bool ) -> Element {
   let title = skill.read().title.clone();
   let tier = skill.read().tier.clone();
   let training_cost = skill.read().training_cost.clone();
   let action = skill.read().action.clone();
+  let terms = skill.read().get_keyword_ids();
   rsx!(
     div {
-      class: "card grid dim-keywords",
-      div { class: "uv-title-property title nowrap", "{title}" }
-      div { class: "uv-property", 
-        div { class: "nowrap italics", "{tier} - {training_cost}" }
+      class: "group column",
+      div {
+        class: "card grid dim-keywords",
+        div { class: "uv-title-property title nowrap", "{title}" }
+        div { class: "uv-property", 
+          div { class: "nowrap italics", "{tier} - {training_cost}" }
+        }
+        if let Some( description ) = skill.read().description.clone() {
+          div { class: "uv-full", "{description}" }
+        }
+        ActionProperties { action, keywords }
       }
-      if let Some( description ) = skill.read().description.clone() {
-        div { class: "uv-full", "{description}" }
+      if show_terms {
+        for term in terms {
+          TermSnippet { term: RuleTerm { keyword_id: term }, keywords, hover: false }
+        }
       }
-      ActionProperties { action }
     }
   )
 }
 
 #[component]
-fn ActionProperties( action: Action ) -> Element {
+fn ActionProperties( action: Action, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
   let activation = action.activation();
   rsx!(
     div{ class: "uv-full nowrap highlight", "{activation}" }
     if let Some( condition ) = action.condition {
       div { class: "uv-title nowrap highlight", "Condition" }
-      div { class: "uv-details", SnippetSetDetails { rules: condition } }
+      div { class: "uv-details", SnippetSetDetails { rules: condition, keywords } }
     }
     if let Some( cost ) = action.cost {
       div { class: "uv-title nowrap highlight", "Cost" }
@@ -47,7 +58,7 @@ fn ActionProperties( action: Action ) -> Element {
     if let Some( rules ) = action.rules {
       div {
         class: "uv-full",
-        SnippetSetDetails { rules }
+        SnippetSetDetails { rules, keywords }
       }
     }
   )

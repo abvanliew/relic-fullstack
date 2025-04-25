@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use bson::oid::ObjectId;
@@ -6,10 +8,9 @@ use crate::character::expertise::ExpertiseComponent;
 use crate::character::resistance::ResistanceDetails;
 use crate::equipment::armor::Armor;
 use crate::equipment::weapon::Weapon;
+use crate::skill::prelude::*;
 use crate::path::Path;
 use crate::rule::components::Modifier;
-use crate::skill::prelude::SkillDescription;
-use crate::skill::Skill;
 
 use super::attribute::*;
 use super::aspects::{BodyStats, FlowStat, TrainingRanks};
@@ -36,16 +37,16 @@ pub struct CharacterSheet {
 }
 
 #[component]
-pub fn SheetTable( sheets: Vec<CharacterSheet>, skills: Vec<Skill>, paths: Vec<Path> ) -> Element {
+pub fn SheetTable( sheets: Vec<CharacterSheet>, skills: Vec<Skill>, paths: Vec<Path>, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
   rsx!(
     for sheet in sheets {
-      SheetDetails { sheet, skills: skills.clone(), paths: paths.clone() }
+      SheetDetails { sheet, skills: skills.clone(), paths: paths.clone(), keywords }
     }
   )
 }
 
 #[component]
-pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path> ) -> Element {
+pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
   let mut path_names: Vec<String> = Vec::new();
   for path in &sheet.paths {
     let results: Vec<Path> = paths.clone().into_iter().filter(|p| p.id == *path ).collect();
@@ -130,7 +131,7 @@ pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>
       div {
         class: "row-wrap margin-top",
         for skill in selected_skills {
-          SkillDescription { skill }
+          SkillDescription { skill, keywords, show_terms: true }
         }
       }
     }

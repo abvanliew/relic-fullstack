@@ -1,9 +1,10 @@
-use std::{collections::HashSet, fmt};
+use std::{collections::{HashMap, HashSet}, fmt};
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
-
-use crate::{character::prelude::*, rule::snippet::SnippetSetDetails};
+use crate::skill::prelude::*;
+use crate::rule::snippet::SnippetSetDetails;
+use crate::character::prelude::*;
 use super::snippet::Snippet;
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
@@ -15,13 +16,18 @@ pub struct Roll {
   pub each: Option<bool>,
   pub keyword: Option<String>,
   pub custom_target: Option<String>,
+  pub triggered: Option<bool>,
   pub difficulty: Option<String>,
 }
 
 impl fmt::Display for Roll {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
     let keyword = self.keyword.clone().unwrap_or( "".into() );
-    let target = self.custom_target.clone().unwrap_or( "target".into() );
+    let target = match ( &self.custom_target, self.triggered ) {
+      ( Some( custom_target ), _ ) => custom_target.clone(),
+      ( _, Some( true ) ) => "triggering target".into(),
+      _ => "target".into()
+    };
     let capability: String = match &self.capability {
       Some( capability ) => capability.to_string(),
       None => "undefined".into(),
@@ -104,7 +110,7 @@ pub fn RollSnippet( roll: Roll ) -> Element {
 }
 
 #[component]
-pub fn OutcomesSnippet( outcomes: Vec<RollOutcome> ) -> Element {
+pub fn OutcomesSnippet( outcomes: Vec<RollOutcome>, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
   rsx!(
     div {
       class: "indent grid dim-keywords",
@@ -115,7 +121,7 @@ pub fn OutcomesSnippet( outcomes: Vec<RollOutcome> ) -> Element {
         }
         div {
           class: "uv-details",
-          SnippetSetDetails { rules: outcome.rules }
+          SnippetSetDetails { rules: outcome.rules, keywords }
         }
       }
     }

@@ -2,6 +2,8 @@ use std::{collections::HashSet, fmt};
 use serde::{Deserialize, Serialize};
 use bson::oid::ObjectId;
 
+use crate::rule::prelude::Snippet;
+
 use super::Skill;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
@@ -48,6 +50,16 @@ pub struct SkillOrdering {
 pub struct PathRef {
   id: ObjectId,
   title: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Keyword {
+  #[serde(rename = "_id")]
+  pub id: ObjectId,
+  pub title: String,
+  pub blurb: Option<String>,
+  pub rules: Option<Vec<Snippet>>,
 }
 
 impl Skill {

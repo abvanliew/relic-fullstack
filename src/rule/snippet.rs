@@ -1,6 +1,7 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use serde::{ Deserialize, Serialize };
+use crate::skill::prelude::*;
 use crate::rule::prelude::*;
 use crate::rule::roll::{OutcomesSnippet, RollSnippet};
 use crate::rule::status_effect::StatusEffectSnippet;
@@ -26,9 +27,8 @@ impl Snippet {
   pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
     if let Some( term ) = &self.term {
-      if let Some( keyword ) = term.keyword_id {
-        ids.insert( keyword );
-      }
+      let term_id = term.keyword_id;
+      ids.insert( term.keyword_id );
     }
     if let Some( outcomes ) = &self.outcomes {
       for outcome in outcomes {
@@ -50,34 +50,34 @@ impl Snippet {
 }
 
 #[component]
-pub fn SnippetSetDetails( rules: Vec<Snippet> ) -> Element {
+pub fn SnippetSetDetails( rules: Vec<Snippet>, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
   rsx!(
     for rule in rules {
-      SnippetDetails { rule }
+      SnippetDetails { rule, keywords }
     }
   )
 }
 
 #[component]
-pub fn SnippetDetails( rule: Snippet ) -> Element {
+pub fn SnippetDetails( rule: Snippet, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
   rsx!(
     if let Some( text ) = rule.text {
       TextSnippet { text, p: rule.p }
     }
     if let Some( term ) = rule.term {
-      TermSnippet { term }
+      TermSnippet { term, keywords, hover: true }
     }
     if let Some( roll ) = rule.roll {
       RollSnippet { roll }
     }
     if let Some( outcomes ) = rule.outcomes {
-      OutcomesSnippet { outcomes }
+      OutcomesSnippet { outcomes, keywords }
     }
     if let Some( effect ) = rule.effect {
-      StatusEffectSnippet { effect }
+      StatusEffectSnippet { effect, keywords }
     }
     if let Some( items ) = rule.items {
-      SnippetList { items }
+      SnippetList { items, keywords }
     }
   )
 }
@@ -91,11 +91,11 @@ pub fn TextSnippet( text: String, p: Option<bool> ) -> Element {
 }
 
 #[component]
-pub fn SnippetList( items: Vec<Vec<Snippet>> ) -> Element {
+pub fn SnippetList( items: Vec<Vec<Snippet>>, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
   rsx!(
     ul {
       for rules in items {
-        li { SnippetSetDetails { rules } }
+        li { SnippetSetDetails { rules, keywords } }
       }
     }
   )

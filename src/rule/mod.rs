@@ -14,4 +14,5 @@ pub mod prelude {
   pub use super::roll::{Roll, RollOutcome};
   pub use super::tier::Tier;
   pub use super::snippet::SnippetSetDetails;
+  pub use super::term::{RuleTerm,TermSnippet};
 }

@@ -1,10 +1,11 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use dioxus::prelude::*;
 
 use crate::rule::snippet::SnippetSetDetails;
+use crate::skill::prelude::*;
 
 use super::snippet::Snippet;
 
@@ -28,7 +29,7 @@ impl StatusEffect {
 }
 
 #[component]
-pub fn StatusEffectSnippet( effect: StatusEffect ) -> Element {
+pub fn StatusEffectSnippet( effect: StatusEffect, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
   println!( "Status Effect" );
   rsx!(
     div {
@@ -37,7 +38,7 @@ pub fn StatusEffectSnippet( effect: StatusEffect ) -> Element {
         div { "{title}" }
       }
       if let Some( rules ) = effect.rules {
-        SnippetSetDetails { rules }
+        SnippetSetDetails { rules, keywords }
       }
     }
   )
