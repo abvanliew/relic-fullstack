@@ -16,7 +16,8 @@ pub fn ResistanceDetails( resistances: Resistances ) -> Element {
       class: "row full",
       onclick: move |_| { display_physical.with_mut(|x| *x = !*x); },
       AttributeRow {
-        name: "Physical", element: rsx!( "{resistances.get_category( &DamageCategory::Physical )}" )
+        name: "Physical", indent: false,
+        element: rsx!( "{resistances.get_category( &DamageCategory::Physical )}" ),
       }
     }
     SubResistance { details: resistances.show_damage( &DamageClass::Bashing ), display: display_physical() }
@@ -26,7 +27,8 @@ pub fn ResistanceDetails( resistances: Resistances ) -> Element {
       class: "row full",
       onclick: move |_| { display_elemental.with_mut(|x| *x = !*x); },
       AttributeRow {
-        name: "Elemental", element: rsx!( "{resistances.get_category( &DamageCategory::Elemental )}" )
+        name: "Elemental", indent: false,
+        element: rsx!( "{resistances.get_category( &DamageCategory::Elemental )}" ),
       }
     }
     SubResistance { details: resistances.show_damage( &DamageClass::Fire ), display: display_elemental() }
@@ -38,7 +40,8 @@ pub fn ResistanceDetails( resistances: Resistances ) -> Element {
       class: "row full",
       onclick: move |_| { display_esoteric.with_mut(|x| *x = !*x); },
       AttributeRow {
-        name: "Esoteric", element: rsx!( "{resistances.get_category( &DamageCategory::Esoteric )}" )
+        name: "Esoteric", indent: false,
+        element: rsx!( "{resistances.get_category( &DamageCategory::Esoteric )}" ),
       }
     }
     SubResistance { details: resistances.show_damage( &DamageClass::Force ), display: display_esoteric() }
@@ -54,7 +57,7 @@ fn SubResistance( details: ( String, i32, bool ), display: bool ) -> Element {
   rsx!(
     div {
       class: if show || display { "row full" } else { "hidden" },
-      AttributeRow { name: "{name}", element: rsx!( "{value}" ) }
+      AttributeRow { name: "{name}", indent: true, element: rsx!( "{value}" ) }
     }
   )
 }

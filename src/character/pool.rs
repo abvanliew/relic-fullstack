@@ -2,7 +2,7 @@ use std::fmt;
 use serde::{Deserialize, Serialize};
 
 use crate::rule::prelude::*;
-use super::flow::Flow;
+// use super::flow::Flow;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ResourcePool {
@@ -38,11 +38,15 @@ impl fmt::Display for ResourcePool {
 }
 
 impl ResourcePool {
-  pub fn ordered() -> [ResourcePool; 11] { [
-    ResourcePool::Anointment, ResourcePool::Animalism, ResourcePool::Sanguine, ResourcePool::Rage,
-    ResourcePool::Mastery, ResourcePool::Channel, ResourcePool::Ki, ResourcePool::Virtuoso,
-    ResourcePool::MinorMana, ResourcePool::ModerateMana, ResourcePool::MajorMana,
-  ] }
+  pub fn with_drain( &self ) -> String {
+    return format!( "{} ({})", self, self.drain() )
+  }
+
+  // pub fn ordered() -> [ResourcePool; 11] { [
+  //   ResourcePool::Anointment, ResourcePool::Animalism, ResourcePool::Sanguine, ResourcePool::Rage,
+  //   ResourcePool::Mastery, ResourcePool::Channel, ResourcePool::Ki, ResourcePool::Virtuoso,
+  //   ResourcePool::MinorMana, ResourcePool::ModerateMana, ResourcePool::MajorMana,
+  // ] }
 
   pub fn drain( &self ) -> String {
     match self {
@@ -60,21 +64,21 @@ impl ResourcePool {
     }.into()
   }
 
-  pub fn flow( &self ) -> Flow {
-    match self {
-      ResourcePool::Animalism => Flow::Innate,
-      ResourcePool::Anointment => Flow::Innate,
-      ResourcePool::Rage => Flow::Innate,
-      ResourcePool::Sanguine => Flow::Innate,
-      ResourcePool::Mastery => Flow::Resonance,
-      ResourcePool::Channel => Flow::Resonance,
-      ResourcePool::Ki => Flow::Resonance,
-      ResourcePool::Virtuoso => Flow::Resonance,
-      ResourcePool::MinorMana => Flow::Magic,
-      ResourcePool::ModerateMana => Flow::Magic,
-      ResourcePool::MajorMana => Flow::Magic,
-    }
-  }
+  // pub fn flow( &self ) -> Flow {
+  //   match self {
+  //     ResourcePool::Animalism => Flow::Innate,
+  //     ResourcePool::Anointment => Flow::Innate,
+  //     ResourcePool::Rage => Flow::Innate,
+  //     ResourcePool::Sanguine => Flow::Innate,
+  //     ResourcePool::Mastery => Flow::Resonance,
+  //     ResourcePool::Channel => Flow::Resonance,
+  //     ResourcePool::Ki => Flow::Resonance,
+  //     ResourcePool::Virtuoso => Flow::Resonance,
+  //     ResourcePool::MinorMana => Flow::Magic,
+  //     ResourcePool::ModerateMana => Flow::Magic,
+  //     ResourcePool::MajorMana => Flow::Magic,
+  //   }
+  // }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]

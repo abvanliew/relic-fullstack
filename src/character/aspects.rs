@@ -1,8 +1,5 @@
-// use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-
-use super::{flow::Flow, ResourcePool};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct TrainingRanks {
@@ -10,7 +7,7 @@ pub struct TrainingRanks {
   pub adept: Option<i32>,
   pub endurance: Option<i32>,
   pub innate: Option<i32>,
-  pub resonnance: Option<i32>,
+  pub resonance: Option<i32>,
   pub magic: Option<i32>,
 }
 
@@ -21,7 +18,7 @@ impl fmt::Display for TrainingRanks {
     if let Some( adept ) = self.adept { ranks.push( format!( "Adept {adept}" ) ); }
     if let Some( endurance ) = self.endurance { ranks.push( format!( "Endurance {endurance}" ) ); }
     if let Some( innate ) = self.innate { ranks.push( format!( "Innate {innate}" ) ); }
-    if let Some( resonnance ) = self.resonnance { ranks.push( format!( "Resonnance {resonnance}" ) ); }
+    if let Some( resonance ) = self.resonance { ranks.push( format!( "Resonance {resonance}" ) ); }
     if let Some( magic ) = self.magic { ranks.push( format!( "Magic {magic}" ) ); }
     write!( f, "{}", ranks.join( ", " ) )
   }

@@ -11,8 +11,8 @@ mod skill;
 use dioxus::prelude::*;
 use panels::*;
 
-const FAVICON: Asset = asset!("/assets/favicon.ico");
-const MAIN_CSS: Asset = asset!("/assets/main.css");
+const FAVICON: Asset = asset!( "assets/favicon.ico" );
+const MAIN_CSS: Asset = asset!( "assets/main.css" );
 
 fn main() {
   dioxus::launch(App);
@@ -38,10 +38,16 @@ pub enum Route {
   CharacterBuilder {},
   #[route("/keywords")]
   KeywordList {},
-  #[route("/sheets/")]
-  CharacterSheetList {},
+  #[nest("/sheets")]
+    #[route("/")]
+    CharacterSheetList {},
+    #[route("/:id")]
+    SingleChracterSheet { id: String },
+  #[end_nest]
   #[route("/all_skills")]
   FullSkillList {},
+  #[route("/inherent")]
+  InherentSkills {},
 }
 
 #[component]

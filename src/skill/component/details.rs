@@ -44,7 +44,7 @@ fn ActionProperties( action: Action, keywords: ReadOnlySignal<HashMap<String,Key
         class: "highlight", "{activation}"
       }
       if let Some( keywords ) = action.keywords {
-        div { class: "italics", " - {keywords}" }
+        div { class: "italics", "{keywords}" }
       }
     }
     if let Some( condition ) = action.condition {

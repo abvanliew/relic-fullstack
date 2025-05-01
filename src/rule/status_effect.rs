@@ -12,7 +12,6 @@ use super::snippet::Snippet;
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
 pub struct StatusEffect {
   pub title: Option<String>,
-  pub keywords: Option<Vec<String>>,
   pub rules: Option<Vec<Snippet>>,
 }
 

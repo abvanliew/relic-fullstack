@@ -11,7 +11,7 @@ pub fn SkillList() -> Element {
     Some( Ok( skills ) ) => {
       rsx! {
         div {
-          class: "grid spacer dim-skills",
+          class: "grid spacer-medium dim-skills",
           div { class: "uv-title underline", "Title" }
           div { class: "uv-cost underline centered", "Training Cost" }
           div { class: "uv-activation underline centered", "Activation" }
@@ -58,7 +58,6 @@ pub fn SingleSkill( id: String ) -> Element {
     },
   }
 }
-
 
 #[component]
 pub fn FullSkillList() -> Element {

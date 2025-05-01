@@ -1,5 +1,6 @@
 mod builder;
 mod home;
+mod inherent;
 mod keyword;
 mod navbar;
 mod path;
@@ -13,5 +14,6 @@ pub use navbar::Navbar;
 pub use path::PathList;
 pub use skill::SkillList;
 pub use skill::SingleSkill;
-pub use sheet::CharacterSheetList;
+pub use sheet::{CharacterSheetList,SingleChracterSheet};
 pub use skill::FullSkillList;
+pub use inherent::InherentSkills;

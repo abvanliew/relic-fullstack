@@ -115,7 +115,7 @@
 //     div {
 //       class: "tiles",
 //       div {
-//         class: "uv-full small-text dotted-underline spacer",
+//         class: "uv-full small-text dotted-underline spacer-medium",
 //         onclick: move |_| { minimize_paths.set( !minimize_paths() ); },
 //         "Paths - Required {path_min}, Optional {path_optional} [{path_count}, {path_selected}, {minimize_paths}]"
 //       }
@@ -127,7 +127,7 @@
 //     div {
 //       class: "tiles",
 //       div {
-//         class: "uv-full small-text dotted-underline spacer",
+//         class: "uv-full small-text dotted-underline spacer-medium",
 //         "Full Features: {full_min} - {full_max} [{full_count}]"
 //       }
 //       for skill in skills_full() {
@@ -137,7 +137,7 @@
 //         FeatureSelector { feature }
 //       }
 //       div {
-//         class: "uv-full small-text dotted-underline spacer",
+//         class: "uv-full small-text dotted-underline spacer-medium",
 //         "Half Features: {half_min} - {half_max}"
 //       }
 //       for feature in half_features {
@@ -152,7 +152,7 @@
 //         max: stats.max_ranks.try_into().unwrap_or( 0 ),
 //         total: stats.attributes.try_into().unwrap_or( 0 )
 //       }
-//       div { class: "uv-full spacer" }
+//       div { class: "uv-full spacer-medium" }
 //       div { class: "uv-title highlight", "HP" }
 //       div { class: "uv-after-title", "{total_hp}" }
 //       div { class: "uv-title highlight", "Con" }
@@ -175,7 +175,7 @@
 //   rsx!(
 //     for flow in Flow::ordered() {
 //       if let Some( flow_resource ) = resources().get( &flow ) {
-//         div { class: "uv-full spacer" }
+//         div { class: "uv-full spacer-medium" }
 //         div { class: "uv-title highlight", "{flow} Flow" }
 //         div { class: "uv-after-title highlight", "{flow_resource.flow}" }
 //         for resource in character::ResourcePool::ordered() {
@@ -198,7 +198,7 @@
 //   rsx!(
 //     div {
 //       class: "grid dim-training",
-//       div { class: "uv-full dotted-underline small-text spacer", "Training Ranks: {level} [{sum}]" }
+//       div { class: "uv-full dotted-underline small-text spacer-medium", "Training Ranks: {level} [{sum}]" }
 //       div { class: "uv-expert", "Expert" }
 //       div { class: "uv-adept", "Adept" }
 //       div { class: "uv-endurance", "Endurance" }
@@ -291,12 +291,12 @@
 //   rsx!(
 //     div { class: "uv-title", "Remaining" }
 //     div { class: "uv-after-title", "{remaining}" }
-//     div { class: "uv-full highlight spacer", "Capabilities" }
+//     div { class: "uv-full highlight spacer-medium", "Capabilities" }
 //     AttributeSelector { attribute: Capability(Physique), min, max, total }
 //     AttributeSelector { attribute: Capability(Warfare), min, max, total }
 //     AttributeSelector { attribute: Capability(Spirit), min, max, total }
 //     AttributeSelector { attribute: Capability(Manipulation), min, max, total }
-//     div { class: "uv-full highlight spacer", "Defenses" }
+//     div { class: "uv-full highlight spacer-medium", "Defenses" }
 //     AttributeSelector { attribute: Defense(Tenacity), min, max, total }
 //     AttributeSelector { attribute: Defense(Fortitude), min, max, total }
 //     AttributeSelector { attribute: Defense(Resolve), min, max, total }

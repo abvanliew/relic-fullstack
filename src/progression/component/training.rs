@@ -12,7 +12,7 @@
 //   rsx!(
 //     div {
 //       class: "grid dim-training",
-//       div { class: "uv-full dotted-underline small-text spacer", "Training Ranks: {level}" }
+//       div { class: "uv-full dotted-underline small-text spacer-medium", "Training Ranks: {level}" }
 //       div { class: "uv-expert", "Expert" }
 //       div { class: "uv-adept", "Adept" }
 //       div { class: "uv-endurance", "Endurance" }

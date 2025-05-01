@@ -22,3 +22,17 @@ pub async fn list_character_sheets() -> Result<Vec<CharacterSheet>, ServerFnErro
   }
   Ok( character_list )
 }
+
+#[server(GetCharacterSheet)]
+pub async fn get_chracter_sheet( id: String ) -> Result<CharacterSheet, ServerFnError> {
+  let client = Client::with_uri_str("mongodb://localhost:27017").await?;
+  let sheets_collection: Collection<CharacterSheet> = client.database( "relic" ).collection( "creatures" );
+  let Ok( id_object ) = ObjectId::parse_str( id.clone() ) else {
+    return Err( ServerFnError::ServerError( "Invalid Id".into() ) );
+  };
+  let mut results = sheets_collection.find( doc! { "_id": id_object }, ).await?;
+  while let Some( sheet ) = results.next().await {
+    return Ok( sheet? );
+  }
+  return Err( ServerFnError::ServerError( format!( "Unable to find chracter sheet with id: {}", &id ) ) )
+}

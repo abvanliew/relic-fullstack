@@ -1,0 +1,106 @@
+{
+  "name": "Template of needs to be filled out",
+  "level": 1,
+  "attributes": {
+    "physique": 0,
+    "warfare": 0,
+    "spirit": 0,
+    "manipulation": 0,
+    "tenacity": 0,
+    "fortitude": 0,
+    "resolve": 0,
+    "insight": 0
+  },
+  "armor": {
+    "title": "Scalemail",
+    "physicalResistance": 5,
+    "tenacityRequirement": 5,
+    "speedPenalty": 1
+  },
+  "weapons": [
+    {
+      "title": "Battleaxe",
+      "class": "Melee",
+      "damageClass": "Slashing",
+      "keywords": "Two Handed, Heavy",
+      "damageDice": [
+        {
+          "amount": 2,
+          "die": "D6"
+        },
+        {
+          "amount": 1,
+          "die": "D8"
+        }
+      ]
+    }
+  ],
+  "training": {
+    "resonance": 1
+  },
+  "paths": [
+    {
+      "$oid": "66f5fc630c1ea8f05c35fd3c"
+    },
+    {
+      "$oid": "66f5fc630c1ea8f05c35fd3d"
+    }
+  ],
+  "body": {
+    "hp": 25,
+    "constitution": 4,
+    "speed": 6
+  },
+  "expertise": [
+    {
+      "title": "Arcana",
+      "ranks": 5
+    },
+    {
+      "title": "Planes",
+      "ranks": 5
+    },
+    {
+      "empty": true
+    },
+    {
+      "empty": true
+    },
+    {
+      "empty": true
+    }
+  ],
+  "flows": [
+    {
+      "flow": "Resonance",
+      "base": 2,
+      "pools": [
+        {
+          "resource": "Channel",
+          "base": 4
+        },
+        {
+          "resource": "Mastery",
+          "base": 5
+        }
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "$oid": "66f45f6b7e098103fc422133"
+    },
+    {
+      "$oid": "66f45f6b7e098103fc422127"
+    },
+    {
+      "$oid": "66f45f6b7e098103fc422136"
+    },
+    {
+      "$oid": "680c6b73fa314f4a97eeec74"
+    },
+    {
+      "$oid": "66f45f6b7e098103fc422151"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "name": "Fae Blood Rogue",
+  "level": 1,
+  "attributes": {
+    "physique": 1,
+    "warfare": 3,
+    "spirit": 0,
+    "manipulation": 5,
+    "tenacity": 4,
+    "fortitude": 0,
+    "resolve": 1,
+    "insight": 3
+  },
+  "armor": {
+    "title": "Leather",
+    "physicalResistance": 2,
+    "tenacityRequirement": 2
+  },
+  "weapons": [
+    {
+      "title": "Dagger",
+      "class": "Melee",
+      "damageClass": "Slashing",
+      "keywords": "One Handed, Light",
+      "damageDice": [
+        {
+          "amount": 2,
+          "die": "D4"
+        },
+        {
+          "amount": 1,
+          "die": "D6"
+        }
+      ]
+    }
+  ],
+  "training": {
+    "adept": 1
+  },
+  "paths": [
+    {
+      "$oid": "66f5fc630c1ea8f05c35fd28"
+    },
+    {
+      "$oid": "66f5fc630c1ea8f05c35fd30"
+    }
+  ],
+  "body": {
+    "hp": 25,
+    "constitution": 4,
+    "speed": 6
+  },
+  "expertise": [
+    {
+      "title": "Politics",
+      "ranks": 5
+    },
+    {
+      "title": "Arcana",
+      "ranks": 5
+    },
+    {
+      "empty": true
+    },
+    {
+      "empty": true
+    },
+    {
+      "empty": true
+    }
+  ],
+  "flows": [
+    {
+      "flow": "Innate",
+      "base": 2,
+      "pools": [
+        {
+          "resource": "Sanguine",
+          "base": 4
+        }
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "$oid": "66f45f6b7e098103fc4220a1"
+    },
+    {
+      "$oid": "66f45f6b7e098103fc4220a2"
+    },
+    {
+      "$oid": "66f45f6b7e098103fc4220a3"
+    },
+    {
+      "$oid": "66f45f6b7e098103fc4220a4"
+    },
+    {
+      "$oid": "66f45f6b7e098103fc4220a5"
+    },
+    {
+      "$oid": "66f45f6b7e098103fc4220a6"
+    },
+    {
+      "$oid": "66f45f6b7e098103fc4220a7"
+    },
+    {
+      "$oid": "67f9f8913f8db6318d57ca69"
+    }
+  ]
+}

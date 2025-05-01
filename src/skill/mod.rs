@@ -24,7 +24,6 @@ pub struct Skill {
   pub action: Action,
   pub order: SkillOrdering,
   pub paths: Option<Vec<PathRef>>,
-  pub editing_state: EditingState,
 }
 
 impl Default for Skill {
@@ -32,14 +31,13 @@ impl Default for Skill {
     Self {
       id: ObjectId::new(),
       tier: Tier::Initiate,
-      title: Default::default(),
+      title: "Undefined".into(),
       summary: Default::default(),
       description: Default::default(),
       training_cost: TrainingCost::Inherient,
       action: Default::default(),
       order: Default::default(),
       paths: Default::default(),
-      editing_state: EditingState::Concept,
     }
   }
 }

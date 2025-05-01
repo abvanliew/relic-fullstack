@@ -8,13 +8,14 @@ use crate::character::expertise::ExpertiseComponent;
 use crate::character::flow::FlowResourcesBlock;
 // use crate::character::prelude::*;
 // use crate::rule::prelude::*;
-use crate::character::resistance::ResistanceDetails;
 use crate::equipment::armor::Armor;
 use crate::equipment::weapon::{Weapon, WeaponEntry};
 use crate::skill::prelude::*;
 use crate::path::Path;
 use crate::rule::components::Modifier;
+use crate::Route;
 
+use super::resistance::ResistanceDetails;
 use super::attribute::*;
 use super::aspects::{BodyStats, TrainingRanks};
 use super::expertise::ExpertiseEntry;
@@ -41,16 +42,30 @@ pub struct CharacterSheet {
 }
 
 #[component]
-pub fn SheetTable( sheets: Vec<CharacterSheet>, skills: Vec<Skill>, paths: Vec<Path>, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
+pub fn SheetTable(
+  sheets: Vec<CharacterSheet>,
+  skills: Vec<Skill>,
+  paths: Vec<Path>,
+  keywords: ReadOnlySignal<HashMap<String,Keyword>>,
+  named_url: bool,
+) -> Element {
   rsx!(
     for sheet in sheets {
-      SheetDetails { sheet, skills: skills.clone(), paths: paths.clone(), keywords }
+      SheetDetails { sheet, skills: skills.clone(), paths: paths.clone(), keywords, named_url }
     }
   )
 }
 
 #[component]
-pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
+pub fn SheetDetails(
+  sheet: CharacterSheet,
+  skills: Vec<Skill>,
+  paths: Vec<Path>,
+  keywords: ReadOnlySignal<HashMap<String,Keyword>>,
+  named_url: bool,
+) -> Element {
+  let id = sheet.id.to_string();
+  let name = sheet.name;
   let mut path_names: Vec<String> = Vec::new();
   for path in &sheet.paths {
     let results: Vec<Path> = paths.clone().into_iter().filter(|p| p.id == *path ).collect();
@@ -84,24 +99,37 @@ pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>
   let opt_flows = sheet.flows;
   rsx!(
     div {
-      class: "column",
+      class: "column print-block sheet",
       div {
         class: "row",
-        div { class: "heavier", "{sheet.name}" }
-      }
-      div {
-        class: "row",
-        div { "Level {sheet.level}" }
-        if path_names.len() > 0 {
-          div { "Paths: {joined_paths}" }
+        if named_url {
+          Link { to: Route::SingleChracterSheet { id }, class: "heavier", "{name}" }
+        } else {
+          div { class: "heavier", "{name}" }
         }
-        div { "Training: {sheet.training}" }
       }
       div {
-        class: "row",
+        class: "grid dim-thirds",
+        div {
+          span { class: "highlight", "Level" }
+          span { " {sheet.level}" }
+        }
+        if path_names.len() > 0 {
+          div {
+            span { class: "highlight", "Paths" }
+            span { " {joined_paths}" }
+          }
+        }
+        div {
+          span { class: "highlight", "Training" }
+          span { " {sheet.training}" }
+        }
+      }
+      div {
+        class: "grid dim-attributes gap-2xlarge",
         AttributeBlock { attributes, dodge }
         div {
-          class: "column",
+          class: "uv-resistances column",
           div { class: "subtitle", "Resistances" }
           if let Some( worn_armor ) = armor {
             div {
@@ -112,7 +140,7 @@ pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>
           ResistanceDetails { resistances: armored_resistances }
         }
         div {
-          class: "column",
+          class: "uv-expertise column",
           div { class: "subtitle", "Expertise" }
           if let Some( expertise ) = sheet.expertise {
             for entry in expertise {
@@ -120,36 +148,39 @@ pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>
             }
           }
         }
-      }
-      div {
-        class: "row",
         div {
-          class: "column",
+          class: "column uv-capabilities",
           div { class: "subtitle", "Body" }
           div { "Speed {speed}" }
           ConstitutionRow { constitution: 4 }
           div { "Health {hp}" }
           div { class: "hp-box" }
         }
-        if let Some( weapons ) = opt_weapons {
-          div {
-            class: "column",
-            div { class: "subtitle", "Weapons" }
-            for weapon in weapons {
-              WeaponEntry { weapon }
+        div {
+          class: "uv-other row",
+          if let Some( weapons ) = opt_weapons {
+            div {
+              class: "column-wrap",
+              div { class: "subtitle", "Weapons" }
+              for weapon in weapons {
+                WeaponEntry { weapon }
+              }
+            }
+          }
+          if let Some( flows ) = opt_flows {
+            div {
+              class: "column float-right",
+              div { class: "subtitle", "Resources" }
+              FlowResourcesBlock { flows }
             }
           }
         }
-        if let Some( flows ) = opt_flows {
-          div {
-            class: "column",
-            div { class: "subtitle", "Resources" }
-            FlowResourcesBlock { flows }
-          }
-        }
       }
+    }
+    div {
+      class: "column",
       div {
-        class: "row-wrap margin-top",
+        class: "row-wrap",
         for skill in selected_skills {
           SkillDescription { skill, keywords, show_terms: true }
         }
@@ -159,15 +190,18 @@ pub fn SheetDetails( sheet: CharacterSheet, skills: Vec<Skill>, paths: Vec<Path>
 }
 
 #[component]
-pub fn AttributeRow( name: String, element: Element ) -> Element {
+pub fn AttributeRow( name: String, indent: bool, element: Element ) -> Element {
   rsx!(
     div {
       class: "row full",
       div {
-        class: "full highlight",
+        class: if indent { "highlight indent" } else { "highlight" },
         "{name}"
       }
-      div { { element } }
+      div {
+        class: "float-right",
+        { element }
+      }
     }
   )
 }
@@ -192,47 +226,56 @@ fn calc_dodge_speed_resistances( tenacity: i32, speed: i32, resistances: Resista
 pub fn AttributeBlock( attributes: AttributeRanks, dodge: i32 ) -> Element {
   rsx!(
     div {
-      class: "column",
+      class: "uv-capabilities column",
       div { class: "subtitle", "Capabilites" }
       AttributeRow {
         name: "Physique",
         element: rsx!( Modifier { value: attributes.physique } ),
+        indent: false,
       }
       AttributeRow {
         name: "Warfare",
         element: rsx!( Modifier { value: attributes.warfare } ),
+        indent: false,
       }
       AttributeRow {
         name: "Spirit",
         element: rsx!( Modifier { value: attributes.spirit } ),
+        indent: false,
       }
       AttributeRow {
         name: "Manipulation",
         element: rsx!( Modifier { value: attributes.manipulation } ),
+        indent: false,
       }
     }
     div {
-      class: "column",
+      class: "uv-defenses column",
       div { class: "subtitle", "Defenses" }
       AttributeRow {
         name: "Tenacity",
         element: rsx!( "{attributes.tenacity + 10}" ),
+        indent: false,
       }
       AttributeRow {
         name: "Fortitude",
         element: rsx!( "{attributes.fortitude + 10}" ),
+        indent: false,
       }
       AttributeRow {
         name: "Resolve",
         element: rsx!( "{attributes.resolve + 10}" ),
+        indent: false,
       }
       AttributeRow {
         name: "Insight",
         element: rsx!( "{attributes.insight + 10}" ),
+        indent: false,
       }
       AttributeRow {
         name: "Dodge",
         element: rsx!( "{dodge + 10}" ),
+        indent: false,
       }
     }
   )
@@ -243,12 +286,17 @@ pub fn AttributeBlock( attributes: AttributeRanks, dodge: i32 ) -> Element {
 pub fn ConstitutionRow( constitution: i32 ) -> Element {
   rsx!(
     div { "Constituion {constitution}" }
+    BoxRow { count: constitution }
+  )
+}
+
+#[component]
+pub fn BoxRow( count: i32 ) -> Element {
+  rsx!(
     div {
-      class: "row-wrap small-gap",
-      if constitution > 0 {
-        for _ in 0..constitution {
-          div { class: "box" }
-        }
+      class: "box-row",
+      if count > 0 {
+        for _ in 0..count { div { class: "box" } }
       }
     }
   )

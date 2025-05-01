@@ -21,9 +21,7 @@ pub fn SkillSummary( skill: ReadOnlySignal<Skill>, training: bool ) -> Element {
   rsx!(
     div {
       class: "uv-title",
-      Link {
-        to: Route::SingleSkill { id }, "{title}"
-      }
+      Link { to: Route::SingleSkill { id }, "{title}" }
     }
     if training {
       div {

@@ -16,7 +16,7 @@ pub fn PathSelections( paths: Vec<Path>, tier: Tier ) -> Element {
     div {
       class: "tiles",
       div {
-        class: "uv-full small-text dotted-underline spacer",
+        class: "uv-full small-text dotted-underline spacer-medium",
         "{tier} Paths"
       }
       for path in selectable {

@@ -14,12 +14,12 @@ pub fn PathDescription( path: ReadOnlySignal<Path> ) -> Element {
   let cantrips: Vec<Skill> = path().cantrips();
 
   rsx!(
-    div { class: "title spacer uv-full", "{title}" }
+    div { class: "title spacer-medium uv-full", "{title}" }
     if let Some( summary ) = path().summary {
       div { class: "uv-full", "{summary}" }
     }
     if path().keystones.is_some() || skills_keystone.len() > 0 {
-      div { class: "uv-full highlight underline spacer", "Keystones" }
+      div { class: "uv-full highlight underline spacer-medium", "Keystones" }
     }
     if let Some( keystones ) = path().keystones {
       for keystone in keystones {
@@ -28,19 +28,19 @@ pub fn PathDescription( path: ReadOnlySignal<Path> ) -> Element {
     }
     SkillTable { skills: skills_keystone.to_owned(), training: false }
     // if path().full_features.is_some() || skills_full.len() > 0 {
-    //   div { class: "uv-full highlight underline spacer", "Features (Full)" }
+    //   div { class: "uv-full highlight underline spacer-medium", "Features (Full)" }
     // }
     SkillTable { skills: skills_full.to_owned(), training: false }
     if spells.len() > 0 {
-      div { class: "uv-full highlight underline spacer", "Spells" }
+      div { class: "uv-full highlight underline spacer-medium", "Spells" }
       SkillTable { skills: spells.to_owned(), training: false, }
     }
     // if path().half_features.is_some() || skills_half.len() > 0 {
-    //   div { class: "uv-full highlight underline spacer", "Features (Half)" }
+    //   div { class: "uv-full highlight underline spacer-medium", "Features (Half)" }
     // }
     SkillTable { skills: skills_half.to_owned(), training: false }
     if cantrips.len() > 0 {
-      div { class: "uv-full highlight underline spacer", "Cantrips" }
+      div { class: "uv-full highlight underline spacer-medium", "Cantrips" }
       SkillTable { skills: cantrips.to_owned(), training: false }
     }
   )

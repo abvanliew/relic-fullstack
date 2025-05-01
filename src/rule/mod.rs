@@ -9,7 +9,7 @@ mod tier;
 
 pub mod prelude {
   pub use super::bonus::Bonus;
-  pub use super::dice::{Die,DiceGroup,DiceSet,DiceGroupEntry};
+  pub use super::dice::{DiceGroup,DiceGroupEntry};
   pub use super::snippet::Snippet;
   pub use super::roll::{Roll, RollOutcome};
   pub use super::tier::Tier;

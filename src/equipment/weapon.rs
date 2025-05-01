@@ -46,11 +46,11 @@ pub fn WeaponEntry( weapon: ReadOnlySignal<Weapon> ) -> Element {
   let opt_block = weapon_signal.block;
   rsx!(
     div {
-      class: "column",
+      class: "column no-gap",
       div {
         class: "row",
         span { class: "highlight", "{title}" }
-        span { " - {class}" }
+        span { " {class}" }
       }
       div {
         DiceGroupEntry { group: damage_dice }
