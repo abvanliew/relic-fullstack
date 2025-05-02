@@ -205,7 +205,7 @@ a:hover {
 }
 
 .dim-thirds {
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: max-content auto max-content;
 }
 
 .uv-main {

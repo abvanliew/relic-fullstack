@@ -27,7 +27,7 @@ pub fn SkillDescription( skill: ReadOnlySignal<Skill>, keywords: ReadOnlySignal<
       }
       if show_terms {
         for term in terms {
-          TermSnippet { term: RuleTerm { keyword_id: term }, keywords, hover: false }
+          TermSnippet { term: RuleTerm { keyword_id: Some( term ), title: None }, keywords, hover: false }
         }
       }
     }

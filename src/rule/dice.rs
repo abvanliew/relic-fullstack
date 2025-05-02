@@ -4,6 +4,7 @@ use std::fmt;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum Die {
+  D3,
   D4,
   D6,
   D8,
@@ -14,6 +15,7 @@ pub enum Die {
 impl fmt::Display for Die {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
     write!( f, "{}", match self {
+      Die::D3 => "d3",
       Die::D4 => "d4",
       Die::D6 => "d6",
       Die::D8 => "d8",

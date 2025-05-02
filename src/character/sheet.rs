@@ -110,12 +110,10 @@ pub fn SheetDetails(
       }
       div {
         class: "grid dim-thirds",
-        div {
-          span { class: "highlight", "Level" }
-          span { " {sheet.level}" }
-        }
+        div { "Level {sheet.level}" }
         if path_names.len() > 0 {
           div {
+            class: "centered",
             span { class: "highlight", "Paths" }
             span { " {joined_paths}" }
           }
@@ -190,12 +188,12 @@ pub fn SheetDetails(
 }
 
 #[component]
-pub fn AttributeRow( name: String, indent: bool, element: Element ) -> Element {
+pub fn AttributeRow( name: String, name_class: String, element: Element ) -> Element {
   rsx!(
     div {
       class: "row full",
       div {
-        class: if indent { "highlight indent" } else { "highlight" },
+        class: name_class,
         "{name}"
       }
       div {
@@ -229,53 +227,44 @@ pub fn AttributeBlock( attributes: AttributeRanks, dodge: i32 ) -> Element {
       class: "uv-capabilities column",
       div { class: "subtitle", "Capabilites" }
       AttributeRow {
-        name: "Physique",
+        name: "Physique", name_class: "highlight",
         element: rsx!( Modifier { value: attributes.physique } ),
-        indent: false,
       }
       AttributeRow {
-        name: "Warfare",
+        name: "Warfare", name_class: "highlight",
         element: rsx!( Modifier { value: attributes.warfare } ),
-        indent: false,
       }
       AttributeRow {
-        name: "Spirit",
+        name: "Spirit", name_class: "highlight",
         element: rsx!( Modifier { value: attributes.spirit } ),
-        indent: false,
       }
       AttributeRow {
-        name: "Manipulation",
+        name: "Manipulation", name_class: "highlight",
         element: rsx!( Modifier { value: attributes.manipulation } ),
-        indent: false,
       }
     }
     div {
       class: "uv-defenses column",
       div { class: "subtitle", "Defenses" }
       AttributeRow {
-        name: "Tenacity",
+        name: "Tenacity", name_class: "highlight",
         element: rsx!( "{attributes.tenacity + 10}" ),
-        indent: false,
       }
       AttributeRow {
-        name: "Fortitude",
+        name: "Fortitude", name_class: "highlight",
         element: rsx!( "{attributes.fortitude + 10}" ),
-        indent: false,
       }
       AttributeRow {
-        name: "Resolve",
+        name: "Resolve", name_class: "highlight",
         element: rsx!( "{attributes.resolve + 10}" ),
-        indent: false,
       }
       AttributeRow {
-        name: "Insight",
+        name: "Insight", name_class: "highlight",
         element: rsx!( "{attributes.insight + 10}" ),
-        indent: false,
       }
       AttributeRow {
-        name: "Dodge",
+        name: "Dodge", name_class: "highlight",
         element: rsx!( "{dodge + 10}" ),
-        indent: false,
       }
     }
   )

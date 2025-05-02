@@ -18,7 +18,7 @@ pub fn ExpertiseComponent( entry: ExpertiseEntry ) -> Element {
     ( _, _, Some( true ), ) => rsx!( div { class: "solid-underline full lh" } ),
     ( Some( title ), Some( rank ), _ ) => rsx!(
       AttributeRow {
-        name: title, indent: false,
+        name: title, name_class: "highlight",
         element: rsx!( Modifier { value: rank } ),
       }
     ),
