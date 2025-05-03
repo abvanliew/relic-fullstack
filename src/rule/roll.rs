@@ -63,6 +63,44 @@ impl fmt::Display for RollClass {
   }
 }
 
+#[component]
+pub fn RollSnippet( roll: Roll ) -> Element {
+  let keyword = roll.keyword.clone().unwrap_or( "".into() );
+  let target = match ( &roll.custom_target, roll.triggered ) {
+    ( Some( custom_target ), _ ) => custom_target.clone(),
+    ( _, Some( true ) ) => "triggering target".into(),
+    _ => "target".into()
+  };
+  let capability: String = match &roll.capability {
+    Some( capability ) => capability.to_string(),
+    None => "undefined".into(),
+  };
+  let defense: String = match &roll.defense {
+    Some( defense ) => defense.to_string(),
+    None => "undefined".into(),
+  };
+  let class = roll.class.clone();
+  let difficulty = roll.difficulty.clone().unwrap_or( "undefined".into() );
+  let article = match &roll.each {
+    Some( true ) => "each",
+    _ => "the",
+  };
+  return match ( &roll.class, &roll.each ) {
+    ( RollClass::LuckCheck, _ ) => rsx!(
+      span { "Make a {keyword} " }
+      span { class: "highlight", "{class}" }
+      span { " difficulty {difficulty}." }
+    ),
+    _ => rsx!(
+      span { "Make a " }
+      span { class: "highlight", "{capability}" }
+      span { " vs " }
+      span { class: "highlight", "{defense}" }
+      span { " {keyword} {class} against {article} {target}." }
+    ),
+  }
+}
+
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
 pub struct RollOutcome {
   pub result: RollResult,
@@ -104,11 +142,6 @@ impl fmt::Display for RollResult {
       RollResult::CriticalSuccess => "Critical Success",
     } )
   }
-}
-
-#[component]
-pub fn RollSnippet( roll: Roll ) -> Element {
-  rsx!( span { "{roll}" } )
 }
 
 #[component]

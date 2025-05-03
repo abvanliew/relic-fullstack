@@ -85,6 +85,11 @@ impl fmt::Display for Target {
         self.article(),
         self.singular(),
       ),
+      ( TargetClass::Touch, _, _, Some( limit ), ) => format!(
+        "Up to {} {} within reach",
+        limit,
+        if *limit != 0 { self.plural() } else { self.singular() },
+      ),
       ( TargetClass::Weapon, _, _, None, ) => format!(
         "{} {} within weapon reach",
         self.article(),
@@ -98,7 +103,13 @@ impl fmt::Display for Target {
       ( TargetClass::Range, Some( range ), _, None, ) => format!(
         "{} {} within range {}",
         self.article(),
-        self.singular(),
+        self.plural(),
+        range,
+      ),
+      ( TargetClass::Range, Some( range ), _, Some( limit ), ) => format!(
+        "Up to {} {} within range {}",
+        limit,
+        if *limit != 0 { self.plural() } else { self.singular() },
         range,
       ),
       ( TargetClass::Burst, Some( range ), _, None, ) => format!(
@@ -110,19 +121,19 @@ impl fmt::Display for Target {
         "Up to {limit} {} within range {range}",
         if *limit != 0 { self.plural() } else { self.singular() },
       ),
-      ( TargetClass::Line, _, Some( size ), _, ) => format!(
+      ( TargetClass::Line, _, Some( size ), None, ) => format!(
         "All {} in a Line {size} spaces long",
         self.plural(),
       ),
-      ( TargetClass::Cone, _, Some( size ), _, ) => format!(
+      ( TargetClass::Cone, _, Some( size ), None, ) => format!(
         "All {} in a Cone size {size}",
         self.plural(),
       ),
       _ => format!( "undefined" ),
     };
     if let Some( suffix ) = &self.suffix {
-      return write!( f, "{target} {suffix}.",  )
+      return write!( f, "{target} {suffix}.", )
     }
-    return write!( f, "{target}.",  )
+    return write!( f, "{target}.", )
   }
 }
