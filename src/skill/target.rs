@@ -14,6 +14,29 @@ pub struct Target {
   pub suffix: Option<String>,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub enum TargetClass {
+  Custom,
+  Yourself,
+  Touch,
+  Weapon,
+  Range,
+  EachTriggering,
+  Cone,
+  Burst,
+  RadiusCorner,
+  RadiusSpace,
+  Line,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
+pub enum Selection {
+  #[default]
+  Creature,
+  Ally,
+  Enemy,
+}
+
 impl Target {
   pub fn singular( &self ) -> String {
     match ( &self.selection, &self.custom_selection ) {
@@ -40,28 +63,6 @@ impl Target {
       _ => "Some"
     }.into()
   }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub enum TargetClass {
-  Custom,
-  Yourself,
-  Touch,
-  Weapon,
-  Range,
-  EachTriggering,
-  Cone,
-  Burst,
-  Area,
-  Line,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
-pub enum Selection {
-  #[default]
-  Creature,
-  Ally,
-  Enemy,
 }
 
 impl fmt::Display for Target {
@@ -103,7 +104,7 @@ impl fmt::Display for Target {
       ( TargetClass::Range, Some( range ), _, None, ) => format!(
         "{} {} within range {}",
         self.article(),
-        self.plural(),
+        self.singular(),
         range,
       ),
       ( TargetClass::Range, Some( range ), _, Some( limit ), ) => format!(
@@ -127,6 +128,10 @@ impl fmt::Display for Target {
       ),
       ( TargetClass::Cone, _, Some( size ), None, ) => format!(
         "All {} in a Cone size {size}",
+        self.plural(),
+      ),
+      ( TargetClass::RadiusCorner, Some( range ), Some( size ), _ ) => format!(
+        "All {} within a radius {size} area centered on a corner within {range} spaces",
         self.plural(),
       ),
       _ => format!( "undefined" ),
