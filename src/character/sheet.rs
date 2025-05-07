@@ -22,6 +22,8 @@ use super::expertise::ExpertiseEntry;
 use super::flow::FlowStat;
 use super::resistance::Resistances;
 
+const DASH_SPEED: i32 = 3;
+
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct CharacterSheet {
@@ -88,7 +90,7 @@ pub fn SheetDetails(
     }
   }
   let hp = sheet.body.hp;
-  let ( dodge, speed, armor_equiped, armored_resistances ) =
+  let ( dodge, speed, dash, armor_equiped, armored_resistances ) =
     calc_dodge_speed_resistances(
       attributes.tenacity,
       sheet.body.speed,
@@ -150,6 +152,7 @@ pub fn SheetDetails(
           class: "column uv-capabilities",
           div { class: "subtitle", "Body" }
           div { "Speed {speed}" }
+          div { "Dash {dash}" }
           ConstitutionRow { constitution: 4 }
           div { "Health {hp}" }
           div { class: "hp-box" }
@@ -176,7 +179,7 @@ pub fn SheetDetails(
       }
     }
     div {
-      class: "column",
+      class: "column print-break",
       div {
         class: "row-wrap",
         for skill in selected_skills {
@@ -204,20 +207,20 @@ pub fn AttributeRow( name: String, name_class: String, element: Element ) -> Ele
   )
 }
 
-fn calc_dodge_speed_resistances( tenacity: i32, speed: i32, resistances: Resistances, armor: &Option<Armor>, ) -> ( i32, i32, bool, Resistances ) {
+fn calc_dodge_speed_resistances( tenacity: i32, speed: i32, resistances: Resistances, armor: &Option<Armor>, ) -> ( i32, i32, i32, bool, Resistances ) {
   if armor.is_none() || armor.as_ref().unwrap().tenacity_requirement > tenacity {
-    return ( tenacity, speed, false, resistances );
+    return ( tenacity, speed, DASH_SPEED, false, resistances );
   }
   let worn_armor = armor.as_ref().unwrap();
   let net_tenacity = tenacity - worn_armor.tenacity_requirement;
   let speed_penalty = worn_armor.speed_penalty.unwrap_or( 0 );
-  let ( dodge, net_speed) = match net_tenacity.cmp( &speed_penalty ) {
-    std::cmp::Ordering::Less => ( 0, speed - speed_penalty + net_tenacity ),
-    std::cmp::Ordering::Equal => ( 0, speed ),
-    std::cmp::Ordering::Greater => ( net_tenacity - speed_penalty, speed ),
+  let ( dodge, net_speed, net_dash ) = match net_tenacity.cmp( &speed_penalty ) {
+    std::cmp::Ordering::Less => ( 0, speed - speed_penalty + net_tenacity, DASH_SPEED - speed_penalty + net_tenacity ),
+    std::cmp::Ordering::Equal => ( 0, speed, DASH_SPEED ),
+    std::cmp::Ordering::Greater => ( net_tenacity - speed_penalty, speed, DASH_SPEED ),
   };
   let armored_resistances = resistances.with_armor( &armor );
-  return ( dodge, net_speed, true, armored_resistances );
+  return ( dodge, net_speed, net_dash, true, armored_resistances );
 }
 
 #[component]

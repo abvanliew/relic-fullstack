@@ -139,7 +139,7 @@ impl fmt::Display for RollResult {
       RollResult::CriticalFailure => "Critical Failure",
       RollResult::Failure => "Failure",
       RollResult::Success => "Success",
-      RollResult::CriticalSuccess => "Critical Success",
+      RollResult::CriticalSuccess => "Critical",
     } )
   }
 }
@@ -148,7 +148,7 @@ impl fmt::Display for RollResult {
 pub fn OutcomesSnippet( outcomes: Vec<RollOutcome>, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
   rsx!(
     div {
-      class: "indent grid dim-keywords",
+      class: "indent spacer grid dim-keywords",
       for outcome in outcomes {
         div {
           class: "uv-title highlight",

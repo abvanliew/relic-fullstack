@@ -33,6 +33,10 @@ a:hover {
   color: #91a4d2;
 }
 
+p {
+  margin: 4px 0px;
+}
+
 .row {
   display: flex;
   flex-direction: row;
@@ -116,9 +120,12 @@ a:hover {
     break-inside: avoid;
   }
 
-  .no-print, .no-print *
-  {
+  .no-print, .no-print * {
     display: none !important;
+  }
+
+  .print-break {
+    page-break-after: always;
   }
 
   :root {

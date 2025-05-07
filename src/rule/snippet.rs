@@ -62,8 +62,12 @@ pub fn SnippetSetDetails( rules: Vec<Snippet>, keywords: ReadOnlySignal<HashMap<
 #[component]
 pub fn SnippetDetails( rule: Snippet, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
   rsx!(
+    match rule.p {
+      Some( true ) => rsx!( p {} ),
+      _ => rsx!()
+    }
     if let Some( text ) = rule.text {
-      TextSnippet { text, p: rule.p }
+      TextSnippet { text }
     }
     if let Some( term ) = rule.term {
       TermSnippet { term, keywords, hover: true }
@@ -84,11 +88,8 @@ pub fn SnippetDetails( rule: Snippet, keywords: ReadOnlySignal<HashMap<String,Ke
 }
 
 #[component]
-pub fn TextSnippet( text: String, p: Option<bool> ) -> Element {
-  return match &p {
-    Some( true ) => rsx!( div { "{text}" } ),
-    _ => rsx!( span { "{text}" } )
-  }
+pub fn TextSnippet( text: String ) -> Element {
+  return rsx!( span { "{text}" } );
 }
 
 #[component]
