@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use dioxus::prelude::*;
 use bson::doc;
 
@@ -23,6 +25,21 @@ pub async fn list_path_skills() -> Result<Vec<Path>, ServerFnError> {
     count += 1;
   }
   Ok( path_list )
+}
+
+#[server(GetPathMap)]
+pub async fn get_path_map() -> Result<HashMap<String,Path>, ServerFnError> {
+  let client = Client::with_uri_str("mongodb://localhost:27017").await?;
+  let path_collection: Collection<Path> = client.database("relic").collection("paths_display");
+  let mut results = path_collection.find( doc! {}, ).await?;
+  let mut path_map: HashMap<String,Path> = HashMap::new();
+  let mut count: u32 = 0;
+  while let Some( result ) = results.next().await {
+    let Ok( path ) = result else { tracing::error!( "Unable to load path [{}] {:?}", count, result ); continue; };
+    path_map.insert( path.id.to_string(), path );
+    count += 1;
+  }
+  Ok( path_map )
 }
 
 #[server(ListPaths)]

@@ -1,10 +1,7 @@
-use std::collections::HashMap;
-
 use serde::{ Deserialize, Serialize };
 use dioxus::prelude::*;
 use bson::oid::ObjectId;
-
-use crate::skill::prelude::*;
+use crate::server::prelude::GameLibrarySignal;
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
 #[serde(rename_all = "camelCase")]
@@ -14,10 +11,12 @@ pub struct RuleTerm {
 }
 
 #[component]
-pub fn TermSnippet( term: RuleTerm, keywords: ReadOnlySignal<HashMap<String,Keyword>>, hover: bool ) -> Element {
+pub fn TermSnippet( term: RuleTerm, hover: bool ) -> Element {
+  let signal = use_context::<GameLibrarySignal>();
+  let keywords_response = signal.get_keyword();
+  let Ok( keyword_map ) = keywords_response else { return rsx!( div { "Loading" } ) };
   let ( title, blurb ) = match ( term.keyword_id, term.title ) {
     ( Some( keyword_id ), _ ) => {
-      let keyword_map = keywords();
       let entry = keyword_map.get( &keyword_id.to_string() );
       match entry {
         Some( keyword ) => ( keyword.title.clone(), keyword.blurb.clone() ),

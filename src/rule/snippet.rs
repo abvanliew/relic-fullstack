@@ -1,7 +1,6 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use serde::{ Deserialize, Serialize };
-use crate::skill::prelude::*;
 use crate::rule::prelude::*;
 use crate::rule::roll::{OutcomesSnippet, RollSnippet};
 use crate::rule::status_effect::StatusEffectSnippet;
@@ -51,16 +50,16 @@ impl Snippet {
 }
 
 #[component]
-pub fn SnippetSetDetails( rules: Vec<Snippet>, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
+pub fn SnippetSetDetails( rules: Vec<Snippet> ) -> Element {
   rsx!(
     for rule in rules {
-      SnippetDetails { rule, keywords }
+      SnippetDetails { rule }
     }
   )
 }
 
 #[component]
-pub fn SnippetDetails( rule: Snippet, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
+pub fn SnippetDetails( rule: Snippet ) -> Element {
   rsx!(
     match rule.p {
       Some( true ) => rsx!( p {} ),
@@ -70,19 +69,19 @@ pub fn SnippetDetails( rule: Snippet, keywords: ReadOnlySignal<HashMap<String,Ke
       TextSnippet { text }
     }
     if let Some( term ) = rule.term {
-      TermSnippet { term, keywords, hover: true }
+      TermSnippet { term, hover: true }
     }
     if let Some( roll ) = rule.roll {
       RollSnippet { roll }
     }
     if let Some( outcomes ) = rule.outcomes {
-      OutcomesSnippet { outcomes, keywords }
+      OutcomesSnippet { outcomes }
     }
     if let Some( effect ) = rule.effect {
-      StatusEffectSnippet { effect, keywords }
+      StatusEffectSnippet { effect }
     }
     if let Some( items ) = rule.items {
-      SnippetList { items, keywords }
+      SnippetList { items }
     }
   )
 }
@@ -93,11 +92,11 @@ pub fn TextSnippet( text: String ) -> Element {
 }
 
 #[component]
-pub fn SnippetList( items: Vec<Vec<Snippet>>, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
+pub fn SnippetList( items: Vec<Vec<Snippet>> ) -> Element {
   rsx!(
     ul {
       for rules in items {
-        li { SnippetSetDetails { rules, keywords } }
+        li { SnippetSetDetails { rules } }
       }
     }
   )

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use dioxus::prelude::*;
 use bson::doc;
 
@@ -37,4 +39,20 @@ pub async fn get_skill( id: String ) -> Result<Skill, ServerFnError> {
     return Ok( skill? );
   }
   return Err( ServerFnError::ServerError( "Unable to find skill Id".into() ) )
+}
+
+
+#[server(GetSkillMap)]
+pub async fn get_skill_map() -> Result<HashMap<String,Skill>, ServerFnError> {
+  let client = Client::with_uri_str("mongodb://localhost:27017").await?;
+  let skills_collection: Collection<Skill> = client.database( "relic" ).collection( "skills_display" );
+  let mut results = skills_collection.find( doc! {}, ).await?;
+  let mut skill_map: HashMap<String,Skill> = HashMap::new();
+  let mut count: u32 = 0;
+  while let Some( result ) = results.next().await {
+    let Ok( skill ) = result else { tracing::error!( "Unable to load skill [{}] {:?}", count, result ); continue; };
+    skill_map.insert( skill.id.to_string(), skill );
+    count += 1;
+  }
+  Ok( skill_map )
 }

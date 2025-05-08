@@ -5,7 +5,10 @@ use crate::rule::prelude::*;
 use crate::skill::prelude::*;
 
 #[component]
-pub fn SkillDescription( skill: ReadOnlySignal<Skill>, keywords: ReadOnlySignal<HashMap<String,Keyword>>, show_terms: bool ) -> Element {
+pub fn SkillDescription(
+  skill: ReadOnlySignal<Skill>,
+  show_terms: bool
+) -> Element {
   let title = skill.read().title.clone();
   let tier = skill.read().tier.clone();
   let training_cost = skill.read().training_cost.clone();
@@ -23,11 +26,11 @@ pub fn SkillDescription( skill: ReadOnlySignal<Skill>, keywords: ReadOnlySignal<
         if let Some( description ) = skill.read().description.clone() {
           div { class: "uv-full", "{description}" }
         }
-        ActionProperties { action, keywords }
+        ActionProperties { action }
       }
       if show_terms {
         for term in terms {
-          TermSnippet { term: RuleTerm { keyword_id: Some( term ), title: None }, keywords, hover: false }
+          TermSnippet { term: RuleTerm { keyword_id: Some( term ), title: None }, hover: false }
         }
       }
     }
@@ -35,7 +38,7 @@ pub fn SkillDescription( skill: ReadOnlySignal<Skill>, keywords: ReadOnlySignal<
 }
 
 #[component]
-fn ActionProperties( action: Action, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
+fn ActionProperties( action: Action ) -> Element {
   let activation = action.activation();
   rsx!(
     div{
@@ -49,7 +52,7 @@ fn ActionProperties( action: Action, keywords: ReadOnlySignal<HashMap<String,Key
     }
     if let Some( condition ) = action.condition {
       div { class: "uv-title nowrap highlight", "Condition" }
-      div { class: "uv-details", SnippetSetDetails { rules: condition, keywords } }
+      div { class: "uv-details", SnippetSetDetails { rules: condition } }
     }
     if let Some( cost ) = action.cost {
       div { class: "uv-title nowrap highlight", "Cost" }
@@ -66,7 +69,7 @@ fn ActionProperties( action: Action, keywords: ReadOnlySignal<HashMap<String,Key
     if let Some( rules ) = action.rules {
       div {
         class: "uv-full",
-        SnippetSetDetails { rules, keywords }
+        SnippetSetDetails { rules }
       }
     }
   )

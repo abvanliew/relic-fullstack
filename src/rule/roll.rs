@@ -1,8 +1,8 @@
-use std::{collections::{HashMap, HashSet}, fmt};
+use std::collections::HashSet;
+use std::fmt;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
-use crate::skill::prelude::*;
 use crate::rule::snippet::SnippetSetDetails;
 use crate::character::prelude::*;
 use super::snippet::Snippet;
@@ -145,7 +145,7 @@ impl fmt::Display for RollResult {
 }
 
 #[component]
-pub fn OutcomesSnippet( outcomes: Vec<RollOutcome>, keywords: ReadOnlySignal<HashMap<String,Keyword>> ) -> Element {
+pub fn OutcomesSnippet( outcomes: Vec<RollOutcome> ) -> Element {
   rsx!(
     div {
       class: "indent spacer grid dim-keywords",
@@ -156,7 +156,7 @@ pub fn OutcomesSnippet( outcomes: Vec<RollOutcome>, keywords: ReadOnlySignal<Has
         }
         div {
           class: "uv-details",
-          SnippetSetDetails { rules: outcome.rules, keywords }
+          SnippetSetDetails { rules: outcome.rules }
         }
       }
     }
