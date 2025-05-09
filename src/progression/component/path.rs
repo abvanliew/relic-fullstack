@@ -2,17 +2,22 @@ use dioxus::prelude::*;
 
 use crate::progression::component::builder::BuildContext;
 use crate::progression::component::qualifiers::BuildQualifiers;
-// use crate::progression::component::LevelContext;
+use crate::progression::component::LevelContext;
+use crate::progression::track::TrackContext;
 use crate::rule::prelude::Tier;
 use crate::path::{components::PathTile, Path};
 
 #[component]
-pub fn PathSelections( paths: Vec<Path>, tier: Tier ) -> Element {
+pub fn PathSelections( paths: Vec<Path>, tier: Tier, level: ReadOnlySignal<usize> ) -> Element {
   let ( _inherient, selectable ): (Vec<Path>, Vec<Path>) = paths.clone().into_iter()
   .partition( |p|  p.inherient.unwrap_or( false ) );
-  let stats = BuildQualifiers::use_memo_stats();
+  // let stats = BuildQualifiers::use_memo_stats();
+  let track = use_context::<TrackContext>();
+  // let level = LevelContext::use_context_provider().level;
+  let stats = use_memo( move || track.character.stats( level() ) );
   rsx! {
-    div { "{stats:?}" }
+    div { "PathSelections {stats:?}" }
+    div { "Level {level}" }
     div {
       class: "tiles",
       div {
