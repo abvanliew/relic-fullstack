@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 
 // use crate::progression::growth::LevelStats;
 // use crate::progression::track::TrackContext;
-use crate::progression::fixed::{MAX_LEVEL, MIN_LEVEL};
+use crate::progression::{component::builder::BuildContext, fixed::{MAX_LEVEL, MIN_LEVEL}};
 
 #[derive(Debug, Clone)]
 pub struct LevelContext {
@@ -18,7 +18,7 @@ impl LevelContext {
 
 #[component]
 pub fn LevelSelector() -> Element {
-  let mut level = use_context::<LevelContext>().level;
+  let mut level = use_context::<BuildContext>().level;
   rsx!(
     div {
       class: "grid dim-keywords",
