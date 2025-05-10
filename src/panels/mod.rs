@@ -4,6 +4,7 @@ mod inherent;
 mod keyword;
 mod navbar;
 mod path;
+mod rulebook;
 mod sheet;
 mod skill;
 
@@ -17,3 +18,4 @@ pub use skill::SingleSkill;
 pub use sheet::{CharacterSheetList,SingleChracterSheet};
 pub use skill::FullSkillList;
 pub use inherent::InherentSkills;
+pub use rulebook::MainRules;

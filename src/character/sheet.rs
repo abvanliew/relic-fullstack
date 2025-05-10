@@ -170,7 +170,7 @@ pub fn SheetDetails(
           }
           if let Some( flows ) = opt_flows {
             div {
-              class: "column float-right",
+              class: "column align-right",
               div { class: "subtitle", "Resources" }
               FlowResourcesBlock { flows }
             }
@@ -200,7 +200,7 @@ pub fn AttributeRow( name: String, name_class: String, element: Element ) -> Ele
         "{name}"
       }
       div {
-        class: "float-right",
+        class: "align-right",
         { element }
       }
     }

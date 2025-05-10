@@ -11,7 +11,7 @@ use bson::oid::ObjectId;
 use super::status_effect::StatusEffect;
 use super::term::RuleTerm;
 
-#[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
+#[derive( Serialize, Deserialize, Debug, Clone, PartialEq, Default )]
 pub struct Snippet {
   pub text: Option<String>,
   pub roll: Option<Roll>,

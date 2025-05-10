@@ -49,6 +49,8 @@ pub enum Route {
   FullSkillList {},
   #[route("/inherent")]
   InherentSkills {},
+  #[route("/rules")]
+  MainRules {},
 }
 
 #[component]

@@ -6,6 +6,7 @@ mod roll;
 mod snippet;
 mod term;
 mod tier;
+mod rulebook;
 
 pub mod prelude {
   pub use super::bonus::Bonus;
@@ -15,4 +16,5 @@ pub mod prelude {
   pub use super::tier::Tier;
   pub use super::snippet::SnippetSetDetails;
   pub use super::term::{RuleTerm,TermSnippet};
+  pub use super::rulebook::MainRulesThread;
 }

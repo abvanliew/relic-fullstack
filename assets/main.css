@@ -120,12 +120,20 @@ p {
     break-inside: avoid;
   }
 
+  .title .subtitle .underline {
+    break-after: avoid;
+  }
+
   .no-print, .no-print * {
     display: none !important;
   }
 
   .print-break {
     page-break-after: always;
+  }
+
+  .break-before {
+    break-before: always;
   }
 
   :root {
@@ -195,6 +203,18 @@ p {
   column-gap: 8px;
 }
 
+.table {
+  border: 0.1rem solid var( --main-border );
+  border-radius: 0.2rem;
+  width: min-content;
+  gap: 0px;
+}
+
+.table div {
+  border: 0.05rem solid var( --main-border );
+  padding: 0.25rem 0.5rem;
+}
+
 .dim-sidebar {
   grid-template-columns: [main] 1fr [side] max-content [end];
 }
@@ -240,8 +260,8 @@ p {
 .uv-expert { grid-column: expert; }
 .uv-adept { grid-column: adept; }
 .uv-endurance { grid-column: endurance; }
-.uv-resonance { grid-column: resonance; }
 .uv-innate { grid-column: innate; }
+.uv-resonance { grid-column: resonance; }
 .uv-magic { grid-column: magic; }
 
 .dim-resources {
@@ -260,6 +280,55 @@ p {
 .uv-resistances { grid-column: resistances; }
 .uv-expertise { grid-column: expertise; }
 .uv-other { grid-column: defenses / end; }
+
+.dim-resource-chart {
+  grid-template-columns: repeat(3, max-content);
+  grid-template-areas:
+    "flow resource drain"
+    "innate anointment anointment-drain"
+    "innate animalism animalism-drain"
+    "innate sanguine sanguine-drain"
+    "innate rage rage-drain"
+    "resonance mastery mastery-drain"
+    "resonance channel channel-drain"
+    "resonance ki ki-drain"
+    "resonance virtuoso virtuoso-drain"
+    "magic minor-mana minor-mana-drain"
+    "magic moderate-mana moderate-mana-drain"
+    "magic major-mana major-mana-drain"
+  ;
+}
+.uv-flow-area { grid-area: flow; }
+.uv-resource-area { grid-area: resource; }
+.uv-drain-area { grid-area: drain; }
+
+.uv-innate-area { grid-area: innate; }
+.uv-anointment-area { grid-area: anointment; }
+.uv-anointment-drain-area { grid-area: anointment-drain; }
+.uv-animalism-area { grid-area: animalism; }
+.uv-animalism-drain-area { grid-area: animalism-drain; }
+.uv-sanguine-area { grid-area: sanguine; }
+.uv-sanguine-drain-area { grid-area: sanguine-drain; }
+.uv-rage-area { grid-area: rage; }
+.uv-rage-drain-area { grid-area: rage-drain; }
+
+.uv-resonance-area { grid-area: resonance; }
+.uv-mastery-area { grid-area: mastery; }
+.uv-mastery-drain-area { grid-area: mastery-drain; }
+.uv-channel-area { grid-area: channel; }
+.uv-channel-drain-area { grid-area: channel-drain; }
+.uv-ki-area { grid-area: ki; }
+.uv-ki-drain-area { grid-area: ki-drain; }
+.uv-virtuoso-area { grid-area: virtuoso; }
+.uv-virtuoso-drain-area { grid-area: virtuoso-drain; }
+
+.uv-magic-area { grid-area: magic; }
+.uv-minor-mana-area { grid-area: minor-mana; }
+.uv-minor-mana-drain-area { grid-area: minor-mana-drain; }
+.uv-moderate-mana-area { grid-area: moderate-mana; }
+.uv-moderate-mana-drain-area { grid-area: moderate-mana-drain; }
+.uv-major-mana-area { grid-area: major-mana; }
+.uv-major-mana-drain-area { grid-area: major-mana-drain; }
 
 .dotted-underline {
   border-bottom: 0.2rem dotted var( --main-border );
@@ -330,11 +399,21 @@ p {
   text-align: center;
 }
 
+.middle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .right {
   text-align: right;
 }
 
 .float-right {
+  float: right;
+}
+
+.align-right {
   margin-left: auto;
 }
 
@@ -357,6 +436,8 @@ p {
 .bumper { margin-right: 8px }
 .spacer { margin-top: 8px; }
 .underhang { margin-bottom: 8px; }
+
+
 
 .hidden {
   opacity: 0;
