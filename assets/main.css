@@ -103,7 +103,7 @@ p {
 }
 
 .card {
-  width: 550px;
+  width: 600px;
   border: 0.2rem solid var( --main-border );
   border-radius: 0.6rem;
   padding: 0.16rem 0.6rem 0.6rem;
@@ -233,6 +233,10 @@ p {
 
 .dim-thirds {
   grid-template-columns: max-content auto max-content;
+}
+
+.dim-triple {
+  grid-template-columns: repeat( 3, max-content );
 }
 
 .uv-main {

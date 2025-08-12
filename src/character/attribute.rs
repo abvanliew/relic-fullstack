@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::rule::components::Modifier;
 
-use self::Attribute::{Capability as CapabilityClass,Defense as DefenseClass};
-use self::Capability::{Manipulation,Physique,Spirit,Warfare};
-use self::Defense::{Dodge,Fortitude,Insight,Resolve,Tenacity};
+// use self::Attribute::{Capability as CapabilityClass,Defense as DefenseClass};
+// use self::Capability::{Manipulation,Physique,Spirit,Warfare};
+// use self::Defense::{Dodge,Fortitude,Insight,Resolve,Tenacity};
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
@@ -57,59 +57,59 @@ pub struct AttributeSignal {
   pub dodge: Signal<i32>,
 }
 
-impl AttributeSignal {
-  pub fn use_context_provider()-> Self {
-    let physique = use_signal( || 0 );
-    let warfare = use_signal( || 0 );
-    let spirit = use_signal( || 0 );
-    let manipulation = use_signal( || 0 );
-    let tenacity = use_signal( || 0 );
-    let fortitude = use_signal( || 0 );
-    let resolve = use_signal( || 0 );
-    let insight = use_signal( || 0 );
-    let dodge = use_signal( || 0 );
-    use_context_provider( || Self{
-      physique, warfare, spirit, manipulation,
-      tenacity, fortitude, resolve, insight, dodge
-    } )
-  }
+// impl AttributeSignal {
+//   pub fn use_context_provider()-> Self {
+//     let physique = use_signal( || 0 );
+//     let warfare = use_signal( || 0 );
+//     let spirit = use_signal( || 0 );
+//     let manipulation = use_signal( || 0 );
+//     let tenacity = use_signal( || 0 );
+//     let fortitude = use_signal( || 0 );
+//     let resolve = use_signal( || 0 );
+//     let insight = use_signal( || 0 );
+//     let dodge = use_signal( || 0 );
+//     use_context_provider( || Self{
+//       physique, warfare, spirit, manipulation,
+//       tenacity, fortitude, resolve, insight, dodge
+//     } )
+//   }
 
-  pub fn cap( &mut self, value: i32 ) {
-    if (self.physique)() > value { self.physique.set( value ); }
-    if (self.warfare)() > value { self.warfare.set( value ); }
-    if (self.spirit)() > value { self.spirit.set( value ); }
-    if (self.manipulation)() > value { self.manipulation.set( value ); }
-    if (self.tenacity)() > value { self.tenacity.set( value ); }
-    if (self.fortitude)() > value { self.fortitude.set( value ); }
-    if (self.resolve)() > value { self.resolve.set( value ); }
-    if (self.insight)() > value { self.insight.set( value ); }
-    if (self.dodge)() > value { self.dodge.set( value ); }
-  }
+//   pub fn cap( &mut self, value: i32 ) {
+//     if (self.physique)() > value { self.physique.set( value ); }
+//     if (self.warfare)() > value { self.warfare.set( value ); }
+//     if (self.spirit)() > value { self.spirit.set( value ); }
+//     if (self.manipulation)() > value { self.manipulation.set( value ); }
+//     if (self.tenacity)() > value { self.tenacity.set( value ); }
+//     if (self.fortitude)() > value { self.fortitude.set( value ); }
+//     if (self.resolve)() > value { self.resolve.set( value ); }
+//     if (self.insight)() > value { self.insight.set( value ); }
+//     if (self.dodge)() > value { self.dodge.set( value ); }
+//   }
 
-  pub fn get( &self, attribute: &Attribute ) -> Signal<i32> {
-    match attribute {
-      CapabilityClass(Physique) => self.physique,
-      CapabilityClass(Warfare) => self.warfare,
-      CapabilityClass(Spirit) => self.spirit,
-      CapabilityClass(Manipulation) => self.manipulation,
-      DefenseClass(Tenacity) => self.tenacity,
-      DefenseClass(Fortitude) => self.fortitude,
-      DefenseClass(Resolve) => self.resolve,
-      DefenseClass(Insight) => self.insight,
-      DefenseClass(Dodge) => self.dodge,
-    }
-  }
+//   pub fn get( &self, attribute: &Attribute ) -> Signal<i32> {
+//     match attribute {
+//       CapabilityClass(Physique) => self.physique,
+//       CapabilityClass(Warfare) => self.warfare,
+//       CapabilityClass(Spirit) => self.spirit,
+//       CapabilityClass(Manipulation) => self.manipulation,
+//       DefenseClass(Tenacity) => self.tenacity,
+//       DefenseClass(Fortitude) => self.fortitude,
+//       DefenseClass(Resolve) => self.resolve,
+//       DefenseClass(Insight) => self.insight,
+//       DefenseClass(Dodge) => self.dodge,
+//     }
+//   }
 
-  pub fn sum( &self ) -> i32 {
-    (self.physique)() + (self.warfare)() + (self.spirit)() + (self.manipulation)() +
-    (self.tenacity)() + (self.fortitude)() + (self.resolve)() + (self.insight)() + (self.dodge)()
-  }
+//   pub fn sum( &self ) -> i32 {
+//     (self.physique)() + (self.warfare)() + (self.spirit)() + (self.manipulation)() +
+//     (self.tenacity)() + (self.fortitude)() + (self.resolve)() + (self.insight)() + (self.dodge)()
+//   }
 
-  pub fn cap_def( &self ) -> ( i32, i32 ) { (
-    (self.physique)() + (self.warfare)() + (self.spirit)() + (self.manipulation)(),
-    (self.tenacity)() + (self.fortitude)() + (self.resolve)() + (self.insight)() + (self.dodge)(),
-  ) }
-}
+//   pub fn cap_def( &self ) -> ( i32, i32 ) { (
+//     (self.physique)() + (self.warfare)() + (self.spirit)() + (self.manipulation)(),
+//     (self.tenacity)() + (self.fortitude)() + (self.resolve)() + (self.insight)() + (self.dodge)(),
+//   ) }
+// }
 
 #[component]
 pub fn AttributeDetails( attributes: AttributeRanks ) -> Element {

@@ -16,6 +16,7 @@ pub struct Action {
   pub condition: Option<Vec<Snippet>>,
   pub cost: Option<ResourceCost>,
   pub duration: Option<Duration>,
+  pub extended_duration: Option<Duration>,
   pub target: Option<Target>,
   pub rules: Option<Vec<Snippet>>,
 }
@@ -29,6 +30,7 @@ impl Default for Action {
       condition: Default::default(),
       cost: Default::default(),
       duration: Default::default(),
+      extended_duration: Default::default(),
       target: Default::default(),
       rules: Default::default(),
     }
@@ -37,12 +39,24 @@ impl Default for Action {
 
 impl Action {
   pub fn activation( &self ) -> String {
+    return format!( "{} {}", self.base(), self.suffix() );
+  }
+
+  pub fn base( &self ) -> String {
     return match self.initial {
       Some( true ) => format!( "Initial {}", self.class ),
       _ => format!( "{}", self.class ),
     }
   }
-  
+
+  pub fn suffix( &self ) -> String {
+    return match (&self.class, &self.extended_duration) {
+      ( Activation::ExtendedAction, Some( duration ) ) => format!( "({})", duration ),
+      ( Activation::ExtendedAction, _ ) => "(undefined)".to_string(),
+      _ => "".to_string(),
+    }
+  }
+
   pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
     if let Some( snippets ) = &self.condition {

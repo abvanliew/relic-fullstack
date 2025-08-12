@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use dioxus::prelude::*;
 use crate::rule::prelude::*;
 use crate::skill::prelude::*;

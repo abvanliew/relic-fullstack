@@ -52,6 +52,6 @@ impl fmt::Display for Duration {
       ( Some( _ ), _, true ) => { base = format!( "{base}, upkeep at cost" ) },
       _ => ()
     }
-    return write!( f, "{base}." )
+    return write!( f, "{base}" )
   }
 }

@@ -18,6 +18,8 @@ pub struct Roll {
   pub custom_target: Option<String>,
   pub triggered: Option<bool>,
   pub difficulty: Option<String>,
+  pub opening: Option<Opening>,
+  pub modifier: Option<Modifier>,
 }
 
 impl fmt::Display for Roll {
@@ -53,11 +55,25 @@ pub enum RollClass {
   LuckCheck,
 }
 
+#[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
+pub enum Opening {
+  Normal,
+  Lower,
+  None,
+}
+
+#[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
+pub enum Modifier {
+  Normal,
+  Advantage,
+  Disadvantage,
+}
+
 impl fmt::Display for RollClass {
   fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
     write!( f, "{}", match self {
-      RollClass::Attack => "Attack",
-      RollClass::Check => "Check",
+      RollClass::Attack => "attack",
+      RollClass::Check => "check",
       RollClass::LuckCheck => "Luck Check",
     } )
   }
@@ -85,18 +101,28 @@ pub fn RollSnippet( roll: Roll ) -> Element {
     Some( true ) => "each",
     _ => "the",
   };
+  let opening = match &roll.opening {
+    Some( Opening::None ) => "",
+    Some( Opening::Lower ) => "make a ",
+    _ => "Make a ",
+  };
+  let modifier = match &roll.modifier {
+    Some( Modifier::Advantage ) => "with advantage",
+    Some( Modifier::Disadvantage ) => "with disadvantage",
+    _ => "",
+  };
   return match ( &roll.class, &roll.each ) {
     ( RollClass::LuckCheck, _ ) => rsx!(
-      span { "Make a {keyword} " }
+      span { "{opening}{keyword} " }
       span { class: "highlight", "{class}" }
       span { " difficulty {difficulty}." }
     ),
     _ => rsx!(
-      span { "Make a " }
+      span { "{opening}" }
       span { class: "highlight", "{capability}" }
       span { " vs " }
       span { class: "highlight", "{defense}" }
-      span { " {keyword} {class} against {article} {target}." }
+      span { " {keyword} {class} {modifier} against {article} {target}." }
     ),
   }
 }

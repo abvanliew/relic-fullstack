@@ -65,6 +65,7 @@ pub fn ActionEconomyThread() -> Element {
       class: "subtitle",
       "Action Economy"
     }
+    ActionEconomyTable {}
     div {
       class: "underhang",
       "The core unit of action economy within the game is the action point. Player characters will have three actions to use in a round. Each skill has a type which indicates when it can be used and how many action points it costs to use. The most basic type is an Action which costs a single action point. If the type is listed as Complex then it costs two action points instead. Actions can only be used during your own turn where Reactions can be used throughout the round. Some skills will have Initial listed next to their action cost, these Actions can only be used once in a given round."
@@ -100,6 +101,37 @@ pub fn ActionEconomyThread() -> Element {
     div {
       class: "underhang",
       "Each turn a character can move up to their speed in spaces without spending action points. Characters can use the Dash Reaction to gain 3 extra spaces of movement at any point during the round. You can move between attacks or checks, but each attack or check must be resolved completely before moving again. You can spend 3 movement to stand up from prone."
+    }
+  }
+}
+
+#[component]
+pub fn ActionEconomyTable() -> Element {
+  rsx! {
+    div {
+      class: "grid table dim-triple indent float-right",
+      div { class: "uv-full", "3 Action Points a Round" }
+      div {}
+      div { class: "centered", "AP Cost" }
+      div { class: "centered", "Free" }
+      div { "Complex Action" }
+      div { class: "centered", "2" }
+      div {}
+      div { "Action" }
+      div { class: "centered", "1" }
+      div {}
+      div { "Interaction" }
+      div { class: "centered", "1" }
+      div { class: "centered", "1" }
+      div { "Reaction" }
+      div { class: "centered", "1" }
+      div { class: "centered", "1" }
+      div { "Reflex" }
+      div { class: "centered", "0" }
+      div {}
+      div { "Trigger" }
+      div { class: "centered", "0" }
+      div {}
     }
   }
 }

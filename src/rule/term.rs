@@ -55,5 +55,4 @@ pub fn TermSnippet( term: RuleTerm, hover: bool ) -> Element {
       }
     )
   }
-  
 }

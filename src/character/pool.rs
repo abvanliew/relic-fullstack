@@ -87,6 +87,7 @@ pub struct ResourceCost {
   resource: ResourcePool,
   base_cost: Option<i32>,
   charge_cost: Option<i32>,
+  optional: Option<bool>,
 }
 
 impl ResourceCost {
