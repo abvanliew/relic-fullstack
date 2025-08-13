@@ -1,7 +1,8 @@
-use std::{collections::HashSet, fmt};
+use std::collections::HashSet;
+use std::fmt;
 use serde::{Deserialize, Serialize};
 use bson::oid::ObjectId;
-use crate::rule::prelude::Snippet;
+use crate::rule::prelude::*;
 use super::Skill;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
@@ -64,4 +65,11 @@ impl Skill {
   pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
     return self.action.get_keyword_ids();
   }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Property {
+  pub title: String,
+  pub rules: RuleBlocks,
 }

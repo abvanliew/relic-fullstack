@@ -40,6 +40,7 @@ p {
 .row {
   display: flex;
   flex-direction: row;
+  align-items: flex-end;
   column-gap: 8px;
 }
 
@@ -377,8 +378,14 @@ p {
 }
 
 .subtitle {
-  font-weight: 750;
-  font-size: 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.subheading {
+  font-size: 1.0625rem;
+  font-weight: 650;
   text-decoration: underline;
 }
 
@@ -401,6 +408,11 @@ p {
 
 .centered {
   text-align: center;
+}
+
+.inline div {
+  display: inline;
+  padding-inline-end: 8px;
 }
 
 .middle {
@@ -433,6 +445,7 @@ p {
 .bold { font-weight: bold; }
 
 /* .gap { gap: 8px; } */
+.gap-xlarge { gap: 24px; }
 .gap-2xlarge { gap: 32px; }
 .no-gap { gap: 0px; }
 

@@ -22,6 +22,7 @@ pub struct Skill {
   pub description: Option<String>,
   pub training_cost: TrainingCost,
   pub action: Action,
+  pub sub_actions: Option<Vec<Action>>,
   pub order: SkillOrdering,
   pub paths: Option<Vec<PathRef>>,
 }
@@ -32,19 +33,20 @@ impl Default for Skill {
       id: ObjectId::new(),
       tier: Tier::Initiate,
       title: "Undefined".into(),
-      summary: Default::default(),
-      description: Default::default(),
+      summary: None,
+      description: None,
       training_cost: TrainingCost::Inherient,
       action: Default::default(),
+      sub_actions: None,
       order: Default::default(),
-      paths: Default::default(),
+      paths: None,
     }
   }
 }
 
 pub mod prelude {
   pub use super::Skill;
-  pub use super::aspect::{Keyword,TrainingCost};
+  pub use super::aspect::{Keyword, Property, TrainingCost};
   pub use super::activation::Action;
   pub use super::duration::Duration;
   pub use super::component::{SkillDescription, SkillTable};

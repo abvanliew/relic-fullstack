@@ -11,35 +11,45 @@ use crate::skill::prelude::*;
 #[serde(rename_all = "camelCase")]
 pub struct Action {
   pub class: Activation,
+  pub sub_title: Option<String>,
   pub keywords: Option<String>,
   pub initial: Option<bool>,
-  pub condition: Option<Vec<Snippet>>,
+
+  pub condition: Option<RuleBlocks>,
   pub cost: Option<ResourceCost>,
   pub duration: Option<Duration>,
   pub extended_duration: Option<Duration>,
   pub target: Option<Target>,
-  pub rules: Option<Vec<Snippet>>,
+  pub properties: Option<Vec<Property>>,
+
+  pub rules: Option<RulesStack>,
 }
 
 impl Default for Action {
   fn default() -> Self {
     Self {
       class: Activation::Boon,
-      keywords: Default::default(),
-      initial: Default::default(),
-      condition: Default::default(),
-      cost: Default::default(),
-      duration: Default::default(),
-      extended_duration: Default::default(),
-      target: Default::default(),
-      rules: Default::default(),
+      sub_title: None,
+      keywords: None,
+      initial: None,
+      condition: None,
+      cost: None,
+      duration: None,
+      extended_duration: None,
+      target: None,
+      properties: None,
+      rules: None,
     }
   }
 }
 
 impl Action {
   pub fn activation( &self ) -> String {
-    return format!( "{} {}", self.base(), self.suffix() );
+    return format!(
+      "{} {}",
+      self.base(),
+      self.suffix().unwrap_or("".to_string())
+    );
   }
 
   pub fn base( &self ) -> String {
@@ -49,11 +59,11 @@ impl Action {
     }
   }
 
-  pub fn suffix( &self ) -> String {
+  pub fn suffix( &self ) -> Option<String> {
     return match (&self.class, &self.extended_duration) {
-      ( Activation::ExtendedAction, Some( duration ) ) => format!( "({})", duration ),
-      ( Activation::ExtendedAction, _ ) => "(undefined)".to_string(),
-      _ => "".to_string(),
+      ( Activation::ExtendedAction, Some( duration ) ) => Some(format!( "{}", duration )),
+      ( Activation::ExtendedAction, _ ) => Some("Undefined".to_string()),
+      _ => None,
     }
   }
 

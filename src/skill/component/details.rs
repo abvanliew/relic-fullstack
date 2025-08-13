@@ -10,7 +10,9 @@ pub fn SkillDescription(
   let title = skill.read().title.clone();
   let tier = skill.read().tier.clone();
   let training_cost = skill.read().training_cost.clone();
+  let opt_description = skill.read().description.clone();
   let action = skill.read().action.clone();
+  let opt_sub_actions = skill.read().sub_actions.clone();
   let terms = skill.read().get_keyword_ids();
   rsx!(
     div {
@@ -21,14 +23,23 @@ pub fn SkillDescription(
         div { class: "uv-property", 
           div { class: "nowrap italics", "{tier} {training_cost}" }
         }
-        if let Some( description ) = skill.read().description.clone() {
+        if let Some( description ) = opt_description {
           div { class: "uv-full", "{description}" }
         }
-        ActionProperties { action }
+        ActionDetails { action }
+        if let Some( sub_actions ) = opt_sub_actions {
+          for action in sub_actions {
+            div { class: "spacer" }
+            ActionDetails { action }
+          }
+        }
       }
       if show_terms {
         for term in terms {
-          TermSnippet { term: RuleTerm { keyword_id: Some( term ), title: None }, hover: false }
+          TermSnippet {
+            term: Term { keyword_id: Some( term ), title: None },
+            hover: false,
+          }
         }
       }
     }
@@ -36,21 +47,24 @@ pub fn SkillDescription(
 }
 
 #[component]
-fn ActionProperties( action: Action ) -> Element {
-  let activation = action.activation();
+fn ActionDetails( action: Action ) -> Element {
+  let activation = action.base();
+  let suffix_opt = action.suffix();
   rsx!(
-    div{
-      class: "uv-full row",
-      div {
-        class: "highlight", "{activation}"
+    div { class: "uv-full inline",
+      if let Some( sub_title ) = action.sub_title {
+        div { class: "subtitle", "{sub_title}" }
+      }
+      div { class: "highlight", "{activation}" }
+      if let Some( suffix ) = suffix_opt {
+        div { "{suffix}" }
       }
       if let Some( keywords ) = action.keywords {
         div { class: "italics", "{keywords}" }
       }
     }
-    if let Some( condition ) = action.condition {
-      div { class: "uv-title nowrap highlight", "Condition" }
-      div { class: "uv-details", SnippetSetDetails { rules: condition } }
+    if let Some( blocks ) = action.condition {
+      PropertyDetail { title: "Condition", blocks }
     }
     if let Some( cost ) = action.cost {
       div { class: "uv-title nowrap highlight", "Cost" }
@@ -64,11 +78,14 @@ fn ActionProperties( action: Action ) -> Element {
       div { class: "uv-title nowrap highlight", "Target" }
       div { class: "uv-details", "{target}" }
     }
-    if let Some( rules ) = action.rules {
-      div {
-        class: "uv-full",
-        SnippetSetDetails { rules }
+    if let Some( properties ) = action.properties {
+      for property in properties {
+        div { class: "uv-title nowrap highlight", "{property.title}" }
+        div { class: "uv-details", RuleBlockSet { blocks: property.rules } }
       }
+    }
+    if let Some( stacks ) = action.rules {
+      RulesStackDetail { stacks }
     }
   )
 }

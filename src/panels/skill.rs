@@ -57,9 +57,18 @@ pub fn FullSkillList() -> Element {
     Some( Ok( skills ) ) => {
       rsx! {
         div {
-          class: "row-wrap",
-          for skill in skills {
-            SkillDescription { skill: skill.clone(), show_terms: true }
+          class: "row-wrap gap-xlarge",
+          div {
+            class: "column-wrap gap-xlarge",
+            for skill in skills.iter().step_by(2) {
+              SkillDescription { skill: skill.clone(), show_terms: true }
+            }
+          }
+          div {
+            class: "column-wrap gap-xlarge",
+            for skill in skills.iter().skip(1).step_by(2) {
+              SkillDescription { skill: skill.clone(), show_terms: true }
+            }
           }
         }
       }

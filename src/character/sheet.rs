@@ -130,7 +130,7 @@ pub fn SheetDetails(
         AttributeBlock { attributes, dodge }
         div {
           class: "uv-resistances column",
-          div { class: "subtitle", "Resistances" }
+          div { class: "subheading", "Resistances" }
           if let Some( worn_armor ) = armor {
             div {
               span { class: "highlight", "Armor:" }
@@ -141,7 +141,7 @@ pub fn SheetDetails(
         }
         div {
           class: "uv-expertise column",
-          div { class: "subtitle", "Expertise" }
+          div { class: "subheading", "Expertise" }
           if let Some( expertise ) = sheet.expertise {
             for entry in expertise {
               ExpertiseComponent { entry }
@@ -150,7 +150,7 @@ pub fn SheetDetails(
         }
         div {
           class: "column uv-capabilities",
-          div { class: "subtitle", "Body" }
+          div { class: "subheading", "Body" }
           div { "Speed {speed}" }
           div { "Dash {dash}" }
           ConstitutionRow { constitution: 4 }
@@ -162,7 +162,7 @@ pub fn SheetDetails(
           if let Some( weapons ) = opt_weapons {
             div {
               class: "column-wrap",
-              div { class: "subtitle", "Weapons" }
+              div { class: "subheading", "Weapons" }
               for weapon in weapons {
                 WeaponEntry { weapon }
               }
@@ -171,7 +171,7 @@ pub fn SheetDetails(
           if let Some( flows ) = opt_flows {
             div {
               class: "column align-right",
-              div { class: "subtitle", "Resources" }
+              div { class: "subheading", "Resources" }
               FlowResourcesBlock { flows }
             }
           }
@@ -228,7 +228,7 @@ pub fn AttributeBlock( attributes: AttributeRanks, dodge: i32 ) -> Element {
   rsx!(
     div {
       class: "uv-capabilities column",
-      div { class: "subtitle", "Capabilites" }
+      div { class: "subheading", "Capabilites" }
       AttributeRow {
         name: "Physique", name_class: "highlight",
         element: rsx!( Modifier { value: attributes.physique } ),
@@ -248,7 +248,7 @@ pub fn AttributeBlock( attributes: AttributeRanks, dodge: i32 ) -> Element {
     }
     div {
       class: "uv-defenses column",
-      div { class: "subtitle", "Defenses" }
+      div { class: "subheading", "Defenses" }
       AttributeRow {
         name: "Tenacity", name_class: "highlight",
         element: rsx!( "{attributes.tenacity + 10}" ),

@@ -5,13 +5,13 @@ use crate::server::prelude::GameLibrarySignal;
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq )]
 #[serde(rename_all = "camelCase")]
-pub struct RuleTerm {
+pub struct Term {
   pub keyword_id: Option<ObjectId>,
   pub title: Option<String>,
 }
 
 #[component]
-pub fn TermSnippet( term: RuleTerm, hover: bool ) -> Element {
+pub fn TermSnippet( term: Term, hover: bool ) -> Element {
   let signal = use_context::<GameLibrarySignal>();
   let keywords_response = signal.get_keyword();
   let Ok( keyword_map ) = keywords_response else { return rsx!( div { "Loading" } ) };
