@@ -35,37 +35,37 @@ impl Stack {
 }
 
 #[component]
-pub fn RulesStackDetail( stacks: RulesStack ) -> Element {
+pub fn RulesStackDetail( stacks: RulesStack, display: TermDisplay ) -> Element {
   rsx!(
     for stack in stacks {
-      StackDetail { stack }
+      StackDetail { stack, display }
     }
   )
 }
 
 #[component]
-pub fn StackDetail( stack: Stack ) -> Element {
+pub fn StackDetail( stack: Stack, display: TermDisplay ) -> Element {
   rsx!(
     if let Some( property ) = stack.property {
-      PropertyDetail { title: property.title, blocks: property.rules }
+      PropertyDetail { title: property.title, blocks: property.rules, display }
     }
     if let Some( outcomes ) = stack.outcomes {
-      OutcomeDetail { outcomes }
+      OutcomeDetail { outcomes, display }
     }
     if stack.block.is_some() || stack.items.is_some() {
-    div {
-      class: "uv-full",
-      BlockDetail { block: Block{ items: stack.items, block: stack.block } }
-    }
+      div {
+        class: "uv-full",
+        BlockDetail { block: Block{ items: stack.items, block: stack.block }, display }
+      }
     }
   )
 }
 
 #[component]
-pub fn PropertyDetail( title: String, blocks: RuleBlocks ) -> Element {
+pub fn PropertyDetail( title: String, blocks: RuleBlocks, display: TermDisplay ) -> Element {
   return rsx!(
     div { class: "uv-title highlight", "{title}" }
-    div { class: "uv-details", RuleBlockSet { blocks } }
+    div { class: "uv-details", RuleBlockSet { blocks, display } }
   )
 }
 
@@ -95,32 +95,32 @@ impl Block {
 }
 
 #[component]
-pub fn RuleBlockSet( blocks: RuleBlocks ) -> Element {
+pub fn RuleBlockSet( blocks: RuleBlocks, display: TermDisplay ) -> Element {
   return rsx!(
     for block in blocks {
-      BlockDetail { block }
+      BlockDetail { block, display }
     }
   )
 }
 
 #[component]
-pub fn BlockDetail( block: Block ) -> Element {
+pub fn BlockDetail( block: Block, display: TermDisplay ) -> Element {
   return rsx!(
     if let Some( items ) = block.items {
-      ListSnippet { items }
+      ListSnippet { items, display }
     }
     if let Some( snippets ) = block.block {
-      RulesSpippetDetail { snippets }
+      RulesSpippetDetail { snippets, display }
     }
   )
 }
 
 #[component]
-pub fn ListSnippet( items: Vec<RuleBlocks> ) -> Element {
+pub fn ListSnippet( items: Vec<RuleBlocks>, display: TermDisplay ) -> Element {
   rsx!(
     ul {
       for blocks in items {
-        li { RuleBlockSet { blocks } }
+        li { RuleBlockSet { blocks, display } }
       }
     }
   )

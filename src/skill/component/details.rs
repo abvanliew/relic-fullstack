@@ -14,6 +14,7 @@ pub fn SkillDescription(
   let action = skill.read().action.clone();
   let opt_sub_actions = skill.read().sub_actions.clone();
   let terms = skill.read().get_keyword_ids();
+  let display = if show_terms { TermDisplay::TitleOnly } else { TermDisplay::Hover };
   rsx!(
     div {
       class: "group column",
@@ -26,11 +27,11 @@ pub fn SkillDescription(
         if let Some( description ) = opt_description {
           div { class: "uv-full", "{description}" }
         }
-        ActionDetails { action }
+        ActionDetails { action, display }
         if let Some( sub_actions ) = opt_sub_actions {
           for action in sub_actions {
             div { class: "spacer" }
-            ActionDetails { action }
+            ActionDetails { action, display }
           }
         }
       }
@@ -38,7 +39,7 @@ pub fn SkillDescription(
         for term in terms {
           TermSnippet {
             term: Term { keyword_id: Some( term ), title: None },
-            hover: false,
+            display: TermDisplay::Block,
           }
         }
       }
@@ -47,24 +48,24 @@ pub fn SkillDescription(
 }
 
 #[component]
-fn ActionDetails( action: Action ) -> Element {
+fn ActionDetails( action: Action, display: TermDisplay ) -> Element {
   let activation = action.base();
   let suffix_opt = action.suffix();
   rsx!(
     div { class: "uv-full inline",
       if let Some( sub_title ) = action.sub_title {
-        div { class: "subtitle", "{sub_title}" }
+        span { class: "subtitle", "{sub_title} " }
       }
-      div { class: "highlight", "{activation}" }
+      span { class: "highlight", "{activation} " }
       if let Some( suffix ) = suffix_opt {
-        div { "{suffix}" }
+        span { "{suffix} " }
       }
       if let Some( keywords ) = action.keywords {
-        div { class: "italics", "{keywords}" }
+        span { class: "italics", "- {keywords}" }
       }
     }
     if let Some( blocks ) = action.condition {
-      PropertyDetail { title: "Condition", blocks }
+      PropertyDetail { title: "Condition", blocks, display }
     }
     if let Some( cost ) = action.cost {
       div { class: "uv-title nowrap highlight", "Cost" }
@@ -81,11 +82,11 @@ fn ActionDetails( action: Action ) -> Element {
     if let Some( properties ) = action.properties {
       for property in properties {
         div { class: "uv-title nowrap highlight", "{property.title}" }
-        div { class: "uv-details", RuleBlockSet { blocks: property.rules } }
+        div { class: "uv-details", RuleBlockSet { blocks: property.rules, display } }
       }
     }
     if let Some( stacks ) = action.rules {
-      RulesStackDetail { stacks }
+      RulesStackDetail { stacks, display }
     }
   )
 }

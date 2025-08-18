@@ -10,8 +10,15 @@ pub struct Term {
   pub title: Option<String>,
 }
 
+#[derive( Debug, Clone, Copy, PartialEq )]
+pub enum TermDisplay {
+  TitleOnly,
+  Block,
+  Hover,
+}
+
 #[component]
-pub fn TermSnippet( term: Term, hover: bool ) -> Element {
+pub fn TermSnippet( term: Term, display: TermDisplay ) -> Element {
   let signal = use_context::<GameLibrarySignal>();
   let keywords_response = signal.get_keyword();
   let Ok( keyword_map ) = keywords_response else { return rsx!( div { "Loading" } ) };
@@ -26,33 +33,26 @@ pub fn TermSnippet( term: Term, hover: bool ) -> Element {
     ( _, Some( title ) ) => ( title, None ),
     _ => ( "Undefined".into(), None ),
   };
-  match hover {
-    true => rsx!(
-      span {
+  match ( &display, &blurb ) {
+    ( TermDisplay::Hover, Some( blurb_text ) ) => rsx! {
+      div {
         class: "term",
-        if let Some( blurb_text ) = blurb {
-          div {
-            class: "float-anchor",
-            div {
-              class: "floating-panel term-panel",
-              "{blurb_text}"
-            }
-          }
-        }
-        span {
-          class: "bold",
-          "{title}"
-        }
-      }
-    ),
-    false => rsx!(
-      if let Some( blurb_text ) = blurb {
         div {
-          class: "term-panel column",
-          div { class: "highlight", "{title}" }
+          class: "float-anchor",
+          div { class: "floating-panel term-panel", "{blurb_text}" }
+        }
+        span { class: "highlight", "{title} " }
+      }
+    },
+    ( TermDisplay::Block, _ ) => rsx! {
+      div {
+        class: "term-panel column",
+        div { class: "highlight", "{title}" }
+        if let Some( blurb_text ) = blurb {
           div { "{blurb_text}" }
         }
       }
-    )
+    },
+    _ => rsx! { span { class: "highlight", "{title}" } },
   }
 }

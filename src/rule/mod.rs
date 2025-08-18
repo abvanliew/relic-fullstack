@@ -14,7 +14,7 @@ pub mod prelude {
   pub use super::rulebook::MainRulesThread;
   pub use super::snippet::{Snippet};
   pub use super::stack::{RuleBlocks, RuleBlockSet, RulesStack, PropertyDetail, RulesStackDetail};
-  pub use super::term::{Term, TermSnippet};
+  pub use super::term::{Term, TermSnippet, TermDisplay};
   pub use super::tier::Tier;
 }
 
@@ -22,4 +22,5 @@ mod internal {
   pub use super::roll::{Outcome, Roll, OutcomeDetail, RollSnippet};
   pub use super::snippet::{RulesSpippetDetail, RulesSnippet};
   pub use super::stack::{RuleBlocks, RuleBlockSet};
+  pub use super::term::{TermDisplay};
 }

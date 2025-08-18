@@ -87,16 +87,16 @@ pub fn RollSnippet( roll: Roll ) -> Element {
   };
   return match ( &roll.class, &roll.each ) {
     ( RollClass::LuckCheck, _ ) => rsx!(
-      div { "{opening}{keyword} " }
-      div { class: "highlight", "{class}" }
-      div { " difficulty {difficulty}." }
+      span { "{opening}{keyword} " }
+      span { class: "highlight", "{class} " }
+      span { "difficulty {difficulty}. " }
     ),
     _ => rsx!(
-      div { "{opening}" }
-      div { class: "highlight", "{capability}" }
-      div { " vs " }
-      div { class: "highlight", "{defense}" }
-      div { " {keyword} {class} {modifier} against {article} {target}." }
+      span { "{opening} " }
+      span { class: "highlight", "{capability} " }
+      span { "vs " }
+      span { class: "highlight", "{defense} " }
+      span { "{keyword} {class} {modifier} against {article} {target}. " }
     ),
   }
 }
@@ -145,19 +145,16 @@ impl fmt::Display for RollResult {
 }
 
 #[component]
-pub fn OutcomeDetail( outcomes: Vec<Outcome> ) -> Element {
+pub fn OutcomeDetail( outcomes: Vec<Outcome>, display: TermDisplay ) -> Element {
   rsx!(
-    div {
-      class: "indent spacer grid dim-keywords",
-      for outcome in outcomes {
-        div {
-          class: "uv-title highlight",
-          "{outcome.result}"
-        }
-        div {
-          class: "uv-details",
-          RuleBlockSet { blocks: outcome.rules }
-        }
+    for outcome in outcomes {
+      div {
+        class: "uv-title indent highlight",
+        "{outcome.result}"
+      }
+      div {
+        class: "uv-details",
+        RuleBlockSet { blocks: outcome.rules, display }
       }
     }
   )

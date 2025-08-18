@@ -28,25 +28,25 @@ impl Snippet {
 }
 
 #[component]
-pub fn RulesSpippetDetail( snippets: RulesSnippet ) -> Element {
+pub fn RulesSpippetDetail( snippets: RulesSnippet, display: TermDisplay ) -> Element {
   rsx!(
     div {
       class: "inline",
       for snippet in snippets {
-        SnippetDetail { snippet }
+        SnippetDetail { snippet, display }
       }
     }
   )
 }
 
 #[component]
-pub fn SnippetDetail( snippet: Snippet ) -> Element {
+pub fn SnippetDetail( snippet: Snippet, display: TermDisplay ) -> Element {
   rsx!(
     if let Some( text ) = snippet.text {
       TextSnippet { text }
     }
     if let Some( term ) = snippet.term {
-      TermSnippet { term, hover: true }
+      TermSnippet { term, display: TermDisplay::Hover }
     }
     if let Some( roll ) = snippet.roll {
       RollSnippet { roll }
@@ -56,5 +56,5 @@ pub fn SnippetDetail( snippet: Snippet ) -> Element {
 
 #[component]
 pub fn TextSnippet( text: String ) -> Element {
-  return rsx!( div { "{text}" } )
+  return rsx!( span { "{text} " } )
 }
