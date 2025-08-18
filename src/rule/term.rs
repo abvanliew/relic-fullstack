@@ -53,6 +53,6 @@ pub fn TermSnippet( term: Term, display: TermDisplay ) -> Element {
         }
       }
     },
-    _ => rsx! { span { class: "highlight", "{title}" } },
+    _ => rsx! { span { class: "highlight", "{title} " } },
   }
 }

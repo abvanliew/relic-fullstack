@@ -21,6 +21,9 @@ pub enum TargetClass {
   Touch,
   Weapon,
   Range,
+  LineOfSight,
+  SeeOrHear,
+  Triggering,
   EachTriggering,
   Cone,
   Burst,
@@ -35,6 +38,7 @@ pub enum Selection {
   Creature,
   Ally,
   Enemy,
+  Space,
 }
 
 impl Target {
@@ -43,7 +47,9 @@ impl Target {
       ( _, Some( text ) ) => text.clone(),
       ( Some( Selection::Ally ), _ ) => "ally".into(),
       ( Some( Selection::Enemy ), _ ) => "enemy".into(),
-      _ => "creature".into(),
+      ( Some( Selection::Creature ), _ ) => "creature".into(),
+      ( Some( Selection::Space ), _ ) => "space".into(),
+      _ => "undefined".into(),
     }
   }
 
@@ -52,13 +58,15 @@ impl Target {
       ( _, Some( text ) ) => text.clone(),
       ( Some( Selection::Ally ), _ ) => "allies".into(),
       ( Some( Selection::Enemy ), _ ) => "enemies".into(),
-      _ => "creatures".into(),
+      ( Some( Selection::Creature ), _ ) => "creatures".into(),
+      ( Some( Selection::Space ), _ ) => "spaces".into(),
+      _ => "undefined".into(),
     }
   }
 
   pub fn article( &self ) -> String {
     match &self.selection {
-      Some( Selection::Creature ) => "A",
+      Some( Selection::Creature ) | Some( Selection::Space ) => "A",
       Some( Selection::Ally ) | Some( Selection::Enemy ) => "An",
       _ => "Some"
     }.into()
@@ -77,12 +85,32 @@ impl fmt::Display for Target {
       &self.limit,
     ) {
       ( TargetClass::Yourself, _, _, _ ) => "Yourself".into(),
+      ( TargetClass::Triggering, _, _, _ ) => format!(
+        "Triggering {}",
+        self.singular()
+      ),
       ( TargetClass::EachTriggering, _, _, _, ) => format!(
         "Each triggering {}",
         self.singular()
       ),
       ( TargetClass::Touch, _, _, None, ) => format!(
         "{} {} within reach",
+        self.article(),
+        self.singular(),
+      ),
+      ( TargetClass::LineOfSight, _, _, _, ) => format!(
+        "{} {} within line of sight",
+        self.article(),
+        self.singular(),
+      ),
+      ( TargetClass::SeeOrHear, _, _, Some( limit ), ) => format!(
+        "{} {} that can see or hear you within {}",
+        self.article(),
+        self.singular(),
+        limit,
+      ),
+      ( TargetClass::SeeOrHear, _, _, _, ) => format!(
+        "{} {} that can see or hear you",
         self.article(),
         self.singular(),
       ),

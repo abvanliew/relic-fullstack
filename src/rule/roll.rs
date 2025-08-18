@@ -77,8 +77,8 @@ pub fn RollSnippet( roll: Roll ) -> Element {
   };
   let opening = match &roll.opening {
     Some( Opening::None ) => "",
-    Some( Opening::Lower ) => "make a ",
-    _ => "Make a ",
+    Some( Opening::Lower ) => "make a",
+    _ => "Make a",
   };
   let modifier = match &roll.modifier {
     Some( Modifier::Advantage ) => "with advantage",
@@ -87,7 +87,8 @@ pub fn RollSnippet( roll: Roll ) -> Element {
   };
   return match ( &roll.class, &roll.each ) {
     ( RollClass::LuckCheck, _ ) => rsx!(
-      span { "{opening}{keyword} " }
+      span { "{opening} " }
+      span { "{keyword} " }
       span { class: "highlight", "{class} " }
       span { "difficulty {difficulty}. " }
     ),

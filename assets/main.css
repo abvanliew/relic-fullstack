@@ -381,6 +381,7 @@ p {
   font-size: 1.125rem;
   font-weight: 700;
   text-decoration: underline;
+  padding-inline-end: 0.5em;
 }
 
 .subheading {
@@ -448,7 +449,7 @@ p {
 .gap-2xlarge { gap: 32px; }
 .no-gap { gap: 0px; }
 
-.indent { margin-left: 8px; }
+.indent { margin-left: 12px; }
 .bumper { margin-right: 8px }
 .spacer { margin-top: 8px; }
 .underhang { margin-bottom: 8px; }
