@@ -46,7 +46,7 @@ impl GameLibrarySignal {
     return status_from( self.skills_response );
   }
 
-  // pub fn get_paths( &self ) -> SignalStatus<HashMap<String,Path>,ServerFnError> {
-  //   return status_from( self.paths_response );
-  // }
+  pub fn get_paths( &self ) -> Result<HashMap<String,Path>,SignalStatus> {
+    return status_from( self.paths_response );
+  }
 }

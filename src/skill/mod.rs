@@ -23,7 +23,7 @@ pub struct Skill {
   pub training_cost: TrainingCost,
   pub action: Action,
   pub sub_actions: Option<Vec<Action>>,
-  pub order: SkillOrdering,
+  pub order: RelicOrdering,
   pub paths: Option<Vec<PathRef>>,
 }
 
@@ -46,7 +46,7 @@ impl Default for Skill {
 
 pub mod prelude {
   pub use super::Skill;
-  pub use super::aspect::{Keyword, Property, TrainingCost};
+  pub use super::aspect::{Keyword, Property, TrainingCost, RelicOrdering};
   pub use super::activation::Action;
   pub use super::duration::Duration;
   pub use super::component::{SkillDescription, SkillTable};

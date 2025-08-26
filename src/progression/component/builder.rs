@@ -1,103 +1,120 @@
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
-// use std::cmp::max;
 
 use dioxus::prelude::*;
 
+use crate::server::prelude::GameLibrarySignal;
+use crate::skill::prelude::*;
 use crate::{path::Path, progression::fixed::MIN_LEVEL};
-// use crate::progression::component::effects::{level_change_effect, path_change_effect};
-// use crate::progression::component::path::PathSelections;
-// use crate::progression::component::TrainingRanks;
-// use crate::progression::fixed::{MAX_LEVEL, MIN_LEVEL};
-// use crate::progression::growth::LevelStats;
-// use crate::progression::prelude::TrainingClass;
-// use crate::progression::qualifier::{FlowPoolQualifier, PathQualifier};
 use crate::progression::track::TrackContext;
-// use crate::rule::prelude::Tier;
 use super::level::LevelSelector;
-// use super::qualifiers::BuildQualifiers;
-// use super::TrainingSignal;
 
 #[component]
 pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
+  let library = use_context::<GameLibrarySignal>();
+  let res_paths = library.get_paths();
+  let path_map: HashMap<String,Path>;
+  match res_paths {
+    Ok( result) => {path_map = result},
+    _ => { return rsx!{
+      div { "Loading" }
+    };},
+  };
   TrackContext::use_context_provider();
   let build_context = BuildContext::use_context_provider();
   let paths = build_context.paths;
-  let path_options = build_context.path_options;
   let path_count = paths.read().len();
   rsx! {
-    div {
-      "{path_options:?}"
-    }
     LevelSelector {}
+    div { "Path Count: {path_count}" }
     div {
-      "Path Count: {path_count}"
-    }
-    div {
-      class: "row-wrap",
-      HashButton { name: "A" }
-      HashButton { name: "B" }
-      HashButton { name: "C" }
-      HashButton { name: "D" }
-      HashButton { name: "E" }
-      HashButton { name: "F" }
-    }
-    for path in paths().iter() {
-      PathOptionDropdown {
-        path_id: path,
-        option_id: "Bonus",
-        selection_text: "Pick a bonus",
-        options: vec![
-          ( "HP".to_string(), "Health +1".to_string() ),
-          ( "RANK".to_string(), "Rank +1".to_string() ),
-          ( "POOL".to_string(), "Pool +1".to_string() ),
-        ]
+      class: "column",
+      for ( id, path ) in path_map {
+        PathSelector { id, path }
       }
     }
+  }
+}
+
+pub const IMG_SELECTED: Asset = asset!(
+  "/assets/selected.png",
+  ImageAssetOptions::new()
+  .with_size(ImageSize::Manual {
+    width: 40, height: 40
+  })
+  .with_format(ImageFormat::Avif)
+);
+
+pub const IMG_UNSELECTED: Asset = asset!(
+  "/assets/unselected.png",
+  ImageAssetOptions::new()
+  .with_size(ImageSize::Manual {
+    width: 40, height: 40
+  })
+  .with_format(ImageFormat::Avif)
+);
+
+#[derive(PartialEq, Props, Clone)]
+struct PathSelectorProps {
+  id: String,
+  path: ReadOnlySignal<Path>,
+}
+
+#[component]
+pub fn PathSelector(props:PathSelectorProps) -> Element {
+  let mut build = use_context::<BuildContext>();
+  let path = (props.path)();
+  let id = props.id;
+  let title = path.title;
+  let summary = path.summary.unwrap_or( "".to_string() );
+  let skill_ids = path.skill_ids.unwrap_or(Vec::new());
+  let library = use_context::<GameLibrarySignal>();
+  let res_skills = library.get_skills();
+  let ( skills, loading ): (Vec<Skill>,bool) = match res_skills {
+    Ok( skill_map ) => {
+      (
+        skill_ids.iter()
+        .map_while(|id| skill_map.get(&id.to_string()))
+        .map(|skill|skill.clone())
+        .collect(),
+        false
+      )
+    },
+    _ => (Vec::new(), true),
+  };
+  let mut display: Signal<bool> = use_signal(|| false);
+  let behavoir = build.path_behavoir( &id );
+  let (class, img_src) = match behavoir {
+    SelectionState::Unselected => ("", IMG_UNSELECTED),
+    SelectionState::Selected => ("", IMG_SELECTED),
+    SelectionState::Disabled => ("hidden", IMG_UNSELECTED),
+    SelectionState::Invalid => ("disabled", IMG_SELECTED),
+  }.into();
+  rsx! {
     div {
-      "Training"
+      class: "row path-card {class}",
+      onclick: move |_| { display.set(!display()); },
       div {
-        class: "row",
-        div {
-          class: "column",
-          div { "Adept" }
-          for i in 0..6 {
-            div { class: "tile unselected", "Rank {i}" }
-          }
-        }
-        div {
-          class: "column",
-          div { "Endurance" }
-          for i in 0..6 {
-            div { class: "tile unselected", "Rank {i}" }
-          }
-        }
-        div {
-          class: "column",
-          div { "Expert" }
-          for i in 0..6 {
-            div { class: "tile unselected", "Rank {i}" }
-          }
-        }
-        div {
-          class: "column",
-          div { "Innate" }
-          for i in 0..6 {
-            div { class: "tile unselected", "Rank {i}" }
-          }
-        }
-        div {
-          class: "column",
-          div { "Resonance" }
-          for i in 0..6 {
-            div { class: "tile unselected", "Rank {i}" }
-          }
-        }
-        div {
-          class: "column",
-          div { "Magic" }
-          for i in 0..6 {
-            div { class: "tile unselected", "Rank {i}" }
+        class: "path-checkbox-wrapper",
+        onclick: move |evt: Event<MouseData>| {
+          evt.stop_propagation();
+          build.path_toggle(&id);
+        },
+        img { src: "{img_src}" }
+      }
+      div { class: "path-title", "{title}" }
+      div { class: "path-description", "{summary}" }
+    }
+    div {
+      class: if display() { "path-skill-panels {class}" } else { "hidden" },
+      match loading {
+        true => rsx! { div { "loading" } },
+        _ => rsx! {
+          for skill in skills {
+            div {
+              class: "path-skill-group",
+              SkillDescription { skill, show_terms: false }
+            }
           }
         }
       }
@@ -108,6 +125,8 @@ pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
 #[derive(PartialEq, Props, Clone)]
 struct HashButtonProps {
   name: String,
+  id: String,
+  class: Option<String>,
 }
 
 pub enum SelectionState {

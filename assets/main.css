@@ -5,6 +5,10 @@
   --main-border: #a9b5d2;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 20px;
   background-color: var( --main-bg-color );
@@ -109,6 +113,67 @@ p {
   border-radius: 0.6rem;
   padding: 0.16rem 0.6rem 0.6rem;
   height: min-content;
+  flex-shrink: 0;
+}
+
+.path-card {
+  width: 100%;
+  min-width: 640px;
+  max-width: 1250px;
+  height: 80px;
+  overflow: hidden;
+  border: 0.16rem solid var( --main-border );
+  border-radius: 0.6rem;
+  padding: 0.4rem 0.6rem;
+  display: flex;
+  align-items: center;
+  margin: 4px 0px;
+}
+
+.path-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.path-checkbox-wrapper{
+  height: 30px;
+  width: 30px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.path-skill-panels {
+  display: flow-root;
+  width: 1240px;
+  margin-bottom: 8px;
+}
+
+.path-skill-group {
+  width: 50%;
+  display: flex;
+  padding: 8px 8px;
+}
+
+.path-skill-group:nth-child(odd) {
+  float: left
+}
+.path-skill-group:nth-child(even) {
+  float: right
+}
+
+@media (width <= 1350px) {
+  .path-skill-panels {
+    width: unset;
+    display: flex;
+    flex-direction: column;
+  }
+  .path-skill-group { width: unset; }
+  .path-skill-group:nth-child(odd) { float: unset }
+  .path-skill-group:nth-child(even) { float: unset }
 }
 
 .group {
@@ -186,7 +251,7 @@ p {
 }
 
 .disabled {
-  color: #777;
+  filter: grayscale(1) brightness(50%);
 }
 
 .grid {

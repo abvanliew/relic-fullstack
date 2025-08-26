@@ -2,7 +2,6 @@ use dioxus::prelude::*;
 
 use crate::progression::component::builder::BuildContext;
 use crate::progression::component::qualifiers::BuildQualifiers;
-use crate::progression::component::LevelContext;
 use crate::progression::track::TrackContext;
 use crate::rule::prelude::Tier;
 use crate::path::{components::PathTile, Path};

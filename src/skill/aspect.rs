@@ -5,12 +5,12 @@ use bson::oid::ObjectId;
 use crate::rule::prelude::*;
 use super::Skill;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, PartialOrd)]
 pub enum TrainingCost {
   Inherient,
+  Keystone,
   Full,
   Half,
-  Keystone,
   Cantrip,
   Spell
 }
@@ -37,11 +37,10 @@ pub enum EditingState {
   Concept,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default, PartialOrd)]
 #[serde(rename_all = "camelCase")]
-pub struct SkillOrdering {
+pub struct RelicOrdering {
   category: i32,
-  training_cost: Option<i32>,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
