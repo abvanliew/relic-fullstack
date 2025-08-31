@@ -183,7 +183,7 @@ pub fn SheetDetails(
       div {
         class: "row-wrap",
         for skill in selected_skills {
-          SkillDescription { skill, show_terms: true }
+          SkillDescription { id: skill.id.to_string(), show_terms: true }
         }
       }
     }

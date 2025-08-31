@@ -35,7 +35,7 @@ pub fn SingleSkill( id: String ) -> Element {
   match &*response_skill.read_unchecked() {
     Some( Ok( skill ) ) => {
       rsx! {
-        SkillDescription { skill: skill.clone(), show_terms: false }
+        SkillDescription { id: skill.id.to_string(), show_terms: false }
       }
     },
     None => { rsx! { "Loading skill" } },
@@ -61,13 +61,13 @@ pub fn FullSkillList() -> Element {
           div {
             class: "column-wrap gap-xlarge",
             for skill in skills.iter().step_by(2) {
-              SkillDescription { skill: skill.clone(), show_terms: true }
+              SkillDescription { id: skill.id.to_string(), show_terms: true }
             }
           }
           div {
             class: "column-wrap gap-xlarge",
             for skill in skills.iter().skip(1).step_by(2) {
-              SkillDescription { skill: skill.clone(), show_terms: true }
+              SkillDescription { id: skill.id.to_string(), show_terms: true }
             }
           }
         }

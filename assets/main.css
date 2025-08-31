@@ -207,6 +207,11 @@ p {
   }
 }
 
+.fit-width {
+  width: min-content;
+  min-width: fit-content;
+}
+
 .card-small {
   border: 0.1rem solid var( --main-border );
   border-radius: 0.4rem;

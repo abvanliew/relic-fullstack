@@ -132,6 +132,7 @@ pub fn ActionEconomyTable() -> Element {
       div { "Trigger" }
       div { class: "centered", "0" }
       div {}
+      div { class: "uv-full italics fit-width", "*Actions with the Intial qualifier can be used once per Round" }
     }
   }
 }

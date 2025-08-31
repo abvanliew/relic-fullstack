@@ -1,19 +1,33 @@
 use dioxus::prelude::*;
 use crate::rule::prelude::*;
+use crate::server::prelude::GameLibrarySignal;
 use crate::skill::prelude::*;
+
 
 #[component]
 pub fn SkillDescription(
-  skill: ReadOnlySignal<Skill>,
-  show_terms: bool
+  id: String,
+  show_terms: bool,
 ) -> Element {
-  let title = skill.read().title.clone();
-  let tier = skill.read().tier.clone();
-  let training_cost = skill.read().training_cost.clone();
-  let opt_description = skill.read().description.clone();
-  let action = skill.read().action.clone();
-  let opt_sub_actions = skill.read().sub_actions.clone();
-  let terms = skill.read().get_keyword_ids();
+  let library = use_context::<GameLibrarySignal>();
+  let res_skills = library.get_skills();
+  let skill = match res_skills {
+    Some(map) => {
+      match map.get(&id) {
+        Some( skill) => { skill.clone() },
+        None => return rsx!{},
+      }
+    },
+    _ => { return rsx! { div { "Loading" } }; },
+  };
+
+  let title = skill.title.clone();
+  let tier = skill.tier.clone();
+  let training_cost = skill.training_cost.clone();
+  let opt_description = skill.description.clone();
+  let action = skill.action.clone();
+  let terms = skill.get_keyword_ids().clone();
+  let opt_sub_actions = skill.sub_actions.clone();
   let display = if show_terms { TermDisplay::TitleOnly } else { TermDisplay::Hover };
   rsx!(
     div {

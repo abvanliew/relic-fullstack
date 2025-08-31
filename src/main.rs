@@ -1,3 +1,4 @@
+mod asset;
 mod character;
 mod equipment;
 mod operator;

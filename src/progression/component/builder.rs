@@ -3,9 +3,11 @@ use std::collections::{HashMap, HashSet};
 
 use dioxus::prelude::*;
 
+use crate::asset::icon::{IMG_SELECTED, IMG_UNSELECTED};
 use crate::server::prelude::GameLibrarySignal;
 use crate::skill::prelude::*;
-use crate::{path::Path, progression::fixed::MIN_LEVEL};
+use crate::path::Path;
+use crate::progression::fixed::MIN_LEVEL;
 use crate::progression::track::TrackContext;
 use super::level::LevelSelector;
 
@@ -15,7 +17,7 @@ pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
   let res_paths = library.get_paths();
   let path_map: HashMap<String,Path>;
   match res_paths {
-    Ok( result) => {path_map = result},
+    Some( result) => {path_map = result},
     _ => { return rsx!{
       div { "Loading" }
     };},
@@ -23,7 +25,7 @@ pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
   TrackContext::use_context_provider();
   let build_context = BuildContext::use_context_provider();
   let paths = build_context.paths;
-  let path_count = paths.read().len();
+  let path_count = paths.len();
   rsx! {
     LevelSelector {}
     div { "Path Count: {path_count}" }
@@ -36,23 +38,6 @@ pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
   }
 }
 
-pub const IMG_SELECTED: Asset = asset!(
-  "/assets/selected.png",
-  ImageAssetOptions::new()
-  .with_size(ImageSize::Manual {
-    width: 40, height: 40
-  })
-  .with_format(ImageFormat::Avif)
-);
-
-pub const IMG_UNSELECTED: Asset = asset!(
-  "/assets/unselected.png",
-  ImageAssetOptions::new()
-  .with_size(ImageSize::Manual {
-    width: 40, height: 40
-  })
-  .with_format(ImageFormat::Avif)
-);
 
 #[derive(PartialEq, Props, Clone)]
 struct PathSelectorProps {
@@ -71,7 +56,7 @@ pub fn PathSelector(props:PathSelectorProps) -> Element {
   let library = use_context::<GameLibrarySignal>();
   let res_skills = library.get_skills();
   let ( skills, loading ): (Vec<Skill>,bool) = match res_skills {
-    Ok( skill_map ) => {
+    Some( skill_map ) => {
       (
         skill_ids.iter()
         .map_while(|id| skill_map.get(&id.to_string()))
@@ -113,11 +98,36 @@ pub fn PathSelector(props:PathSelectorProps) -> Element {
           for skill in skills {
             div {
               class: "path-skill-group",
-              SkillDescription { skill, show_terms: false }
+              SkillDescription { id: skill.id.to_string(), show_terms: false }
             }
           }
         }
       }
+    }
+  }
+}
+
+
+#[derive(PartialEq, Props, Clone)]
+struct SkillSelectorProps {
+  id: String,
+}
+
+
+#[component]
+pub fn SkillSelector(props:SkillSelectorProps) -> Element {
+  let mut build = use_context::<BuildContext>();
+  let id = props.id;
+  let mut display: Signal<bool> = use_signal(|| false);
+  let behavoir = build.skill_behavoir( &id );
+  let (class, img_src) = match behavoir {
+    SelectionState::Unselected => ("", IMG_UNSELECTED),
+    SelectionState::Selected => ("", IMG_SELECTED),
+    SelectionState::Disabled => ("hidden", IMG_UNSELECTED),
+    SelectionState::Invalid => ("disabled", IMG_SELECTED),
+  }.into();
+  rsx! {
+    div {
     }
   }
 }
@@ -214,36 +224,26 @@ pub fn PathOptionDropdown( props: PathOptionDropdownProps ) -> Element {
 }
 
 #[derive(Debug, Clone)]
-pub struct BuildContext {
-  pub level: Signal<usize>,
-  pub paths: Signal<HashSet<String>>,
-  pub path_options: Signal<HashMap<(String,String),String>>,
-  pub training: Signal<TrainingSet>,
+pub struct HashSelectorContext {
+  pub selection: Signal<HashSet<String>>,
 }
 
-impl BuildContext {
+impl HashSelectorContext {
   pub fn use_context_provider()-> Self {
-    let level = use_signal( || MIN_LEVEL );
-    let paths: Signal<HashSet<String>> = use_signal( || HashSet::new() );
-    let path_options:Signal<HashMap<(String,String),String>> = use_signal( || HashMap::new() );
-    let training:Signal<TrainingSet> = use_signal( || TrainingSet::default() );
-
-    use_context_provider( || Self {
-      level,
-      paths, path_options,
-      training,
-    } )
+    let selection: Signal<HashSet<String>> = use_signal( || HashSet::new() );
+    use_context_provider( || Self { selection } )
   }
 
-  pub fn path_behavoir( &self, name: &String ) -> SelectionState {
-    let track = use_context::<TrackContext>();
-    let level = self.level;
-    let stats = track.character.stats( level() );
+  pub fn len( &self ) -> usize {
+    return self.selection.read().len();
+  }
 
+  pub fn selection_behavoir( &self, name: &String, max_len: usize ) -> SelectionState {
+    let selection = self.selection.read();
     match (
-      self.paths.read().contains( name ),
-      self.paths.read().len() < stats.iniatite.path_max,
-      self.paths.read().len() > stats.iniatite.path_max,
+      selection.contains( name ),
+      selection.len() < max_len,
+      selection.len() > max_len,
     ) {
         ( true, _, false ) => SelectionState::Selected,
         ( false, true, _ ) => SelectionState::Unselected,
@@ -252,14 +252,70 @@ impl BuildContext {
     }
   }
 
-  pub fn path_toggle( &mut self, name: &String ) {
-    let mut current = self.paths.read().clone();
-    match self.path_behavoir( name ) {
+  pub fn toggle( &mut self, name: &String, max_len: usize ) {
+    let mut current = self.selection.read().clone();
+    match self.selection_behavoir( name, max_len ) {
       SelectionState::Selected | SelectionState::Invalid => current.remove( name ),
       SelectionState::Unselected => current.insert( name.clone() ),
       _ => false,
     };
-    self.paths.set( current );
+    self.selection.set( current );
+  }
+}
+
+
+#[derive(Debug, Clone)]
+pub struct BuildContext {
+  pub level: Signal<usize>,
+  pub paths: HashSelectorContext,
+  pub skills: HashSelectorContext,
+  pub path_options: Signal<HashMap<(String,String),String>>,
+  pub training: Signal<TrainingSet>,
+}
+
+impl BuildContext {
+  pub fn use_context_provider()-> Self {
+    let level = use_signal( || MIN_LEVEL );
+    let paths = HashSelectorContext::use_context_provider();
+    let skills = HashSelectorContext::use_context_provider();
+    let path_options:Signal<HashMap<(String,String),String>> = use_signal( || HashMap::new() );
+    let training:Signal<TrainingSet> = use_signal( || TrainingSet::default() );
+
+    use_context_provider(|| Self {
+      level,
+      paths, skills, path_options,
+      training,
+    })
+  }
+
+  pub fn path_max( &self ) -> usize {
+    let track = use_context::<TrackContext>();
+    let level = self.level;
+    let stats = track.character.stats( level() );
+    return stats.iniatite.path_max;
+  }
+
+  pub fn path_behavoir( &self, name: &String ) -> SelectionState {
+    return self.paths.selection_behavoir(name, self.path_max());
+  }
+
+  pub fn path_toggle( &mut self, name: &String ) {
+    return self.paths.toggle(name, self.path_max());
+  }
+
+  pub fn skill_max( &self ) -> usize {
+    let track = use_context::<TrackContext>();
+    let level = self.level;
+    let stats = track.character.stats( level() );
+    return stats.iniatite.features;
+  }
+
+  pub fn skill_behavoir( &self, name: &String ) -> SelectionState {
+    return self.skills.selection_behavoir(name, self.skill_max());
+  }
+
+  pub fn skill_toggle( &mut self, name: &String ) {
+    return self.skills.toggle(name, self.skill_max());
   }
 
   pub fn get_path_option( &self, path_id: &String, option_id: &String ) -> Option<String> {

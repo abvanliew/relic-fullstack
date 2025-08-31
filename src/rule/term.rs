@@ -1,4 +1,4 @@
-use serde::{ Deserialize, Serialize };
+use serde::{Deserialize, Serialize};
 use dioxus::prelude::*;
 use bson::oid::ObjectId;
 use crate::server::prelude::GameLibrarySignal;
@@ -21,7 +21,7 @@ pub enum TermDisplay {
 pub fn TermSnippet( term: Term, display: TermDisplay ) -> Element {
   let signal = use_context::<GameLibrarySignal>();
   let keywords_response = signal.get_keyword();
-  let Ok( keyword_map ) = keywords_response else { return rsx!( div { "Loading" } ) };
+  let Some( keyword_map ) = keywords_response else { return rsx!( div { "Loading" } ) };
   let ( title, blurb ) = match ( term.keyword_id, term.title ) {
     ( Some( keyword_id ), _ ) => {
       let entry = keyword_map.get( &keyword_id.to_string() );

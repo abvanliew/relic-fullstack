@@ -21,5 +21,5 @@ pub mod prelude {
   pub use super::skill::{list_skills, get_skill};
   pub use super::sheet::{list_character_sheets, get_chracter_sheet};
   pub use super::keyword::list_keywords;
-  pub use super::signal::{GameLibrarySignal,SignalStatus};
+  pub use super::signal::{GameLibrarySignal};
 }
