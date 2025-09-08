@@ -20,40 +20,71 @@ pub fn SkillDescription(
     },
     _ => { return rsx! { div { "Loading" } }; },
   };
+  let terms = skill.get_keyword_ids().clone();
+  let display = if show_terms { TermDisplay::TitleOnly } else { TermDisplay::Hover };
+  rsx!(
+    div {
+      class: "group column",
+      SkillCard { id, display }
+      if show_terms {
+        for term in terms {
+          TermSnippet {
+            id: Some( term.to_string() ),
+            display: TermDisplay::Block,
+          }
+        }
+      }
+    }
+  )
+}
 
+
+#[component]
+pub fn SkillCard(
+  id: String,
+  display: TermDisplay,
+) -> Element {
+  let library = use_context::<GameLibrarySignal>();
+  let res_skills = library.get_skills();
+  let skill = match res_skills {
+    Some(map) => {
+      match map.get(&id) {
+        Some( skill) => { skill.clone() },
+        None => return rsx!{},
+      }
+    },
+    _ => { return rsx! { div { class: "card", "Loading" } }; },
+  };
   let title = skill.title.clone();
   let tier = skill.tier.clone();
   let training_cost = skill.training_cost.clone();
   let opt_description = skill.description.clone();
   let action = skill.action.clone();
-  let terms = skill.get_keyword_ids().clone();
   let opt_sub_actions = skill.sub_actions.clone();
-  let display = if show_terms { TermDisplay::TitleOnly } else { TermDisplay::Hover };
+  let opt_pick_keywords = skill.pick_one_keyword.clone();
   rsx!(
     div {
-      class: "group column",
-      div {
-        class: "card grid dim-keywords",
-        div { class: "uv-title-property title nowrap", "{title}" }
-        div { class: "uv-property", 
-          div { class: "nowrap italics", "{tier} {training_cost}" }
-        }
-        if let Some( description ) = opt_description {
-          div { class: "uv-full", "{description}" }
-        }
-        ActionDetails { action, display }
-        if let Some( sub_actions ) = opt_sub_actions {
-          for action in sub_actions {
-            div { class: "spacer" }
-            ActionDetails { action, display }
-          }
+      class: "card grid dim-keywords",
+      div { class: "uv-title-property title nowrap", "{title}" }
+      div { class: "uv-property", 
+        div { class: "nowrap italics", "{tier} {training_cost}" }
+      }
+      if let Some( description ) = opt_description {
+        div { class: "uv-full", "{description}" }
+      }
+      ActionDetails { action, display }
+      if let Some( sub_actions ) = opt_sub_actions {
+        for action in sub_actions {
+          div { class: "spacer" }
+          ActionDetails { action, display }
         }
       }
-      if show_terms {
-        for term in terms {
+      if let Some( pick_keywords ) = opt_pick_keywords {
+        for keyword in pick_keywords {
+          div { class: "uv-full horizontal-bar" }
           TermSnippet {
-            term: Term { keyword_id: Some( term ), title: None },
-            display: TermDisplay::Block,
+            id: Some( keyword.to_string() ),
+            display: TermDisplay::Row,
           }
         }
       }

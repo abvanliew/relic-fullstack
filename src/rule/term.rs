@@ -10,31 +10,47 @@ pub struct Term {
   pub title: Option<String>,
 }
 
-#[derive( Debug, Clone, Copy, PartialEq )]
+#[derive( Debug, Clone, Copy, PartialEq, Default )]
 pub enum TermDisplay {
+  #[default]
   TitleOnly,
   Block,
   Hover,
+  Row,
+}
+
+#[derive(PartialEq, Props, Clone)]
+pub struct TermSnippetProps {
+  #[props(default)]
+  id: Option<String>,
+  #[props(default)]
+  term: Option<Term>,
+  #[props(default)]
+  display: TermDisplay,
 }
 
 #[component]
-pub fn TermSnippet( term: Term, display: TermDisplay ) -> Element {
-  let signal = use_context::<GameLibrarySignal>();
-  let keywords_response = signal.get_keyword();
-  let Some( keyword_map ) = keywords_response else { return rsx!( div { "Loading" } ) };
-  let ( title, blurb ) = match ( term.keyword_id, term.title ) {
-    ( Some( keyword_id ), _ ) => {
-      let entry = keyword_map.get( &keyword_id.to_string() );
-      match entry {
-        Some( keyword ) => ( keyword.title.clone(), keyword.blurb.clone() ),
-        _ => ( "Undefined".into(), None ),
-      }
+pub fn TermSnippet( props: TermSnippetProps ) -> Element {
+  let opt_keyword = match props.id {
+    Some( id ) => {
+      let signal = use_context::<GameLibrarySignal>();
+      let keywords_response = signal.get_keyword();
+      let Some( keyword_map ) = keywords_response else { return rsx!( div { "Loading" } ) };
+      keyword_map.get( &id ).cloned()
     },
-    ( _, Some( title ) ) => ( title, None ),
-    _ => ( "Undefined".into(), None ),
+    _ => None,
   };
-  match ( &display, &blurb ) {
-    ( TermDisplay::Hover, Some( blurb_text ) ) => rsx! {
+  let opt_title = match props.term {
+    Some( term ) => term.title,
+    None => None,
+  };
+  let ( title, blurb_text ) = match ( opt_keyword, opt_title ) {
+    ( Some( keyword), _ ) => ( keyword.title.clone(), keyword.blurb.clone().unwrap_or("".into()) ),
+    ( _, Some( title ) ) => (title, "".into()),
+    _ => ( "Undefined".into(), "".into() )
+  };
+  match &props.display {
+    TermDisplay::Hover => rsx! {
       div {
         class: "term",
         div {
@@ -44,14 +60,16 @@ pub fn TermSnippet( term: Term, display: TermDisplay ) -> Element {
         span { class: "highlight", "{title} " }
       }
     },
-    ( TermDisplay::Block, _ ) => rsx! {
+    TermDisplay::Block => rsx! {
       div {
         class: "term-panel column",
-        div { class: "highlight", "{title}" }
-        if let Some( blurb_text ) = blurb {
-          div { "{blurb_text}" }
-        }
+        div { class: "highlight", "{title} " }
+        div { "{blurb_text}" }
       }
+    },
+    TermDisplay::Row  => rsx! {
+      div { class: "uv-title highlight", "{title}" }
+      div { class: "uv-details", "{blurb_text}" }
     },
     _ => rsx! { span { class: "highlight", "{title} " } },
   }

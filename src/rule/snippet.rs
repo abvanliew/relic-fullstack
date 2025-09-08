@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use serde::{ Deserialize, Serialize };
-use crate::rule::prelude::*;
+use crate::rule::{prelude::*};
 use super::internal::*;
 use dioxus::prelude::*;
 use bson::oid::ObjectId;
@@ -41,12 +41,19 @@ pub fn RulesSpippetDetail( snippets: RulesSnippet, display: TermDisplay ) -> Ele
 
 #[component]
 pub fn SnippetDetail( snippet: Snippet, display: TermDisplay ) -> Element {
+  let id = match snippet.term {
+    Some( ref term ) => match term.keyword_id {
+      Some( id ) => Some( id.to_string() ),
+      _ => None,
+    },
+    None => None,
+  };
   rsx!(
     if let Some( text ) = snippet.text {
       TextSnippet { text }
     }
     if let Some( term ) = snippet.term {
-      TermSnippet { term, display: TermDisplay::Hover }
+      TermSnippet { term, id, display }
     }
     if let Some( roll ) = snippet.roll {
       RollSnippet { roll }

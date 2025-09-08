@@ -3,6 +3,8 @@
   --main-font: #a9b5d2;
   --main-font-hover: #91a4d2;
   --main-border: #a9b5d2;
+  --selected: #d1ab3a;
+  --prev-selected: #6599ad
 }
 
 * {
@@ -34,7 +36,7 @@ a {
 
 a:hover {
   cursor: pointer;
-  color: #91a4d2;
+  color: var( --main-font-hover );
 }
 
 p {
@@ -237,6 +239,11 @@ p {
   padding: 0.16rem 0.5rem 0.8rem;
 }
 
+
+.card-selected .card {
+  border-color: var( --selected );
+}
+
 .unselected {
   margin: 2px;
   border: 1px solid var( --main-border );
@@ -245,13 +252,13 @@ p {
 
 .selected {
   margin: 0px;
-  border: 3px solid #d1ab3a;
+  border: 3px solid var( --selected );
   border-radius: 0.4rem;
 }
 
 .prev-selected {
   margin: 0px;
-  border: 3px solid #6599ad;
+  border: 3px solid var( --prev-selected );
   border-radius: 0.4rem;
 }
 
@@ -425,6 +432,12 @@ p {
   border: 0.05rem solid var( --main-border );
   width: 0px;
   margin-bottom: 12px;
+}
+
+.horizontal-bar {
+  border-bottom: 0.02rem solid var( --main-border );
+  width: 100%;
+  margin: 6px 0px 2px;
 }
 
 .lh {

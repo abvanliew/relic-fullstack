@@ -20,6 +20,6 @@ pub mod prelude {
   pub use super::path::{list_paths, list_path_skills};
   pub use super::skill::{list_skills, get_skill};
   pub use super::sheet::{list_character_sheets, get_chracter_sheet};
-  pub use super::keyword::list_keywords;
+  pub use super::keyword::get_keyword_map;
   pub use super::signal::{GameLibrarySignal};
 }

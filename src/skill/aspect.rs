@@ -72,3 +72,13 @@ pub struct Property {
   pub title: String,
   pub rules: RuleBlocks,
 }
+
+impl Property {
+  pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
+    let mut ids: HashSet<ObjectId> = HashSet::new();
+    for rule in &self.rules {
+      ids.extend( rule.get_keyword_ids() );
+    }
+    return ids;
+  }
+}

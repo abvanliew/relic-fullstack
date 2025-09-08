@@ -14,7 +14,7 @@ use futures::stream::StreamExt;
 use crate::skill::prelude::Keyword;
 
 #[server(ListKeywords)]
-pub async fn list_keywords() -> Result<HashMap<String,Keyword>, ServerFnError> {
+pub async fn get_keyword_map() -> Result<HashMap<String,Keyword>, ServerFnError> {
   let client = Client::with_uri_str( "mongodb://localhost:27017" ).await?;
   let keyword_collection: Collection<Keyword> = client.database( "relic" ).collection( "keywords_display" );
   let mut results = keyword_collection.find( doc! {}, ).await?;

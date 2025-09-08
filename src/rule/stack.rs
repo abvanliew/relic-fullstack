@@ -20,14 +20,24 @@ pub struct Stack {
 impl Stack {
   pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
+    if let Some( property ) = &self.property {
+      ids.extend( property.get_keyword_ids() );
+    }
     if let Some( outcomes ) = &self.outcomes {
       for outcome in outcomes {
         ids.extend( outcome.get_keyword_ids() );
       }
     }
-    if let Some( outcomes ) = &self.outcomes {
-      for outcome in outcomes {
-        ids.extend( outcome.get_keyword_ids() );
+    if let Some( items ) = &self.items {
+      for item in items {
+        for block in item {
+          ids.extend( block.get_keyword_ids() );
+        }
+      }
+    }
+    if let Some( block ) = &self.block {
+      for snippet in block {
+        ids.extend( snippet.get_keyword_ids() );
       }
     }
     return ids;

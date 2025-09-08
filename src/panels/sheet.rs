@@ -11,7 +11,7 @@ pub fn CharacterSheetList() -> Element {
   let response_paths: Resource<Result<Vec<Path>, ServerFnError>> = use_resource( move || list_paths() );
   let response_skills: Resource<Result<Vec<Skill>, ServerFnError>> = use_resource( move || list_skills() );
   let response_sheets: Resource<Result<Vec<CharacterSheet>, ServerFnError>> = use_resource( move || list_character_sheets() );
-  let response_keywords: Resource<Result<HashMap<String,Keyword>, ServerFnError>> = use_resource( move || list_keywords() );
+  let response_keywords: Resource<Result<HashMap<String,Keyword>, ServerFnError>> = use_resource( move || get_keyword_map() );
   return match (
     &*response_paths.read_unchecked(),
     &*response_skills.read_unchecked(),
@@ -67,7 +67,7 @@ pub fn SingleChracterSheet( id: String ) -> Element {
   let response_paths: Resource<Result<Vec<Path>, ServerFnError>> = use_resource( move || list_paths() );
   let response_skills: Resource<Result<Vec<Skill>, ServerFnError>> = use_resource( move || list_skills() );
   let response_sheet: Resource<Result<CharacterSheet, ServerFnError>> = use_resource( move || get_chracter_sheet( id.clone() ) );
-  let response_keywords: Resource<Result<HashMap<String,Keyword>, ServerFnError>> = use_resource( move || list_keywords() );
+  let response_keywords: Resource<Result<HashMap<String,Keyword>, ServerFnError>> = use_resource( move || get_keyword_map() );
   return match (
     &*response_paths.read_unchecked(),
     &*response_skills.read_unchecked(),

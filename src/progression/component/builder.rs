@@ -4,6 +4,8 @@ use std::collections::{HashMap, HashSet};
 use dioxus::prelude::*;
 
 use crate::asset::icon::{IMG_SELECTED, IMG_UNSELECTED};
+use crate::progression::training::TrainingClass;
+use crate::rule::prelude::TermDisplay;
 use crate::server::prelude::GameLibrarySignal;
 use crate::skill::prelude::*;
 use crate::path::Path;
@@ -11,10 +13,18 @@ use crate::progression::fixed::MIN_LEVEL;
 use crate::progression::track::TrackContext;
 use super::level::LevelSelector;
 
+#[derive(Debug, Clone)]
+pub enum BuilderTab {
+  Paths,
+  Growth,
+}
+
+
 #[component]
 pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
   let library = use_context::<GameLibrarySignal>();
   let res_paths = library.get_paths();
+  let mut current_tab: Signal<BuilderTab> = use_signal(|| BuilderTab::Growth);
   let path_map: HashMap<String,Path>;
   match res_paths {
     Some( result) => {path_map = result},
@@ -22,18 +32,75 @@ pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
       div { "Loading" }
     };},
   };
-  TrackContext::use_context_provider();
+  let track = TrackContext::use_context_provider();
   let build_context = BuildContext::use_context_provider();
   let paths = build_context.paths;
   let path_count = paths.len();
+  let level = build_context.level;
+  let stats = track.character.stats( level() );
   rsx! {
-    LevelSelector {}
-    div { "Path Count: {path_count}" }
     div {
-      class: "column",
-      for ( id, path ) in path_map {
-        PathSelector { id, path }
+      class: "row",
+      LevelSelector {}
+      div {
+        onclick: move |_| {
+          current_tab.set(BuilderTab::Paths);
+        },
+        "Paths"
       }
+      div {
+        onclick: move |_| {
+          current_tab.set(BuilderTab::Growth);
+        },
+        "Growth"
+      }
+    }
+    div { "{stats:?}" }
+    match current_tab() {
+      BuilderTab::Paths =>rsx!(
+        div { "Path Count: {path_count}" }
+        div {
+          class: "column",
+          for ( id, path ) in path_map {
+            PathSelector { id, path }
+          }
+        }
+      ),
+      BuilderTab::Growth =>rsx!(
+        GrowthSelector { training:TrainingClass::Adept, level }
+      ),
+    }
+  }
+}
+
+
+#[derive(PartialEq, Props, Clone)]
+struct GrowthSelectorProps {
+  training: TrainingClass,
+  level: ReadOnlySignal<usize>,
+}
+
+#[component]
+pub fn GrowthSelector(props:GrowthSelectorProps) -> Element {
+  let training = props.training;
+  let mut number = use_signal(|| 0);
+  let level = props.level;
+  rsx! {
+    div {
+      class: "path-card row",
+      input {
+        type: "number",
+        value: number(),
+        oninput: move |evt| {
+          let value = evt.value().parse::<usize>().unwrap_or(0);
+          let constrained = if value > level() { level() } else { value };
+          number.set(constrained);
+        },
+        onclick: move |evt| {
+          evt.stop_propagation();
+        }
+      }
+      "{training:?}"
     }
   }
 }
@@ -52,21 +119,7 @@ pub fn PathSelector(props:PathSelectorProps) -> Element {
   let id = props.id;
   let title = path.title;
   let summary = path.summary.unwrap_or( "".to_string() );
-  let skill_ids = path.skill_ids.unwrap_or(Vec::new());
-  let library = use_context::<GameLibrarySignal>();
-  let res_skills = library.get_skills();
-  let ( skills, loading ): (Vec<Skill>,bool) = match res_skills {
-    Some( skill_map ) => {
-      (
-        skill_ids.iter()
-        .map_while(|id| skill_map.get(&id.to_string()))
-        .map(|skill|skill.clone())
-        .collect(),
-        false
-      )
-    },
-    _ => (Vec::new(), true),
-  };
+  let skill_ids: Vec<String> = path.skill_ids.unwrap_or(Vec::new()).iter().map(|x| x.to_string()).collect();
   let mut display: Signal<bool> = use_signal(|| false);
   let behavoir = build.path_behavoir( &id );
   let (class, img_src) = match behavoir {
@@ -92,15 +145,10 @@ pub fn PathSelector(props:PathSelectorProps) -> Element {
     }
     div {
       class: if display() { "path-skill-panels {class}" } else { "hidden" },
-      match loading {
-        true => rsx! { div { "loading" } },
-        _ => rsx! {
-          for skill in skills {
-            div {
-              class: "path-skill-group",
-              SkillDescription { id: skill.id.to_string(), show_terms: false }
-            }
-          }
+      for id in skill_ids {
+        div {
+          class: "path-skill-group",
+          SkillSelector { id }
         }
       }
     }
@@ -116,18 +164,23 @@ struct SkillSelectorProps {
 
 #[component]
 pub fn SkillSelector(props:SkillSelectorProps) -> Element {
-  let mut build = use_context::<BuildContext>();
+  let build = use_context::<BuildContext>();
   let id = props.id;
-  let mut display: Signal<bool> = use_signal(|| false);
   let behavoir = build.skill_behavoir( &id );
-  let (class, img_src) = match behavoir {
-    SelectionState::Unselected => ("", IMG_UNSELECTED),
-    SelectionState::Selected => ("", IMG_SELECTED),
-    SelectionState::Disabled => ("hidden", IMG_UNSELECTED),
-    SelectionState::Invalid => ("disabled", IMG_SELECTED),
-  }.into();
+  let class: &'static str = match behavoir {
+    SelectionState::Unselected => "",
+    SelectionState::Selected => "card-selected",
+    SelectionState::Disabled => "hidden",
+    SelectionState::Invalid => "disabled",
+  };
   rsx! {
     div {
+      class,
+      // onclick: move |evt: Event<MouseData>| {
+      //   evt.stop_propagation();
+      //   build.skill_toggle(&id);
+      // },
+      SkillCard { id: id.clone(), display: TermDisplay::Hover }
     }
   }
 }

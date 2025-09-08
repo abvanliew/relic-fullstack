@@ -25,6 +25,7 @@ pub struct Skill {
   pub sub_actions: Option<Vec<Action>>,
   pub order: RelicOrdering,
   pub paths: Option<Vec<PathRef>>,
+  pub pick_one_keyword: Option<Vec<ObjectId>>,
 }
 
 impl Default for Skill {
@@ -40,6 +41,7 @@ impl Default for Skill {
       sub_actions: None,
       order: Default::default(),
       paths: None,
+      pick_one_keyword: Default::default(),
     }
   }
 }
@@ -49,6 +51,6 @@ pub mod prelude {
   pub use super::aspect::{Keyword, Property, TrainingCost, RelicOrdering};
   pub use super::activation::Action;
   pub use super::duration::Duration;
-  pub use super::component::{SkillDescription, SkillTable};
+  pub use super::component::{SkillDescription, SkillTable, SkillCard};
   pub use super::target::Target;
 }

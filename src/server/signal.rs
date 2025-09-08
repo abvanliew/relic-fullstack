@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use dioxus::prelude::*;
-use crate::{path::Path, server::prelude::list_keywords, skill::{prelude::Keyword, Skill}};
+use crate::{path::Path, server::prelude::get_keyword_map, skill::{prelude::Keyword, Skill}};
 
 use super::{path::get_path_map, skill::get_skill_map};
 
@@ -22,7 +22,7 @@ pub struct GameLibrarySignal {
 
 impl GameLibrarySignal {
   pub fn use_context_provider()-> Self {
-    let keywords_response = use_resource( move || list_keywords() );
+    let keywords_response = use_resource( move || get_keyword_map() );
     let skills_response = use_resource( move || get_skill_map() );
     let paths_response = use_resource( move || get_path_map() );
     use_context_provider( || Self {
