@@ -24,7 +24,7 @@ pub enum BuilderTab {
 pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
   let library = use_context::<GameLibrarySignal>();
   let res_paths = library.get_paths();
-  let mut current_tab: Signal<BuilderTab> = use_signal(|| BuilderTab::Growth);
+  let mut current_tab: Signal<BuilderTab> = use_signal(|| BuilderTab::Paths);
   let path_map: HashMap<String,Path>;
   match res_paths {
     Some( result) => {path_map = result},
@@ -68,6 +68,11 @@ pub fn CharacterProgression( paths: Vec<Path> ) -> Element {
       ),
       BuilderTab::Growth =>rsx!(
         GrowthSelector { training:TrainingClass::Adept, level }
+        GrowthSelector { training:TrainingClass::Endurance, level }
+        GrowthSelector { training:TrainingClass::Expert, level }
+        GrowthSelector { training:TrainingClass::Innate, level }
+        GrowthSelector { training:TrainingClass::Resonance, level }
+        GrowthSelector { training:TrainingClass::Magic, level }
       ),
     }
   }
@@ -82,9 +87,11 @@ struct GrowthSelectorProps {
 
 #[component]
 pub fn GrowthSelector(props:GrowthSelectorProps) -> Element {
+  let track = use_context::<TrackContext>();
   let training = props.training;
   let mut number = use_signal(|| 0);
   let level = props.level;
+  let bonuses = track.training.total_bonus(&training, number());
   rsx! {
     div {
       class: "path-card row",
@@ -100,7 +107,8 @@ pub fn GrowthSelector(props:GrowthSelectorProps) -> Element {
           evt.stop_propagation();
         }
       }
-      "{training:?}"
+      div {"{training:?}"}
+      div {"{bonuses}"}
     }
   }
 }
@@ -122,11 +130,11 @@ pub fn PathSelector(props:PathSelectorProps) -> Element {
   let skill_ids: Vec<String> = path.skill_ids.unwrap_or(Vec::new()).iter().map(|x| x.to_string()).collect();
   let mut display: Signal<bool> = use_signal(|| false);
   let behavoir = build.path_behavoir( &id );
-  let (class, img_src) = match behavoir {
-    SelectionState::Unselected => ("", IMG_UNSELECTED),
-    SelectionState::Selected => ("", IMG_SELECTED),
-    SelectionState::Disabled => ("hidden", IMG_UNSELECTED),
-    SelectionState::Invalid => ("disabled", IMG_SELECTED),
+  let (class, img_src, enabled) = match behavoir {
+    SelectionState::Unselected => ("", IMG_UNSELECTED, false),
+    SelectionState::Selected => ("", IMG_SELECTED, true),
+    SelectionState::Disabled => ("hidden", IMG_UNSELECTED, false),
+    SelectionState::Invalid => ("disabled", IMG_SELECTED, false),
   }.into();
   rsx! {
     div {
@@ -148,7 +156,7 @@ pub fn PathSelector(props:PathSelectorProps) -> Element {
       for id in skill_ids {
         div {
           class: "path-skill-group",
-          SkillSelector { id }
+          SkillSelector { id, enabled }
         }
       }
     }
@@ -159,28 +167,30 @@ pub fn PathSelector(props:PathSelectorProps) -> Element {
 #[derive(PartialEq, Props, Clone)]
 struct SkillSelectorProps {
   id: String,
+  enabled: bool,
 }
 
 
 #[component]
 pub fn SkillSelector(props:SkillSelectorProps) -> Element {
-  let build = use_context::<BuildContext>();
+  let mut build = use_context::<BuildContext>();
   let id = props.id;
   let behavoir = build.skill_behavoir( &id );
-  let class: &'static str = match behavoir {
-    SelectionState::Unselected => "",
-    SelectionState::Selected => "card-selected",
-    SelectionState::Disabled => "hidden",
-    SelectionState::Invalid => "disabled",
+  let (class, enabled) = match (behavoir, props.enabled) {
+    (SelectionState::Unselected, path_enabled) => ("", path_enabled),
+    (SelectionState::Selected, path_enabled) => ("card-selected", path_enabled),
+    (SelectionState::Disabled,_) => ("hidden",false),
+    (SelectionState::Invalid,_) => ("disabled",true),
   };
   rsx! {
     div {
       class,
-      // onclick: move |evt: Event<MouseData>| {
-      //   evt.stop_propagation();
-      //   build.skill_toggle(&id);
-      // },
-      SkillCard { id: id.clone(), display: TermDisplay::Hover }
+      onclick: move |evt: Event<MouseData>| {
+        if !enabled {return;}
+        evt.stop_propagation();
+        build.skill_toggle(&id);
+      },
+      SkillCard { id: id.clone(), display: TermDisplay::TitleOnly }
     }
   }
 }

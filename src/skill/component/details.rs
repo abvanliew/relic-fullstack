@@ -97,16 +97,16 @@ fn ActionDetails( action: Action, display: TermDisplay ) -> Element {
   let activation = action.base();
   let suffix_opt = action.suffix();
   rsx!(
+    if let Some( sub_title ) = action.sub_title {
+      div { class: "uv-full subtitle", "{sub_title}" }
+    }
     div { class: "uv-full inline",
-      if let Some( sub_title ) = action.sub_title {
-        span { class: "subtitle", "{sub_title}" }
-      }
       span { class: "highlight", "{activation} " }
       if let Some( suffix ) = suffix_opt {
-        span { "{suffix} " }
+        span {"{suffix} "}
       }
       if let Some( keywords ) = action.keywords {
-        span { class: "italics", "- {keywords}" }
+        span {class: "italics", "- {keywords}"}
       }
     }
     if let Some( blocks ) = action.condition {

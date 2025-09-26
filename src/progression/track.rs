@@ -1,7 +1,13 @@
 use dioxus::prelude::*;
 
+use crate::progression::training::FlowBonus;
+use crate::progression::training::RankBonus;
 use crate::rule::prelude::*;
 use crate::progression::prelude::*;
+
+use crate::operator::InstanceBonus as I;
+use crate::operator::StackingBonus as S;
+
 
 #[derive(Debug, Clone)]
 pub struct TrackContext {
@@ -160,52 +166,38 @@ pub fn character_growth_track() -> CharacterGrowth {
 pub fn training_growth_track() -> TrainingGrowth {
   return TrainingGrowth {
     expert: vec![
-      CharacterBonus { rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), max_rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), max_rank: Some( 1 ), ..Default::default() },
+      CharacterBonus {expertise: RankBonus {rank: S::plus(1),..Default::default()}, ..Default::default() },
+      CharacterBonus {expertise: RankBonus {rank: S::plus(1),..Default::default()}, hp: S::plus( 1 ), ..Default::default() },
+      CharacterBonus {expertise: RankBonus {max_rank: S::plus(1),..Default::default()}, ..Default::default() },
     ],
     adept: vec![
-      CharacterBonus { hp: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { max_rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { max_rank: Some( 1 ), ..Default::default() },
+      CharacterBonus {hp: S::plus( 1 ), ..Default::default() },
+      CharacterBonus {hp: S::plus( 1 ), capability: RankBonus {rank: S::plus(1),..Default::default()}, ..Default::default() },
+      CharacterBonus {capability: RankBonus {max_rank: S::plus(1),..Default::default()}, ..Default::default() },
     ],
     endurance: vec![
-      CharacterBonus { hp: Some( 2 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 2 ), max_rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 2 ), rank: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), con: Some( 1 ), max_rank: Some( 1 ), ..Default::default() },
+      CharacterBonus {hp: S::plus( 2 ), ..Default::default() },
+      CharacterBonus {hp: S::plus( 1 ), defense: RankBonus {rank: S::plus(1),..Default::default()}, ..Default::default() },
+      CharacterBonus {hp: S::plus( 2 ), defense: RankBonus {max_rank: S::plus(1),..Default::default()}, ..Default::default() },
+      CharacterBonus {hp: S::plus( 1 ), ..Default::default() },
+      CharacterBonus {hp: S::plus( 2 ), defense: RankBonus {rank: S::plus(1),..Default::default()}, ..Default::default() },
+      CharacterBonus {con: S::plus( 1 ), defense: RankBonus {max_rank: S::plus(1),..Default::default()}, ..Default::default() },
     ],
     innate: vec![
-      CharacterBonus { hp: Some( 1 ), pool: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), pool: Some( 1 ), flow: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), pool: Some( 1 ), pool_all: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), pool: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), pool: Some( 1 ), flow: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), pool: Some( 1 ), pool_all: Some( 1 ), ..Default::default() },
+      CharacterBonus { hp: S::plus( 1 ), innate: FlowBonus { pool: S::plus(1), ..Default::default()}, ..Default::default() },
+      CharacterBonus { hp: S::plus( 1 ), innate: FlowBonus { pool: S::plus(1), flow: S::plus(1), ..Default::default()}, ..Default::default() },
+      CharacterBonus { hp: S::plus( 1 ), innate: FlowBonus { pool: S::plus(1), pool_all: S::plus(1), ..Default::default()}, ..Default::default() },
+
     ],
     resonance: vec![
-      CharacterBonus { pool: Some( 1 ), ..Default::default() },
-      CharacterBonus { pool: Some( 1 ), flow: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), pool: Some( 1 ), pool_all: Some( 1 ), ..Default::default() },
-      CharacterBonus { pool: Some( 1 ), ..Default::default() },
-      CharacterBonus { pool: Some( 1 ), flow: Some( 1 ), ..Default::default() },
-      CharacterBonus { hp: Some( 1 ), pool: Some( 1 ), pool_all: Some( 1 ), ..Default::default() },
+      CharacterBonus { resonance: FlowBonus { pool: S::plus(1), ..Default::default()}, ..Default::default() },
+      CharacterBonus { resonance: FlowBonus { pool: S::plus(1), flow: S::plus(1), ..Default::default()}, ..Default::default() },
+      CharacterBonus { resonance: FlowBonus { pool: S::plus(1), pool_all: S::plus(1), ..Default::default()}, hp: S::plus( 1 ), ..Default::default() },
     ],
     magic: vec![
-      CharacterBonus { flow: Some( 1 ), pool: Some( 1 ), ..Default::default() },
-      CharacterBonus { flow: Some( 1 ), pool: Some( 1 ), ..Default::default() },
-      CharacterBonus { flow: Some( 1 ), pool: Some( 1 ), pool_all: Some( 1 ), ..Default::default() },
-      CharacterBonus { flow: Some( 1 ), pool: Some( 1 ), ..Default::default() },
-      CharacterBonus { flow: Some( 1 ), pool: Some( 1 ), ..Default::default() },
-      CharacterBonus { flow: Some( 1 ), pool: Some( 1 ), pool_all: Some( 1 ), ..Default::default() },
+      CharacterBonus { magic: FlowBonus { flow: S::plus( 1 ), pool: S::plus(1), ..Default::default()}, ..Default::default() },
+      CharacterBonus { magic: FlowBonus { flow: S::plus( 1 ), pool: S::plus(1), ..Default::default()}, ..Default::default() },
+      CharacterBonus { magic: FlowBonus { flow: S::plus( 1 ), pool: S::plus(1), pool_all: S::plus(1), ..Default::default()}, ..Default::default() },
     ],
   }
 }

@@ -38,7 +38,7 @@ pub enum Selection {
   Creature,
   Ally,
   Enemy,
-  Space,
+  Space
 }
 
 impl Target {
@@ -65,9 +65,10 @@ impl Target {
   }
 
   pub fn article( &self ) -> String {
-    match &self.selection {
-      Some( Selection::Creature ) | Some( Selection::Space ) => "A",
-      Some( Selection::Ally ) | Some( Selection::Enemy ) => "An",
+    match (&self.selection, &self.custom_selection) {
+      (Some( Selection::Creature ) | Some( Selection::Space ),_) => "A",
+      (Some( Selection::Ally ) | Some( Selection::Enemy ),_) => "An",
+      (_,Some(_)) => "",
       _ => "Some"
     }.into()
   }
