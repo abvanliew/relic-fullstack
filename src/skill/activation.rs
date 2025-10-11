@@ -1,7 +1,7 @@
-use std::collections::HashSet;
-use std::fmt;
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
+use std::fmt;
 
 use crate::character::prelude::*;
 use crate::rule::prelude::*;
@@ -44,7 +44,7 @@ impl Default for Action {
 }
 
 impl Action {
-  pub fn activation( &self ) -> String {
+  pub fn activation(&self) -> String {
     return format!(
       "{} {}",
       self.base(),
@@ -52,31 +52,31 @@ impl Action {
     );
   }
 
-  pub fn base( &self ) -> String {
+  pub fn base(&self) -> String {
     return match self.initial {
-      Some( true ) => format!( "Initial {}", self.class ),
-      _ => format!( "{}", self.class ),
-    }
+      Some(true) => format!("Initial {}", self.class),
+      _ => format!("{}", self.class),
+    };
   }
 
-  pub fn suffix( &self ) -> Option<String> {
+  pub fn suffix(&self) -> Option<String> {
     return match (&self.class, &self.extended_duration) {
-      ( Activation::ExtendedAction, Some( duration ) ) => Some(format!( "{}", duration )),
-      ( Activation::ExtendedAction, _ ) => Some("Undefined".to_string()),
+      (Activation::ExtendedAction, Some(duration)) => Some(format!("{}", duration)),
+      (Activation::ExtendedAction, _) => Some("Undefined".to_string()),
       _ => None,
-    }
+    };
   }
 
-  pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
+  pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
-    if let Some( snippets ) = &self.condition {
+    if let Some(snippets) = &self.condition {
       for snippet in snippets {
-        ids.extend( snippet.get_keyword_ids() );
+        ids.extend(snippet.get_keyword_ids());
       }
     }
-    if let Some( snippets ) = &self.rules {
+    if let Some(snippets) = &self.rules {
       for snippet in snippets {
-        ids.extend( snippet.get_keyword_ids() );
+        ids.extend(snippet.get_keyword_ids());
       }
     }
     return ids;
@@ -97,17 +97,21 @@ pub enum Activation {
 }
 
 impl fmt::Display for Activation {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "{}", match self {
-      Activation::Boon => "Boon",
-      Activation::Action => "Action",
-      Activation::Interaction => "Interaction",
-      Activation::Reaction => "Reaction",
-      Activation::Reflex => "Reflex",
-      Activation::Trigger => "Trigger",
-      Activation::ComplexAction => "Complex Action",
-      Activation::ExtendedAction => "Extended Action",
-      Activation::FreeAction => "Free Action",
-    } )
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
+        Activation::Boon => "Boon",
+        Activation::Action => "Action",
+        Activation::Interaction => "Interaction",
+        Activation::Reaction => "Reaction",
+        Activation::Reflex => "Reflex",
+        Activation::Trigger => "Trigger",
+        Activation::ComplexAction => "Complex Action",
+        Activation::ExtendedAction => "Extended Action",
+        Activation::FreeAction => "Free Action",
+      }
+    )
   }
 }

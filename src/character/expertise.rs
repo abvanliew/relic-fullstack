@@ -1,6 +1,6 @@
+use crate::rule::components::Modifier;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
-use crate::rule::components::Modifier;
 
 use super::sheet::AttributeRow;
 
@@ -13,15 +13,16 @@ pub struct ExpertiseEntry {
 }
 
 #[component]
-pub fn ExpertiseComponent( entry: ExpertiseEntry ) -> Element {
-  return match ( entry.title, entry.ranks, entry.empty ) {
-    ( _, _, Some( true ), ) => rsx!( div { class: "solid-underline full lh" } ),
-    ( Some( title ), Some( rank ), _ ) => rsx!(
-      AttributeRow {
-        name: title, name_class: "highlight",
-        element: rsx!( Modifier { value: rank } ),
-      }
-    ),
-    _ => rsx!( "Undefined" ),
-  }
+pub fn ExpertiseComponent(entry: ExpertiseEntry) -> Element {
+  return match (entry.title, entry.ranks, entry.empty) {
+    (_, _, Some(true)) => rsx!(div {
+      class: "solid-underline full lh"
+    }),
+    (Some(title), Some(rank), _) => rsx!(AttributeRow {
+      name: title,
+      name_class: "highlight",
+      element: rsx!(Modifier { value: rank }),
+    }),
+    _ => rsx!("Undefined"),
+  };
 }

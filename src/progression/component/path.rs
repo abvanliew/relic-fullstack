@@ -2,16 +2,18 @@ use dioxus::prelude::*;
 
 // use crate::progression::component::builder::BuildContext;
 // use crate::progression::component::qualifiers::BuildQualifiers;
+use crate::path::Path;
 use crate::progression::track::TrackContext;
 use crate::rule::prelude::Tier;
-use crate::path::{ Path};
 
 #[component]
-pub fn PathSelections( paths: Vec<Path>, tier: Tier, level: ReadOnlySignal<usize> ) -> Element {
-  let ( _inherient, selectable ): (Vec<Path>, Vec<Path>) = paths.clone().into_iter()
-  .partition( |p|  p.inherient.unwrap_or( false ) );
+pub fn PathSelections(paths: Vec<Path>, tier: Tier, level: ReadOnlySignal<usize>) -> Element {
+  let (_inherient, selectable): (Vec<Path>, Vec<Path>) = paths
+    .clone()
+    .into_iter()
+    .partition(|p| p.inherient.unwrap_or(false));
   let track = use_context::<TrackContext>();
-  let stats = use_memo( move || track.character.stats( level() ) );
+  let stats = use_memo(move || track.character.stats(level()));
   rsx! {
     div { "PathSelections {stats:?}" }
     div { "Level {level}" }
@@ -29,7 +31,7 @@ pub fn PathSelections( paths: Vec<Path>, tier: Tier, level: ReadOnlySignal<usize
 }
 
 #[component]
-pub fn PathSelector( path: Path ) -> Element {
+pub fn PathSelector(path: Path) -> Element {
   // let build = use_context::<BuildContext>();
   // let stats = BuildQualifiers::use_memo_stats();
   // let mut current = build.paths;

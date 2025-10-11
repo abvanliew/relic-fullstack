@@ -1,6 +1,6 @@
-use std::{cmp::min, fmt};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::{cmp::min, fmt};
 
 use crate::character::sheet::BoxRow;
 
@@ -14,12 +14,16 @@ pub enum Flow {
 }
 
 impl fmt::Display for Flow {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "{}", match self {
-      Flow::Innate => "Innate",
-      Flow::Resonance => "Resonance",
-      Flow::Magic => "Magic",
-    } )
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
+        Flow::Innate => "Innate",
+        Flow::Resonance => "Resonance",
+        Flow::Magic => "Magic",
+      }
+    )
   }
 }
 
@@ -41,7 +45,7 @@ pub struct ResourceStat {
 }
 
 #[component]
-pub fn FlowResourcesBlock( flows: ReadOnlySignal<Vec<FlowStat>>) -> Element {
+pub fn FlowResourcesBlock(flows: ReadOnlySignal<Vec<FlowStat>>) -> Element {
   rsx!(
     div {
       class: "grid dim-resources",
@@ -53,7 +57,7 @@ pub fn FlowResourcesBlock( flows: ReadOnlySignal<Vec<FlowStat>>) -> Element {
 }
 
 #[component]
-pub fn FlowBlock( flow: ReadOnlySignal<FlowStat>) -> Element {
+pub fn FlowBlock(flow: ReadOnlySignal<FlowStat>) -> Element {
   let read_flow = flow.read().clone();
   let name = read_flow.flow;
   let flow_value = read_flow.base;
@@ -72,14 +76,14 @@ pub fn FlowBlock( flow: ReadOnlySignal<FlowStat>) -> Element {
     div {
       class: "min-height"
     }
-  )
+  );
 }
 
 #[component]
-pub fn ResourcePoolEntry( pool: ReadOnlySignal<ResourceStat>, flow_value: i32 ) -> Element {
+pub fn ResourcePoolEntry(pool: ReadOnlySignal<ResourceStat>, flow_value: i32) -> Element {
   let read_pool = pool.read().clone();
   let resource = read_pool.resource.with_drain();
-  let pool_flow = min( read_pool.base, flow_value );
+  let pool_flow = min(read_pool.base, flow_value);
   let pool_reserves = read_pool.base - pool_flow;
   return rsx!(
     div { class: "uv-title bumper", "{resource}" }
@@ -91,5 +95,5 @@ pub fn ResourcePoolEntry( pool: ReadOnlySignal<ResourceStat>, flow_value: i32 ) 
       class: "uv-reserves",
       BoxRow { count: pool_reserves }
     }
-  )
+  );
 }

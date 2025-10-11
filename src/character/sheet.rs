@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
+use bson::oid::ObjectId;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
-use bson::oid::ObjectId;
 
 use crate::character::expertise::ExpertiseComponent;
 use crate::character::flow::FlowResourcesBlock;
@@ -10,16 +10,16 @@ use crate::character::flow::FlowResourcesBlock;
 // use crate::rule::prelude::*;
 use crate::equipment::armor::Armor;
 use crate::equipment::weapon::{Weapon, WeaponEntry};
-use crate::skill::prelude::*;
 use crate::path::Path;
 use crate::rule::components::Modifier;
+use crate::skill::prelude::*;
 use crate::Route;
 
-use super::resistance::ResistanceDetails;
-use super::attribute::*;
 use super::aspects::{BodyStats, TrainingRanks};
+use super::attribute::*;
 use super::expertise::ExpertiseEntry;
 use super::flow::FlowStat;
+use super::resistance::ResistanceDetails;
 use super::resistance::Resistances;
 
 const DASH_SPEED: i32 = 3;
@@ -48,14 +48,18 @@ pub fn SheetTable(
   sheets: Vec<CharacterSheet>,
   skills: Vec<Skill>,
   paths: Vec<Path>,
-  keywords: ReadOnlySignal<HashMap<String,Keyword>>,
+  keywords: ReadOnlySignal<HashMap<String, Keyword>>,
   named_url: bool,
 ) -> Element {
-  rsx!(
-    for sheet in sheets {
-      SheetDetails { sheet, skills: skills.clone(), paths: paths.clone(), keywords, named_url }
+  rsx!(for sheet in sheets {
+    SheetDetails {
+      sheet,
+      skills: skills.clone(),
+      paths: paths.clone(),
+      keywords,
+      named_url,
     }
-  )
+  })
 }
 
 #[component]
@@ -63,40 +67,49 @@ pub fn SheetDetails(
   sheet: CharacterSheet,
   skills: Vec<Skill>,
   paths: Vec<Path>,
-  keywords: ReadOnlySignal<HashMap<String,Keyword>>,
+  keywords: ReadOnlySignal<HashMap<String, Keyword>>,
   named_url: bool,
 ) -> Element {
   let id = sheet.id.to_string();
   let name = sheet.name;
   let mut path_names: Vec<String> = Vec::new();
   for path in &sheet.paths {
-    let results: Vec<Path> = paths.clone().into_iter().filter(|p| p.id == *path ).collect();
-    if results.len() != 1 { continue; }
-    path_names.push( results[0].title.clone() );
+    let results: Vec<Path> = paths
+      .clone()
+      .into_iter()
+      .filter(|p| p.id == *path)
+      .collect();
+    if results.len() != 1 {
+      continue;
+    }
+    path_names.push(results[0].title.clone());
   }
   let joined_paths = path_names.join(", ");
   let attributes = sheet.attributes.clone();
   let armor: Option<Armor> = sheet.armor.clone();
   let mut selected_skills: Vec<Skill> = Vec::new();
-  selected_skills.resize( sheet.skills.len(), Skill::default() );
+  selected_skills.resize(sheet.skills.len(), Skill::default());
   let mut match_count: usize = 0;
   'outer: for i in 0..skills.len() {
     for c in 0..sheet.skills.len() {
-      if skills[i].id != sheet.skills[c] { continue; }
+      if skills[i].id != sheet.skills[c] {
+        continue;
+      }
       selected_skills[c] = skills[i].clone();
       match_count += 1;
-      if match_count == sheet.skills.len() { break 'outer; }
+      if match_count == sheet.skills.len() {
+        break 'outer;
+      }
       break;
     }
   }
   let hp = sheet.body.hp;
-  let ( dodge, speed, dash, armor_equiped, armored_resistances ) =
-    calc_dodge_speed_resistances(
-      attributes.tenacity,
-      sheet.body.speed,
-      sheet.resistances.clone().unwrap_or_default(),
-      &sheet.armor,
-    );
+  let (dodge, speed, dash, armor_equiped, armored_resistances) = calc_dodge_speed_resistances(
+    attributes.tenacity,
+    sheet.body.speed,
+    sheet.resistances.clone().unwrap_or_default(),
+    &sheet.armor,
+  );
   let opt_weapons = sheet.weapons;
   let opt_flows = sheet.flows;
   rsx!(
@@ -191,7 +204,7 @@ pub fn SheetDetails(
 }
 
 #[component]
-pub fn AttributeRow( name: String, name_class: String, element: Element ) -> Element {
+pub fn AttributeRow(name: String, name_class: String, element: Element) -> Element {
   rsx!(
     div {
       class: "row full",
@@ -207,24 +220,33 @@ pub fn AttributeRow( name: String, name_class: String, element: Element ) -> Ele
   )
 }
 
-fn calc_dodge_speed_resistances( tenacity: i32, speed: i32, resistances: Resistances, armor: &Option<Armor>, ) -> ( i32, i32, i32, bool, Resistances ) {
+fn calc_dodge_speed_resistances(
+  tenacity: i32,
+  speed: i32,
+  resistances: Resistances,
+  armor: &Option<Armor>,
+) -> (i32, i32, i32, bool, Resistances) {
   if armor.is_none() || armor.as_ref().unwrap().tenacity_requirement > tenacity {
-    return ( tenacity, speed, DASH_SPEED, false, resistances );
+    return (tenacity, speed, DASH_SPEED, false, resistances);
   }
   let worn_armor = armor.as_ref().unwrap();
   let net_tenacity = tenacity - worn_armor.tenacity_requirement;
-  let speed_penalty = worn_armor.speed_penalty.unwrap_or( 0 );
-  let ( dodge, net_speed, net_dash ) = match net_tenacity.cmp( &speed_penalty ) {
-    std::cmp::Ordering::Less => ( 0, speed - speed_penalty + net_tenacity, DASH_SPEED - speed_penalty + net_tenacity ),
-    std::cmp::Ordering::Equal => ( 0, speed, DASH_SPEED ),
-    std::cmp::Ordering::Greater => ( net_tenacity - speed_penalty, speed, DASH_SPEED ),
+  let speed_penalty = worn_armor.speed_penalty.unwrap_or(0);
+  let (dodge, net_speed, net_dash) = match net_tenacity.cmp(&speed_penalty) {
+    std::cmp::Ordering::Less => (
+      0,
+      speed - speed_penalty + net_tenacity,
+      DASH_SPEED - speed_penalty + net_tenacity,
+    ),
+    std::cmp::Ordering::Equal => (0, speed, DASH_SPEED),
+    std::cmp::Ordering::Greater => (net_tenacity - speed_penalty, speed, DASH_SPEED),
   };
-  let armored_resistances = resistances.with_armor( &armor );
-  return ( dodge, net_speed, net_dash, true, armored_resistances );
+  let armored_resistances = resistances.with_armor(&armor);
+  return (dodge, net_speed, net_dash, true, armored_resistances);
 }
 
 #[component]
-pub fn AttributeBlock( attributes: AttributeRanks, dodge: i32 ) -> Element {
+pub fn AttributeBlock(attributes: AttributeRanks, dodge: i32) -> Element {
   rsx!(
     div {
       class: "uv-capabilities column",
@@ -273,9 +295,8 @@ pub fn AttributeBlock( attributes: AttributeRanks, dodge: i32 ) -> Element {
   )
 }
 
-
 #[component]
-pub fn ConstitutionRow( constitution: i32 ) -> Element {
+pub fn ConstitutionRow(constitution: i32) -> Element {
   rsx!(
     div { "Constituion {constitution}" }
     BoxRow { count: constitution }
@@ -283,7 +304,7 @@ pub fn ConstitutionRow( constitution: i32 ) -> Element {
 }
 
 #[component]
-pub fn BoxRow( count: i32 ) -> Element {
+pub fn BoxRow(count: i32) -> Element {
   rsx!(
     div {
       class: "box-row",

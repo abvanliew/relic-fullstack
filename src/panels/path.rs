@@ -1,13 +1,14 @@
-use dioxus::prelude::*;
 use crate::path::components::PathDescription;
-use crate::server::prelude::*;
 use crate::path::Path;
+use crate::server::prelude::*;
+use dioxus::prelude::*;
 
 #[component]
 pub fn PathList() -> Element {
-  let response: Resource<Result<Vec<Path>, ServerFnError>> = use_resource( move || list_path_skills() );
+  let response: Resource<Result<Vec<Path>, ServerFnError>> =
+    use_resource(move || list_path_skills());
   match &*response.read_unchecked() {
-    Some( Ok( paths ) ) => {
+    Some(Ok(paths)) => {
       rsx! {
         div {
           class: "grid dim-paths",
@@ -17,9 +18,11 @@ pub fn PathList() -> Element {
         }
       }
     }
-    Some( Err(err) ) => {
+    Some(Err(err)) => {
       rsx! { "An error occurred when loading paths: {err}" }
     }
-    None => { rsx! { "Loading paths" } }
+    None => {
+      rsx! { "Loading paths" }
+    }
   }
 }

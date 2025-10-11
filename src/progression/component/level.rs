@@ -2,7 +2,10 @@ use dioxus::prelude::*;
 
 // use crate::progression::growth::LevelStats;
 // use crate::progression::track::TrackContext;
-use crate::progression::{component::builder::BuildContext, fixed::{MAX_LEVEL, MIN_LEVEL}};
+use crate::progression::{
+  component::builder::BuildContext,
+  fixed::{MAX_LEVEL, MIN_LEVEL},
+};
 
 #[derive(Debug, Clone)]
 pub struct LevelContext {
@@ -10,9 +13,9 @@ pub struct LevelContext {
 }
 
 impl LevelContext {
-  pub fn use_context_provider()-> Self {
-    let level = use_signal( || MIN_LEVEL );
-    use_context_provider( || Self{ level }  )
+  pub fn use_context_provider() -> Self {
+    let level = use_signal(|| MIN_LEVEL);
+    use_context_provider(|| Self { level })
   }
 }
 

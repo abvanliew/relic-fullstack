@@ -1,9 +1,9 @@
-use dioxus::prelude::*;
-use crate::Route;
 use crate::skill::prelude::*;
+use crate::Route;
+use dioxus::prelude::*;
 
 #[component]
-pub fn SkillTable( skills: Vec<Skill>, training: bool ) -> Element {
+pub fn SkillTable(skills: Vec<Skill>, training: bool) -> Element {
   rsx! {
     for skill in skills {
       SkillSummary { skill: skill.to_owned(), training }
@@ -12,12 +12,12 @@ pub fn SkillTable( skills: Vec<Skill>, training: bool ) -> Element {
 }
 
 #[component]
-pub fn SkillSummary( skill: ReadOnlySignal<Skill>, training: bool ) -> Element {
+pub fn SkillSummary(skill: ReadOnlySignal<Skill>, training: bool) -> Element {
   let title = skill.read().title.clone();
   let id = skill.read().id.to_string();
   let training_cost = skill.read().training_cost.to_string();
   let activation = skill.read().action.activation();
-  let summary = skill.read().summary.clone().unwrap_or( "".into() );
+  let summary = skill.read().summary.clone().unwrap_or("".into());
   rsx!(
     div {
       class: "uv-title",
@@ -41,7 +41,7 @@ pub fn SkillSummary( skill: ReadOnlySignal<Skill>, training: bool ) -> Element {
 }
 
 #[component]
-pub fn SkillTile( skill: ReadOnlySignal<Skill> ) -> Element {
+pub fn SkillTile(skill: ReadOnlySignal<Skill>) -> Element {
   let title = skill.read().title.clone();
   let activation = skill.read().action.activation();
   rsx!(

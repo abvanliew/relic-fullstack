@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 #[component]
-pub fn Modifier( value: i32 ) -> Element {
+pub fn Modifier(value: i32) -> Element {
   rsx! {
     span {
       match value >= 0 {

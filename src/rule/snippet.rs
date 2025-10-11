@@ -1,10 +1,10 @@
 use std::collections::HashSet;
 
-use serde::{ Deserialize, Serialize };
-use crate::rule::{prelude::*};
 use super::internal::*;
-use dioxus::prelude::*;
+use crate::rule::prelude::*;
 use bson::oid::ObjectId;
+use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
 
 pub type RulesSnippet = Vec<Snippet>;
 
@@ -16,11 +16,11 @@ pub struct Snippet {
 }
 
 impl Snippet {
-  pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
+  pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
-    if let Some( term ) = &self.term {
-      if let Some( keyword_id ) = term.keyword_id {
-        ids.insert( keyword_id );
+    if let Some(term) = &self.term {
+      if let Some(keyword_id) = term.keyword_id {
+        ids.insert(keyword_id);
       }
     }
     return ids;
@@ -28,7 +28,7 @@ impl Snippet {
 }
 
 #[component]
-pub fn RulesSpippetDetail( snippets: RulesSnippet, display: TermDisplay ) -> Element {
+pub fn RulesSpippetDetail(snippets: RulesSnippet, display: TermDisplay) -> Element {
   rsx!(
     div {
       class: "inline",
@@ -40,10 +40,10 @@ pub fn RulesSpippetDetail( snippets: RulesSnippet, display: TermDisplay ) -> Ele
 }
 
 #[component]
-pub fn SnippetDetail( snippet: Snippet, display: TermDisplay ) -> Element {
+pub fn SnippetDetail(snippet: Snippet, display: TermDisplay) -> Element {
   let id = match snippet.term {
-    Some( ref term ) => match term.keyword_id {
-      Some( id ) => Some( id.to_string() ),
+    Some(ref term) => match term.keyword_id {
+      Some(id) => Some(id.to_string()),
       _ => None,
     },
     None => None,
@@ -62,6 +62,6 @@ pub fn SnippetDetail( snippet: Snippet, display: TermDisplay ) -> Element {
 }
 
 #[component]
-pub fn TextSnippet( text: String ) -> Element {
-  return rsx!( span { "{text} " } )
+pub fn TextSnippet(text: String) -> Element {
+  return rsx!( span { "{text} " } );
 }

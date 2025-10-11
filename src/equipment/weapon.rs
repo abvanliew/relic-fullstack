@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
 use crate::{character::prelude::DamageClass, rule::prelude::*};
@@ -25,17 +25,21 @@ pub enum WeaponClass {
 }
 
 impl fmt::Display for WeaponClass {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "{}", match self {
-      WeaponClass::Melee => "Melee",
-      WeaponClass::Thrown => "Thrown",
-      WeaponClass::Ranged => "Ranged",
-    } )
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
+        WeaponClass::Melee => "Melee",
+        WeaponClass::Thrown => "Thrown",
+        WeaponClass::Ranged => "Ranged",
+      }
+    )
   }
 }
 
 #[component]
-pub fn WeaponEntry( weapon: ReadOnlySignal<Weapon> ) -> Element {
+pub fn WeaponEntry(weapon: ReadOnlySignal<Weapon>) -> Element {
   let weapon_signal = weapon.read().clone();
   let title = weapon_signal.title;
   let class = weapon_signal.class;

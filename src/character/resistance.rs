@@ -1,13 +1,13 @@
 use std::{cmp::max, fmt};
 
+use crate::{character::sheet::AttributeRow, equipment::armor::Armor};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
-use crate::{character::sheet::AttributeRow, equipment::armor::Armor};
 
 const BASE_RESIST: i32 = 3;
 
 #[component]
-pub fn ResistanceDetails( resistances: Resistances ) -> Element {
+pub fn ResistanceDetails(resistances: Resistances) -> Element {
   let mut display_physical = use_signal(|| false);
   let mut display_elemental = use_signal(|| false);
   let mut display_esoteric = use_signal(|| false);
@@ -52,8 +52,8 @@ pub fn ResistanceDetails( resistances: Resistances ) -> Element {
 }
 
 #[component]
-fn SubResistance( details: ( String, i32, bool ), display: bool ) -> Element {
-  let ( name, value, show ) = details;
+fn SubResistance(details: (String, i32, bool), display: bool) -> Element {
+  let (name, value, show) = details;
   rsx!(
     div {
       class: if show || display { "row full" } else { "hidden" },
@@ -84,20 +84,22 @@ pub struct Resistances {
 }
 
 impl Resistances {
-  pub fn with_armor( &self, armor: &Option<Armor> ) -> Self {
+  pub fn with_armor(&self, armor: &Option<Armor>) -> Self {
     return Self {
-      physical: match ( self.physical, armor ) {
-        ( Some( resist_value ), Some( worn_armor ) ) =>
-          Some( max( resist_value, worn_armor.physical_resistance + BASE_RESIST ) ),
-        ( Some( resist_value ), None ) => Some( resist_value ),
-        ( None, Some( worn_armor ) ) => Some( worn_armor.physical_resistance + BASE_RESIST ),
-        ( None, None ) => None,
+      physical: match (self.physical, armor) {
+        (Some(resist_value), Some(worn_armor)) => Some(max(
+          resist_value,
+          worn_armor.physical_resistance + BASE_RESIST,
+        )),
+        (Some(resist_value), None) => Some(resist_value),
+        (None, Some(worn_armor)) => Some(worn_armor.physical_resistance + BASE_RESIST),
+        (None, None) => None,
       },
       ..self.clone()
-    }
+    };
   }
 
-  fn category_ref( &self, category: &DamageCategory ) -> &Option<i32> {
+  fn category_ref(&self, category: &DamageCategory) -> &Option<i32> {
     match category {
       DamageCategory::Physical => &self.physical,
       DamageCategory::Elemental => &self.elemental,
@@ -105,7 +107,7 @@ impl Resistances {
     }
   }
 
-  fn damage_ref( &self, damage: &DamageClass ) -> &Option<i32> {
+  fn damage_ref(&self, damage: &DamageClass) -> &Option<i32> {
     match damage {
       DamageClass::Bashing => &self.bashing,
       DamageClass::Slashing => &self.slashing,
@@ -122,15 +124,19 @@ impl Resistances {
     }
   }
 
-  pub fn get_category( &self, category: &DamageCategory ) -> i32 {
-    return self.category_ref( category ).unwrap_or( BASE_RESIST )
+  pub fn get_category(&self, category: &DamageCategory) -> i32 {
+    return self.category_ref(category).unwrap_or(BASE_RESIST);
   }
 
-  pub fn show_damage( &self, damage: &DamageClass ) -> ( String, i32, bool ) {
-    return match self.damage_ref( damage ) {
-      Some( resist) => ( damage.to_string(), *resist, true ),
-      None => ( damage.to_string(), self.get_category( &damage.category() ), false ),
-    }
+  pub fn show_damage(&self, damage: &DamageClass) -> (String, i32, bool) {
+    return match self.damage_ref(damage) {
+      Some(resist) => (damage.to_string(), *resist, true),
+      None => (
+        damage.to_string(),
+        self.get_category(&damage.category()),
+        false,
+      ),
+    };
   }
 }
 
@@ -159,8 +165,11 @@ pub enum DamageClass {
 }
 
 impl fmt::Display for DamageClass {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "{}", match self {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
         DamageClass::Acid => "Acid",
         DamageClass::Bashing => "Bashing",
         DamageClass::Slashing => "Slashing",
@@ -173,25 +182,26 @@ impl fmt::Display for DamageClass {
         DamageClass::Radiant => "Radiant",
         DamageClass::Necrotic => "Necrotic",
         DamageClass::Psionic => "Psionic",
-    } )
+      }
+    )
   }
 }
 
 impl DamageClass {
-  fn category( &self ) -> DamageCategory {
+  fn category(&self) -> DamageCategory {
     match self {
       // Physical
       DamageClass::Bashing => DamageCategory::Physical,
       DamageClass::Slashing => DamageCategory::Physical,
       DamageClass::Piercing => DamageCategory::Physical,
-  
+
       // Elemental
       DamageClass::Fire => DamageCategory::Elemental,
       DamageClass::Cold => DamageCategory::Elemental,
       DamageClass::Lighting => DamageCategory::Elemental,
       DamageClass::Thunder => DamageCategory::Elemental,
       DamageClass::Acid => DamageCategory::Elemental,
-  
+
       // Esoteric
       DamageClass::Force => DamageCategory::Esoteric,
       DamageClass::Radiant => DamageCategory::Esoteric,

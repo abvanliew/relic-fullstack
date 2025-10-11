@@ -1,9 +1,9 @@
+use super::Skill;
+use crate::rule::prelude::*;
+use bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt;
-use serde::{Deserialize, Serialize};
-use bson::oid::ObjectId;
-use crate::rule::prelude::*;
-use super::Skill;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, PartialOrd)]
 pub enum TrainingCost {
@@ -12,19 +12,23 @@ pub enum TrainingCost {
   Full,
   Half,
   Cantrip,
-  Spell
+  Spell,
 }
 
 impl fmt::Display for TrainingCost {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "{}", match self {
-      TrainingCost::Inherient => "Inherient",
-      TrainingCost::Full => "Feature",
-      TrainingCost::Half => "Minor Feature",
-      TrainingCost::Keystone => "Keystone",
-      TrainingCost::Cantrip => "Cantrip",
-      TrainingCost::Spell => "Spell",
-    } )
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
+        TrainingCost::Inherient => "Inherient",
+        TrainingCost::Full => "Feature",
+        TrainingCost::Half => "Minor Feature",
+        TrainingCost::Keystone => "Keystone",
+        TrainingCost::Cantrip => "Cantrip",
+        TrainingCost::Spell => "Spell",
+      }
+    )
   }
 }
 
@@ -61,7 +65,7 @@ pub struct Keyword {
 }
 
 impl Skill {
-  pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
+  pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     return self.action.get_keyword_ids();
   }
 }
@@ -74,10 +78,10 @@ pub struct Property {
 }
 
 impl Property {
-  pub fn get_keyword_ids( &self ) -> HashSet<ObjectId> {
+  pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
     for rule in &self.rules {
-      ids.extend( rule.get_keyword_ids() );
+      ids.extend(rule.get_keyword_ids());
     }
     return ids;
   }

@@ -1,15 +1,15 @@
 pub mod components;
-mod keystone;
 mod feature;
+mod keystone;
 mod skills;
 
 use feature::Feature;
 
 use keystone::Keystone;
 
-use std::cmp::Ordering;
-use serde::{Deserialize, Serialize};
 use bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
+use std::cmp::Ordering;
 
 use crate::rule::prelude::*;
 use crate::skill::prelude::*;
@@ -48,7 +48,10 @@ impl PartialOrd for Path {
   }
 
   fn le(&self, other: &Self) -> bool {
-    matches!(self.partial_cmp(other), Some(Ordering::Less | Ordering::Equal))
+    matches!(
+      self.partial_cmp(other),
+      Some(Ordering::Less | Ordering::Equal)
+    )
   }
 
   fn gt(&self, other: &Self) -> bool {
@@ -56,6 +59,9 @@ impl PartialOrd for Path {
   }
 
   fn ge(&self, other: &Self) -> bool {
-    matches!(self.partial_cmp(other), Some(Ordering::Greater | Ordering::Equal))
+    matches!(
+      self.partial_cmp(other),
+      Some(Ordering::Greater | Ordering::Equal)
+    )
   }
 }

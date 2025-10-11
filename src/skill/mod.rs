@@ -4,12 +4,12 @@ pub mod component;
 mod duration;
 mod target;
 
-use serde::{Deserialize, Serialize};
 use bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
 
+use crate::rule::prelude::*;
 use activation::Action;
 use aspect::*;
-use crate::rule::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -47,10 +47,10 @@ impl Default for Skill {
 }
 
 pub mod prelude {
-  pub use super::Skill;
-  pub use super::aspect::{Keyword, Property, TrainingCost, RelicOrdering};
   pub use super::activation::Action;
+  pub use super::aspect::{Keyword, Property, RelicOrdering, TrainingCost};
+  pub use super::component::{SkillCard, SkillDescription, SkillTable};
   pub use super::duration::Duration;
-  pub use super::component::{SkillDescription, SkillTable, SkillCard};
   pub use super::target::Target;
+  pub use super::Skill;
 }

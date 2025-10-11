@@ -1,5 +1,5 @@
-use std::fmt;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 use crate::rule::prelude::*;
 // use super::flow::Flow;
@@ -20,26 +20,30 @@ pub enum ResourcePool {
 }
 
 impl fmt::Display for ResourcePool {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "{}", match self {
-      ResourcePool::Anointment => "Anointment",
-      ResourcePool::Animalism => "Animalism",
-      ResourcePool::Sanguine => "Sanguine",
-      ResourcePool::Rage => "Rage",
-      ResourcePool::Channel => "Channel",
-      ResourcePool::Ki => "Ki",
-      ResourcePool::Mastery => "Mastery",
-      ResourcePool::Virtuoso => "Virtuoso",
-      ResourcePool::MinorMana => "Minor Mana",
-      ResourcePool::ModerateMana => "Moderate Mana",
-      ResourcePool::MajorMana => "Major Mana",
-    } )
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
+        ResourcePool::Anointment => "Anointment",
+        ResourcePool::Animalism => "Animalism",
+        ResourcePool::Sanguine => "Sanguine",
+        ResourcePool::Rage => "Rage",
+        ResourcePool::Channel => "Channel",
+        ResourcePool::Ki => "Ki",
+        ResourcePool::Mastery => "Mastery",
+        ResourcePool::Virtuoso => "Virtuoso",
+        ResourcePool::MinorMana => "Minor Mana",
+        ResourcePool::ModerateMana => "Moderate Mana",
+        ResourcePool::MajorMana => "Major Mana",
+      }
+    )
   }
 }
 
 impl ResourcePool {
-  pub fn with_drain( &self ) -> String {
-    return format!( "{} ({})", self, self.drain() )
+  pub fn with_drain(&self) -> String {
+    return format!("{} ({})", self, self.drain());
   }
 
   // pub fn ordered() -> [ResourcePool; 11] { [
@@ -48,7 +52,7 @@ impl ResourcePool {
   //   ResourcePool::MinorMana, ResourcePool::ModerateMana, ResourcePool::MajorMana,
   // ] }
 
-  pub fn drain( &self ) -> String {
+  pub fn drain(&self) -> String {
     match self {
       ResourcePool::Anointment => "d6",
       ResourcePool::Animalism => "d8",
@@ -61,7 +65,8 @@ impl ResourcePool {
       ResourcePool::MinorMana => "d10",
       ResourcePool::ModerateMana => "d10 **1-3",
       ResourcePool::MajorMana => "d10 **1-4",
-    }.into()
+    }
+    .into()
   }
 
   // pub fn flow( &self ) -> Flow {
@@ -91,37 +96,55 @@ pub struct ResourceCost {
 }
 
 impl ResourceCost {
-  pub fn format( &self, drain: bool ) -> String {
+  pub fn format(&self, drain: bool) -> String {
     let mut components: Vec<String> = Vec::new();
-    let drain_option = if drain { Some( self.resource.drain() ) } else { None };
-    if let Some( base ) = self.base_cost {
-      components.push(
-        cost_format( base, self.resource.to_string(), drain_option.clone(), false )
-      );
+    let drain_option = if drain {
+      Some(self.resource.drain())
+    } else {
+      None
+    };
+    if let Some(base) = self.base_cost {
+      components.push(cost_format(
+        base,
+        self.resource.to_string(),
+        drain_option.clone(),
+        false,
+      ));
     }
-    if let Some( charge ) = self.charge_cost {
-      components.push(
-        cost_format( charge, self.resource.to_string(), drain_option, true )
-      );
+    if let Some(charge) = self.charge_cost {
+      components.push(cost_format(
+        charge,
+        self.resource.to_string(),
+        drain_option,
+        true,
+      ));
     }
-    return components.join( " plus " );
+    return components.join(" plus ");
   }
 
-  pub fn simple( &self ) -> String { return self.format( false ); }
+  pub fn simple(&self) -> String {
+    return self.format(false);
+  }
 }
 
 impl fmt::Display for ResourceCost {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "{}", self.format( true ) )
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "{}", self.format(true))
   }
 }
 
-fn cost_format( cost: i32, name: String, drain: Option<String>, per_charge: bool ) -> String {
+fn cost_format(cost: i32, name: String, drain: Option<String>, per_charge: bool) -> String {
   let drain_details = match &drain {
-    Some( text ) => format!( " ({}{})", cost, text ),
-    _ => "".into()
+    Some(text) => format!(" ({}{})", cost, text),
+    _ => "".into(),
   };
-  format!( "{} {}{}{}", cost, name, drain_details, if per_charge { " per charge" } else { "" } )
+  format!(
+    "{} {}{}{}",
+    cost,
+    name,
+    drain_details,
+    if per_charge { " per charge" } else { "" }
+  )
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]

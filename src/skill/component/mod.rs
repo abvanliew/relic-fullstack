@@ -1,5 +1,5 @@
 mod details;
 mod summary;
 
-pub use details::{SkillDescription, SkillCard};
+pub use details::{SkillCard, SkillDescription};
 pub use summary::SkillTable;

@@ -1,5 +1,5 @@
-use std::fmt;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 use crate::character::prelude::*;
 
@@ -26,32 +26,40 @@ pub enum DurationClass {
 }
 
 impl fmt::Display for Duration {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     let length = match self.length {
-      Some( amount ) => amount,
+      Some(amount) => amount,
       None => 1,
     };
-    let mut base: String = match ( &self.class, length != 1, &self.upkeep_cost ) {
-      ( DurationClass::Custom, _, _ ) => format!( "{}", self.custom.clone().unwrap_or( "".into() ) ),
-      ( DurationClass::NextTurnStart, _, _ ) => "Until the start of the next round".into(),
-      ( DurationClass::NextTurnEnd, _, _ ) => "Until the end of the next round".into(),
-      ( DurationClass::WhileReserved, _, Some( cost ) ) => format!( "While {} is reserved", cost.simple() ),
-      ( DurationClass::Minutes, true, _ ) => format!( "{length} Minutes" ),
-      ( DurationClass::Minutes, false, _ ) => format!( "1 Minute" ),
-      ( DurationClass::Hours, true, _ ) => format!( "{length} Hours" ),
-      ( DurationClass::Hours, false, _ ) => format!( "1 Hour" ),
-      ( DurationClass::Days, true, _ ) => format!( "{length} Days" ),
-      ( DurationClass::Days, false, _ ) => format!( "1 Day" ),
-      ( _, _ , _ ) => format!( "Undefined" ),
+    let mut base: String = match (&self.class, length != 1, &self.upkeep_cost) {
+      (DurationClass::Custom, _, _) => {
+        format!("{}", self.custom.clone().unwrap_or("".into()))
+      }
+      (DurationClass::NextTurnStart, _, _) => "Until the start of the next round".into(),
+      (DurationClass::NextTurnEnd, _, _) => "Until the end of the next round".into(),
+      (DurationClass::WhileReserved, _, Some(cost)) => {
+        format!("While {} is reserved", cost.simple())
+      }
+      (DurationClass::Minutes, true, _) => format!("{length} Minutes"),
+      (DurationClass::Minutes, false, _) => format!("1 Minute"),
+      (DurationClass::Hours, true, _) => format!("{length} Hours"),
+      (DurationClass::Hours, false, _) => format!("1 Hour"),
+      (DurationClass::Days, true, _) => format!("{length} Days"),
+      (DurationClass::Days, false, _) => format!("1 Day"),
+      (_, _, _) => format!("Undefined"),
     };
     if self.expendable.is_some() && self.expendable.unwrap() {
-      base = format!( "{base} or until expended" )
+      base = format!("{base} or until expended")
     }
-    match ( &self.upkeep, &self.upkeep_cost, self.class != DurationClass::WhileReserved ) {
-      ( _, Some( cost ), true ) => { base = format!( "{base}, upkeep: {cost}" ) },
-      ( Some( _ ), _, true ) => { base = format!( "{base}, upkeep at cost" ) },
-      _ => ()
+    match (
+      &self.upkeep,
+      &self.upkeep_cost,
+      self.class != DurationClass::WhileReserved,
+    ) {
+      (_, Some(cost), true) => base = format!("{base}, upkeep: {cost}"),
+      (Some(_), _, true) => base = format!("{base}, upkeep at cost"),
+      _ => (),
     }
-    return write!( f, "{base}" )
+    return write!(f, "{base}");
   }
 }

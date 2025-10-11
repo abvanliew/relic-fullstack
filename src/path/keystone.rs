@@ -27,14 +27,14 @@ pub struct Keystone {
 }
 
 #[component]
-pub fn KeystoneDescription( keystone: Keystone ) -> Element {
+pub fn KeystoneDescription(keystone: Keystone) -> Element {
   rsx!(
     div {
       class: "uv-full",
       "{keystone.clone():?}"
     }
     div {
-      class: "highlight uv-title", 
+      class: "highlight uv-title",
       "{keystone.title}"
     }
     div {

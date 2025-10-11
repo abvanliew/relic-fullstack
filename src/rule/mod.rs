@@ -1,26 +1,26 @@
-pub mod components;
 mod bonus;
+pub mod components;
 mod dice;
 mod roll;
+mod rulebook;
 mod snippet;
 mod stack;
 mod term;
 mod tier;
-mod rulebook;
 
 pub mod prelude {
   pub use super::bonus::Bonus;
-  pub use super::dice::{DiceGroupEntry, DiceGroup};
+  pub use super::dice::{DiceGroup, DiceGroupEntry};
   pub use super::rulebook::MainRulesThread;
-  pub use super::snippet::{Snippet};
-  pub use super::stack::{RuleBlocks, RuleBlockSet, RulesStack, PropertyDetail, RulesStackDetail};
-  pub use super::term::{Term, TermSnippet, TermDisplay};
+  pub use super::snippet::Snippet;
+  pub use super::stack::{PropertyDetail, RuleBlockSet, RuleBlocks, RulesStack, RulesStackDetail};
+  pub use super::term::{Term, TermDisplay, TermSnippet};
   pub use super::tier::Tier;
 }
 
 mod internal {
-  pub use super::roll::{Outcome, Roll, OutcomeDetail, RollSnippet};
-  pub use super::snippet::{RulesSpippetDetail, RulesSnippet};
-  pub use super::stack::{RuleBlocks, RuleBlockSet};
-  pub use super::term::{TermDisplay};
+  pub use super::roll::{Outcome, OutcomeDetail, Roll, RollSnippet};
+  pub use super::snippet::{RulesSnippet, RulesSpippetDetail};
+  pub use super::stack::{RuleBlockSet, RuleBlocks};
+  pub use super::term::TermDisplay;
 }

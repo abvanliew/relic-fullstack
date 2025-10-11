@@ -12,14 +12,17 @@ pub struct PathQualifier {
 
 impl PathQualifier {
   pub fn new_signal() -> Self {
-    let paths: Signal<u32> = use_signal( || 0 );
-    let paths_optional: Signal<u32> = use_signal( || 0 );
-    return Self { paths, paths_optional };
+    let paths: Signal<u32> = use_signal(|| 0);
+    let paths_optional: Signal<u32> = use_signal(|| 0);
+    return Self {
+      paths,
+      paths_optional,
+    };
   }
 
-  pub fn set( &mut self, ( paths, paths_optional ): ( u32, u32 ) ) {
-    self.paths.set( paths );
-    self.paths_optional.set( paths_optional );
+  pub fn set(&mut self, (paths, paths_optional): (u32, u32)) {
+    self.paths.set(paths);
+    self.paths_optional.set(paths_optional);
   }
 }
 

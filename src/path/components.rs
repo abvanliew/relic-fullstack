@@ -5,7 +5,7 @@ use crate::path::Path;
 use crate::skill::prelude::*;
 
 #[component]
-pub fn PathDescription( path: ReadOnlySignal<Path> ) -> Element {
+pub fn PathDescription(path: ReadOnlySignal<Path>) -> Element {
   let title = path().title;
   let skills_keystone: Vec<Skill> = path().skills_keystone();
   let skills_full: Vec<Skill> = path().skills_full();
@@ -47,7 +47,7 @@ pub fn PathDescription( path: ReadOnlySignal<Path> ) -> Element {
 }
 
 #[component]
-pub fn PathTile( path: ReadOnlySignal<Path> ) -> Element {
+pub fn PathTile(path: ReadOnlySignal<Path>) -> Element {
   let title = path().title;
   rsx!(
     div { "{title}" }

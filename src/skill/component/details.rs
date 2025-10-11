@@ -1,27 +1,27 @@
-use dioxus::prelude::*;
 use crate::rule::prelude::*;
 use crate::server::prelude::GameLibrarySignal;
 use crate::skill::prelude::*;
-
+use dioxus::prelude::*;
 
 #[component]
-pub fn SkillDescription(
-  id: String,
-  show_terms: bool,
-) -> Element {
+pub fn SkillDescription(id: String, show_terms: bool) -> Element {
   let library = use_context::<GameLibrarySignal>();
   let res_skills = library.get_skills();
   let skill = match res_skills {
-    Some(map) => {
-      match map.get(&id) {
-        Some( skill) => { skill.clone() },
-        None => return rsx!{},
-      }
+    Some(map) => match map.get(&id) {
+      Some(skill) => skill.clone(),
+      None => return rsx! {},
     },
-    _ => { return rsx! { div { "Loading" } }; },
+    _ => {
+      return rsx! { div { "Loading" } };
+    }
   };
   let terms = skill.get_keyword_ids().clone();
-  let display = if show_terms { TermDisplay::TitleOnly } else { TermDisplay::Hover };
+  let display = if show_terms {
+    TermDisplay::TitleOnly
+  } else {
+    TermDisplay::Hover
+  };
   rsx!(
     div {
       class: "group column",
@@ -38,22 +38,18 @@ pub fn SkillDescription(
   )
 }
 
-
 #[component]
-pub fn SkillCard(
-  id: String,
-  display: TermDisplay,
-) -> Element {
+pub fn SkillCard(id: String, display: TermDisplay) -> Element {
   let library = use_context::<GameLibrarySignal>();
   let res_skills = library.get_skills();
   let skill = match res_skills {
-    Some(map) => {
-      match map.get(&id) {
-        Some( skill) => { skill.clone() },
-        None => return rsx!{},
-      }
+    Some(map) => match map.get(&id) {
+      Some(skill) => skill.clone(),
+      None => return rsx! {},
     },
-    _ => { return rsx! { div { class: "card", "Loading" } }; },
+    _ => {
+      return rsx! { div { class: "card", "Loading" } };
+    }
   };
   let title = skill.title.clone();
   let tier = skill.tier.clone();
@@ -66,7 +62,7 @@ pub fn SkillCard(
     div {
       class: "card grid dim-keywords",
       div { class: "uv-title-property title nowrap", "{title}" }
-      div { class: "uv-property", 
+      div { class: "uv-property",
         div { class: "nowrap italics", "{tier} {training_cost}" }
       }
       if let Some( description ) = opt_description {
@@ -93,7 +89,7 @@ pub fn SkillCard(
 }
 
 #[component]
-fn ActionDetails( action: Action, display: TermDisplay ) -> Element {
+fn ActionDetails(action: Action, display: TermDisplay) -> Element {
   let activation = action.base();
   let suffix_opt = action.suffix();
   rsx!(

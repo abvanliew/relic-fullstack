@@ -13,8 +13,8 @@ use dioxus::prelude::*;
 use panels::*;
 use server::prelude::GameLibrarySignal;
 
-const FAVICON: Asset = asset!( "assets/favicon.ico" );
-const MAIN_CSS: Asset = asset!( "assets/main.css" );
+const FAVICON: Asset = asset!("assets/favicon.ico");
+const MAIN_CSS: Asset = asset!("assets/main.css");
 
 fn main() {
   dioxus::launch(App);

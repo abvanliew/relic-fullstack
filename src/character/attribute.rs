@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
-use std::fmt;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 use crate::rule::components::Modifier;
 
@@ -112,7 +112,7 @@ pub struct AttributeSignal {
 // }
 
 #[component]
-pub fn AttributeDetails( attributes: AttributeRanks ) -> Element {
+pub fn AttributeDetails(attributes: AttributeRanks) -> Element {
   rsx!(
     div { "Capabilites" }
     div {
@@ -167,27 +167,35 @@ pub enum RankClass {
 }
 
 impl fmt::Display for RankClass {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "{}", match self {
-      RankClass::Capability => "Capability",
-      RankClass::Defense => "Defense",
-      RankClass::Expertise => "Expertise",
-    } )
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
+        RankClass::Capability => "Capability",
+        RankClass::Defense => "Defense",
+        RankClass::Expertise => "Expertise",
+      }
+    )
   }
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Attribute {
-  Capability( Capability ),
-  Defense( Defense ),
+  Capability(Capability),
+  Defense(Defense),
 }
 
 impl fmt::Display for Attribute {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "{}", match self {
-      Attribute::Capability(capability) => format!( "{capability}" ),
-      Attribute::Defense(defense) => format!( "{defense}" ),
-    } )
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
+        Attribute::Capability(capability) => format!("{capability}"),
+        Attribute::Defense(defense) => format!("{defense}"),
+      }
+    )
   }
 }
 
@@ -200,13 +208,17 @@ pub enum Capability {
 }
 
 impl fmt::Display for Capability {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "{}", match self {
-      Capability::Physique => "Physique",
-      Capability::Warfare => "Warfare",
-      Capability::Spirit => "Spirit",
-      Capability::Manipulation => "Manipulation",
-    } )
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
+        Capability::Physique => "Physique",
+        Capability::Warfare => "Warfare",
+        Capability::Spirit => "Spirit",
+        Capability::Manipulation => "Manipulation",
+      }
+    )
   }
 }
 
@@ -220,13 +232,17 @@ pub enum Defense {
 }
 
 impl fmt::Display for Defense {
-  fn fmt( &self, f: &mut fmt::Formatter ) -> fmt::Result {
-    write!( f, "{}", match self {
-      Defense::Tenacity => "Tenacity",
-      Defense::Fortitude => "Fortitude",
-      Defense::Resolve => "Resolve",
-      Defense::Insight => "Insight",
-      Defense::Dodge => "Dodge",
-    } )
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
+        Defense::Tenacity => "Tenacity",
+        Defense::Fortitude => "Fortitude",
+        Defense::Resolve => "Resolve",
+        Defense::Insight => "Insight",
+        Defense::Dodge => "Dodge",
+      }
+    )
   }
 }
