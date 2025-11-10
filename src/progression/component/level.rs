@@ -1,7 +1,5 @@
 use dioxus::prelude::*;
 
-// use crate::progression::growth::LevelStats;
-// use crate::progression::track::TrackContext;
 use crate::progression::{
   component::builder::BuildContext,
   fixed::{MAX_LEVEL, MIN_LEVEL},

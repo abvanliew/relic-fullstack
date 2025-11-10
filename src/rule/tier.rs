@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, PartialOrd)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, PartialOrd, Ord, Eq)]
 pub enum Tier {
   Initiate,
   Journeyman,

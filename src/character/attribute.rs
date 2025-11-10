@@ -3,18 +3,9 @@ use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use crate::rule::components::Modifier;
-
 // use self::Attribute::{Capability as CapabilityClass,Defense as DefenseClass};
 // use self::Capability::{Manipulation,Physique,Spirit,Warfare};
 // use self::Defense::{Dodge,Fortitude,Insight,Resolve,Tenacity};
-
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct AttributeMask {
-  pub capabilities: Option<Vec<Capability>>,
-  pub defenses: Option<Vec<Defense>>,
-}
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default)]
 pub struct AttributeRanks {
@@ -111,54 +102,6 @@ pub struct AttributeSignal {
 //   ) }
 // }
 
-#[component]
-pub fn AttributeDetails(attributes: AttributeRanks) -> Element {
-  rsx!(
-    div { "Capabilites" }
-    div {
-      class: "row",
-      div { "Physique" }
-      div { Modifier { value: attributes.physique } }
-    }
-    div {
-      class: "row",
-      div { "Warfare" }
-      div { Modifier { value: attributes.warfare } }
-    }
-    div {
-      class: "row",
-      div { "Spirit" }
-      div { Modifier { value: attributes.spirit } }
-    }
-    div {
-      class: "row",
-      div { "Manipulation" }
-      div { Modifier { value: attributes.manipulation } }
-    }
-    div { "Defenses" }
-    div {
-      class: "row",
-      div { "Tenacity" }
-      div { "{attributes.tenacity + 10}" }
-    }
-    div {
-      class: "row",
-      div { "Fortitude" }
-      div { "{attributes.fortitude + 10}" }
-    }
-    div {
-      class: "row",
-      div { "Resolve" }
-      div { "{attributes.resolve + 10}" }
-    }
-    div {
-      class: "row",
-      div { "Insight" }
-      div { "{attributes.insight + 10}" }
-    }
-  )
-}
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum RankClass {
   Capability,
@@ -199,7 +142,7 @@ impl fmt::Display for Attribute {
   }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum Capability {
   Physique,
   Warfare,
@@ -222,7 +165,7 @@ impl fmt::Display for Capability {
   }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum Defense {
   Tenacity,
   Fortitude,

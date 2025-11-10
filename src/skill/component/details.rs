@@ -1,11 +1,11 @@
 use crate::rule::prelude::*;
-use crate::server::prelude::GameLibrarySignal;
+use crate::server::prelude::{GameLibrarySignal, ServerRequestSignals};
 use crate::skill::prelude::*;
 use dioxus::prelude::*;
 
 #[component]
 pub fn SkillDescription(id: String, show_terms: bool) -> Element {
-  let library = use_context::<GameLibrarySignal>();
+  let library = use_context::<ServerRequestSignals>();
   let res_skills = library.get_skills();
   let skill = match res_skills {
     Some(map) => match map.get(&id) {
@@ -40,9 +40,11 @@ pub fn SkillDescription(id: String, show_terms: bool) -> Element {
 
 #[component]
 pub fn SkillCard(id: String, display: TermDisplay) -> Element {
-  let library = use_context::<GameLibrarySignal>();
-  let res_skills = library.get_skills();
-  let skill = match res_skills {
+  let library = use_context::<ServerRequestSignals>();
+  let skill_result = library.get_skills();
+  // let library = GameLibrarySignal::use_context_provider();
+  // let skill_result = &*library.skills.read();
+  let skill = match skill_result {
     Some(map) => match map.get(&id) {
       Some(skill) => skill.clone(),
       None => return rsx! {},
@@ -90,8 +92,27 @@ pub fn SkillCard(id: String, display: TermDisplay) -> Element {
 
 #[component]
 fn ActionDetails(action: Action, display: TermDisplay) -> Element {
+  let keywords: Vec<String> = if let Some( ref keyword_ids) = action.keyword_ids {
+    let library = use_context::<ServerRequestSignals>();
+    let keyword_results = library.get_keywords();
+    match &keyword_results {
+      Some(map) => {
+        keyword_ids.iter()
+          .filter_map(|id| match map.get(&id.to_string()) {
+            Some(keyword) => Some( keyword.title.clone() ),
+            None => None,
+          })
+          .collect()
+      },
+      None => Vec::new(),
+    }
+  } else {
+    Vec::new()
+  };
+  let keyword_display = keywords.join( ", " );
   let activation = action.base();
   let suffix_opt = action.suffix();
+
   rsx!(
     if let Some( sub_title ) = action.sub_title {
       div { class: "uv-full subtitle", "{sub_title}" }
@@ -101,8 +122,8 @@ fn ActionDetails(action: Action, display: TermDisplay) -> Element {
       if let Some( suffix ) = suffix_opt {
         span {"{suffix} "}
       }
-      if let Some( keywords ) = action.keywords {
-        span {class: "italics", "- {keywords}"}
+      if keywords.len() > 0 {
+        span {class: "italics", "- {keyword_display}"}
       }
     }
     if let Some( blocks ) = action.condition {

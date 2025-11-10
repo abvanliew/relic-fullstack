@@ -11,7 +11,7 @@ use crate::rule::prelude::*;
 use activation::Action;
 use aspect::*;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Skill {
   #[serde(rename = "_id")]

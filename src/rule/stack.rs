@@ -4,17 +4,19 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
 use crate::rule::internal::*;
+use crate::rule::stat_block::StatBlock;
 use crate::skill::prelude::*;
 
 pub type RulesStack = Vec<Stack>;
 pub type RuleBlocks = Vec<Block>;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
 pub struct Stack {
   pub property: Option<Property>,
   pub outcomes: Option<Vec<Outcome>>,
   pub items: Option<Vec<RuleBlocks>>,
   pub block: Option<RulesSnippet>,
+  pub stats: Option<StatBlock>,
 }
 
 impl Stack {
@@ -60,6 +62,9 @@ pub fn StackDetail(stack: Stack, display: TermDisplay) -> Element {
     if let Some( outcomes ) = stack.outcomes {
       OutcomeDetail { outcomes, display }
     }
+    if let Some(stats) = stack.stats {
+      StatBlockSnippet { stats }
+    }
     if stack.block.is_some() || stack.items.is_some() {
       div {
         class: "uv-full",
@@ -77,7 +82,7 @@ pub fn PropertyDetail(title: String, blocks: RuleBlocks, display: TermDisplay) -
   );
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
 pub struct Block {
   pub items: Option<Vec<RuleBlocks>>,
   pub block: Option<RulesSnippet>,

@@ -1,10 +1,36 @@
+use serde::{Deserialize, Serialize};
 use std::{
   cmp::max,
   ops::{Add, AddAssign},
 };
 
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct StackingBonus<T>(Option<T>)
+#[derive(Debug, Clone, PartialEq, Default, Deserialize, Serialize, Eq)]
+pub struct BonusPair<T>
+where
+  T: Add + Ord + Clone,
+{
+  pub base: InstanceBonus<T>,
+  pub bonus: StackingBonus<T>,
+}
+
+// impl<T: Add<Output = T> + Clone + Ord + Default> ModifierBonus<T> {
+//   pub fn value(&self) -> T {
+//     return self.base.as_opt().unwrap_or_default() + self.bonus.as_opt().unwrap_or_default();
+//   }
+// }
+
+impl<T: Add<Output = T> + Clone + Ord> Add for BonusPair<T> {
+  type Output = BonusPair<T>;
+  fn add(self, rhs: Self) -> Self::Output {
+    BonusPair {
+      bonus: self.bonus + rhs.bonus,
+      base: self.base + rhs.base,
+    }
+  }
+}
+
+#[derive(Debug, Clone, PartialEq, Default, Deserialize, Serialize, Eq)]
+pub struct StackingBonus<T>(pub Option<T>)
 where
   T: Add + Clone;
 
@@ -36,8 +62,8 @@ impl<T: Add<Output = T> + Clone> AddAssign for StackingBonus<T> {
   }
 }
 
-#[derive(Debug, Clone, PartialEq, Default)]
-pub struct InstanceBonus<T>(Option<T>)
+#[derive(Debug, Clone, PartialEq, Default, Deserialize, Serialize, Eq)]
+pub struct InstanceBonus<T>(pub Option<T>)
 where
   T: Ord + Clone;
 

@@ -1,16 +1,16 @@
-use crate::server::prelude::GameLibrarySignal;
+use crate::server::prelude::ServerRequestSignals;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Term {
   pub keyword_id: Option<ObjectId>,
   pub title: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Eq)]
 pub enum TermDisplay {
   #[default]
   TitleOnly,
@@ -33,8 +33,8 @@ pub struct TermSnippetProps {
 pub fn TermSnippet(props: TermSnippetProps) -> Element {
   let opt_keyword = match props.id {
     Some(id) => {
-      let signal = use_context::<GameLibrarySignal>();
-      let keywords_response = signal.get_keyword();
+      let signal = use_context::<ServerRequestSignals>();
+      let keywords_response = signal.get_keywords();
       let Some(keyword_map) = keywords_response else {
         return rsx!( div { "Loading" } );
       };

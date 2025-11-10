@@ -3,7 +3,7 @@ use std::fmt;
 
 use crate::character::prelude::*;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Duration {
   pub class: DurationClass,
@@ -14,7 +14,7 @@ pub struct Duration {
   pub custom: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum DurationClass {
   NextTurnStart,
   NextTurnEnd,

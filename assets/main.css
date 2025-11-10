@@ -46,7 +46,7 @@ p {
 .row {
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
+  align-items: flex-start;
   column-gap: 8px;
 }
 
@@ -135,7 +135,7 @@ p {
 .path-title {
   font-size: 1.1rem;
   font-weight: 700;
-  width: 160px;
+  width: 216px;
   flex-shrink: 0;
 }
 
@@ -160,12 +160,12 @@ p {
   padding: 8px 8px;
 }
 
-.path-skill-group:nth-child(odd) {
+/* .path-skill-group:nth-child(odd) {
   float: left
 }
 .path-skill-group:nth-child(even) {
   float: right
-}
+} */
 
 @media (width <= 1350px) {
   .path-skill-panels {
@@ -306,7 +306,7 @@ p {
 }
 
 .dim-keywords {
-  grid-template-columns: [title] max-content [title-end details] 1fr [property] max-content [end];
+  grid-template-columns: [title] min-content [title-end details] 1fr [property] max-content [end];
 }
 
 .dim-thirds {
@@ -315,6 +315,10 @@ p {
 
 .dim-triple {
   grid-template-columns: repeat( 3, max-content );
+}
+
+.dim-forths {
+  grid-template-columns: repeat( 4, 1fr );
 }
 
 .uv-main {

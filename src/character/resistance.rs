@@ -4,65 +4,78 @@ use crate::{character::sheet::AttributeRow, equipment::armor::Armor};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
-const BASE_RESIST: i32 = 3;
+const BASE_RESIST: i32 = 0;
+
+#[derive(PartialEq, Props, Clone)]
+pub struct ResistanceDetailsProps {
+  resistances: Resistances,
+  #[props(default)]
+  display: ResistanceDisplay,
+}
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum ResistanceDisplay {
+  #[default]
+  Base,
+  OnlyIncluded,
+}
+
 
 #[component]
-pub fn ResistanceDetails(resistances: Resistances) -> Element {
-  let mut display_physical = use_signal(|| false);
-  let mut display_elemental = use_signal(|| false);
-  let mut display_esoteric = use_signal(|| false);
+pub fn ResistanceDetails(props: ResistanceDetailsProps) -> Element {
+  let resistances = props.resistances;
+  let physical_total = resistances.get_category( &DamageCategory::Physical );
+  let elemental_total = resistances.get_category( &DamageCategory::Elemental );
+  let esoteric_total = resistances.get_category( &DamageCategory::Esoteric );
   rsx!(
     div {
       class: "row full",
-      onclick: move |_| { display_physical.with_mut(|x| *x = !*x); },
       AttributeRow {
         name: "Physical", name_class: "highlight",
-        element: rsx!( "{resistances.get_category( &DamageCategory::Physical )}" ),
+        element: rsx!( "{physical_total}" ),
       }
     }
-    SubResistance { details: resistances.show_damage( &DamageClass::Bashing ), display: display_physical() }
-    SubResistance { details: resistances.show_damage( &DamageClass::Slashing ), display: display_physical() }
-    SubResistance { details: resistances.show_damage( &DamageClass::Piercing ), display: display_physical() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Bashing ) }
+    SubResistance { details: resistances.show_damage( &DamageClass::Slashing ) }
+    SubResistance { details: resistances.show_damage( &DamageClass::Piercing ) }
     div {
       class: "row full",
-      onclick: move |_| { display_elemental.with_mut(|x| *x = !*x); },
       AttributeRow {
         name: "Elemental", name_class: "highlight",
-        element: rsx!( "{resistances.get_category( &DamageCategory::Elemental )}" ),
+        element: rsx!( "{elemental_total}" ),
       }
     }
-    SubResistance { details: resistances.show_damage( &DamageClass::Fire ), display: display_elemental() }
-    SubResistance { details: resistances.show_damage( &DamageClass::Cold ), display: display_elemental() }
-    SubResistance { details: resistances.show_damage( &DamageClass::Lighting ), display: display_elemental() }
-    SubResistance { details: resistances.show_damage( &DamageClass::Thunder ), display: display_elemental() }
-    SubResistance { details: resistances.show_damage( &DamageClass::Acid ), display: display_elemental() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Fire ) }
+    SubResistance { details: resistances.show_damage( &DamageClass::Cold ) }
+    SubResistance { details: resistances.show_damage( &DamageClass::Lighting ) }
+    SubResistance { details: resistances.show_damage( &DamageClass::Thunder ) }
+    SubResistance { details: resistances.show_damage( &DamageClass::Acid ) }
     div {
       class: "row full",
-      onclick: move |_| { display_esoteric.with_mut(|x| *x = !*x); },
       AttributeRow {
         name: "Esoteric", name_class: "highlight",
-        element: rsx!( "{resistances.get_category( &DamageCategory::Esoteric )}" ),
+        element: rsx!( "{esoteric_total}" ),
       }
     }
-    SubResistance { details: resistances.show_damage( &DamageClass::Force ), display: display_esoteric() }
-    SubResistance { details: resistances.show_damage( &DamageClass::Radiant ), display: display_esoteric() }
-    SubResistance { details: resistances.show_damage( &DamageClass::Necrotic ), display: display_esoteric() }
-    SubResistance { details: resistances.show_damage( &DamageClass::Psionic ), display: display_esoteric() }
+    SubResistance { details: resistances.show_damage( &DamageClass::Force ) }
+    SubResistance { details: resistances.show_damage( &DamageClass::Radiant ) }
+    SubResistance { details: resistances.show_damage( &DamageClass::Necrotic ) }
+    SubResistance { details: resistances.show_damage( &DamageClass::Psionic ) }
   )
 }
 
 #[component]
-fn SubResistance(details: (String, i32, bool), display: bool) -> Element {
+fn SubResistance(details: (String, i32, bool)) -> Element {
   let (name, value, show) = details;
   rsx!(
     div {
-      class: if show || display { "row full" } else { "hidden" },
+      class: if show { "row full" } else { "hidden" },
       AttributeRow { name: "{name}", name_class: "indent", element: rsx!( "{value}" ) }
     }
   )
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
 pub struct Resistances {
   physical: Option<i32>,
   bashing: Option<i32>,
@@ -126,6 +139,22 @@ impl Resistances {
 
   pub fn get_category(&self, category: &DamageCategory) -> i32 {
     return self.category_ref(category).unwrap_or(BASE_RESIST);
+  }
+
+  pub fn category_has_child_value(&self, category: &DamageCategory) -> bool {
+    return match category {
+      DamageCategory::Physical => {
+        self.bashing.is_some() || self.slashing.is_some() || self.piercing.is_some()
+      },
+      DamageCategory::Elemental => {
+        self.fire.is_some() || self.cold.is_some() || self.lighting.is_some() || 
+        self.thunder.is_some() || self.acid.is_some()
+      },
+      DamageCategory::Esoteric => {
+        self.force.is_some() || self.radiant.is_some() || self.necrotic.is_some() || 
+        self.psionic.is_some()
+      },
+    }
   }
 
   pub fn show_damage(&self, damage: &DamageClass) -> (String, i32, bool) {

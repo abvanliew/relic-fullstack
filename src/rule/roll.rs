@@ -7,7 +7,7 @@ use std::fmt;
 use crate::character::prelude::*;
 use crate::rule::internal::*;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Roll {
   pub class: RollClass,
@@ -23,21 +23,21 @@ pub struct Roll {
   pub modifier: Option<Modifier>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum RollClass {
   Attack,
   Check,
   LuckCheck,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum Opening {
   Normal,
   Lower,
   None,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum Modifier {
   Normal,
   Advantage,
@@ -101,14 +101,14 @@ pub fn RollSnippet(roll: Roll) -> Element {
     _ => rsx!(
       span { " {opening}" }
       span { class: "highlight", " {capability}" }
-      span { "vs " }
+      span { " vs" }
       span { class: "highlight", " {defense}" }
       span { " {keyword} {class} {modifier} against {article} {target}." }
     ),
   };
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct Outcome {
   pub result: RollResult,
   pub rules: RuleBlocks,
@@ -124,7 +124,7 @@ impl Outcome {
   }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum RollResult {
   Miss,
   Hit,

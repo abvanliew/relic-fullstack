@@ -5,6 +5,7 @@ mod roll;
 mod rulebook;
 mod snippet;
 mod stack;
+mod stat_block;
 mod term;
 mod tier;
 
@@ -23,4 +24,5 @@ mod internal {
   pub use super::snippet::{RulesSnippet, RulesSpippetDetail};
   pub use super::stack::{RuleBlockSet, RuleBlocks};
   pub use super::term::TermDisplay;
+  pub use super::stat_block::StatBlockSnippet;
 }

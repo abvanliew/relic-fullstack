@@ -1,11 +1,11 @@
-use crate::server::prelude::GameLibrarySignal;
+use crate::server::prelude::ServerRequestSignals;
 use crate::skill::prelude::TrainingCost;
 use crate::skill::{prelude::SkillDescription, Skill};
 use dioxus::prelude::*;
 
 #[component]
 pub fn InherentSkills() -> Element {
-  let signal = use_context::<GameLibrarySignal>();
+  let signal = use_context::<ServerRequestSignals>();
   let skills_response = signal.get_skills();
   let results = match skills_response.clone() {
     Some(skills) => {

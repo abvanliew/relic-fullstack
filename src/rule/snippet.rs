@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 pub type RulesSnippet = Vec<Snippet>;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
 pub struct Snippet {
   pub text: Option<String>,
   pub roll: Option<Roll>,

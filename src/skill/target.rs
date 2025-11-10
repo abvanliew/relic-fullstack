@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Target {
   pub class: TargetClass,
@@ -14,7 +14,7 @@ pub struct Target {
   pub suffix: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum TargetClass {
   Custom,
   Yourself,
@@ -32,7 +32,7 @@ pub enum TargetClass {
   Line,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
 pub enum Selection {
   #[default]
   Creature,
@@ -161,6 +161,10 @@ impl fmt::Display for Target {
       }
       (TargetClass::RadiusCorner, Some(range), Some(size), _) => format!(
         "All {} within a radius {size} area centered on a corner within {range} spaces",
+        self.plural(),
+      ),
+      (TargetClass::RadiusSpace, Some(range), Some(size), _) => format!(
+        "All {} within a radius {size} area centered on a space within {range} spaces",
         self.plural(),
       ),
       _ => format!("undefined"),

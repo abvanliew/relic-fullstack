@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, PartialOrd)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, PartialOrd, Eq)]
 pub enum TrainingCost {
   Inherient,
   Keystone,
@@ -41,13 +41,13 @@ pub enum EditingState {
   Concept,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default, PartialOrd)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default, PartialOrd, Ord, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct RelicOrdering {
   category: i32,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct PathRef {
   id: ObjectId,
@@ -68,9 +68,17 @@ impl Skill {
   pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     return self.action.get_keyword_ids();
   }
+
+  pub fn minor_feature_cost(&self) -> u32 {
+    match &self.training_cost {
+      TrainingCost::Inherient | TrainingCost::Keystone => 0,
+      TrainingCost::Full | TrainingCost::Spell => 2,
+      TrainingCost::Half | TrainingCost::Cantrip => 1,
+    }
+  }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Property {
   pub title: String,

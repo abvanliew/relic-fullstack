@@ -23,6 +23,7 @@ use super::resistance::ResistanceDetails;
 use super::resistance::Resistances;
 
 const DASH_SPEED: i32 = 3;
+pub const BASE_DEFENSE: i32 = 11;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -154,21 +155,21 @@ pub fn SheetDetails(
         }
         div {
           class: "uv-expertise column",
-          div { class: "subheading", "Expertise" }
-          if let Some( expertise ) = sheet.expertise {
-            for entry in expertise {
-              ExpertiseComponent { entry }
-            }
-          }
-        }
-        div {
-          class: "column uv-capabilities",
           div { class: "subheading", "Body" }
           div { "Speed {speed}" }
           div { "Dash {dash}" }
           ConstitutionRow { constitution: 4 }
           div { "Health {hp}" }
           div { class: "hp-box" }
+        }
+        div {
+          class: "uv-capabilities column",
+          div { class: "subheading", "Expertise" }
+          if let Some( expertise ) = sheet.expertise {
+            for entry in expertise {
+              ExpertiseComponent { entry }
+            }
+          }
         }
         div {
           class: "uv-other row",
@@ -203,8 +204,19 @@ pub fn SheetDetails(
   )
 }
 
+#[derive(PartialEq, Props, Clone)]
+pub struct AttributeRowProps {
+  name: String,
+  element: Element,
+  #[props(default)]
+  name_class: Option<String>,
+}
+
 #[component]
-pub fn AttributeRow(name: String, name_class: String, element: Element) -> Element {
+pub fn AttributeRow(props: AttributeRowProps) -> Element {
+  let name = props.name;
+  let element = props.element;
+  let name_class = props.name_class.unwrap_or( "highlight".into() );
   rsx!(
     div {
       class: "row full",
@@ -252,19 +264,19 @@ pub fn AttributeBlock(attributes: AttributeRanks, dodge: i32) -> Element {
       class: "uv-capabilities column",
       div { class: "subheading", "Capabilites" }
       AttributeRow {
-        name: "Physique", name_class: "highlight",
+        name: "Physique", 
         element: rsx!( Modifier { value: attributes.physique } ),
       }
       AttributeRow {
-        name: "Warfare", name_class: "highlight",
+        name: "Warfare", 
         element: rsx!( Modifier { value: attributes.warfare } ),
       }
       AttributeRow {
-        name: "Spirit", name_class: "highlight",
+        name: "Spirit", 
         element: rsx!( Modifier { value: attributes.spirit } ),
       }
       AttributeRow {
-        name: "Manipulation", name_class: "highlight",
+        name: "Manipulation",
         element: rsx!( Modifier { value: attributes.manipulation } ),
       }
     }
@@ -272,24 +284,24 @@ pub fn AttributeBlock(attributes: AttributeRanks, dodge: i32) -> Element {
       class: "uv-defenses column",
       div { class: "subheading", "Defenses" }
       AttributeRow {
-        name: "Tenacity", name_class: "highlight",
-        element: rsx!( "{attributes.tenacity + 10}" ),
+        name: "Tenacity",
+        element: rsx!( "{attributes.tenacity + BASE_DEFENSE}" ),
       }
       AttributeRow {
-        name: "Fortitude", name_class: "highlight",
-        element: rsx!( "{attributes.fortitude + 10}" ),
+        name: "Fortitude",
+        element: rsx!( "{attributes.fortitude + BASE_DEFENSE}" ),
       }
       AttributeRow {
-        name: "Resolve", name_class: "highlight",
-        element: rsx!( "{attributes.resolve + 10}" ),
+        name: "Resolve",
+        element: rsx!( "{attributes.resolve + BASE_DEFENSE}" ),
       }
       AttributeRow {
-        name: "Insight", name_class: "highlight",
-        element: rsx!( "{attributes.insight + 10}" ),
+        name: "Insight",
+        element: rsx!( "{attributes.insight + BASE_DEFENSE}" ),
       }
       AttributeRow {
-        name: "Dodge", name_class: "highlight",
-        element: rsx!( "{dodge + 10}" ),
+        name: "Dodge",
+        element: rsx!( "{dodge + BASE_DEFENSE}" ),
       }
     }
   )

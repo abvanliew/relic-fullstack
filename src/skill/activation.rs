@@ -7,12 +7,13 @@ use crate::character::prelude::*;
 use crate::rule::prelude::*;
 use crate::skill::prelude::*;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Action {
   pub class: Activation,
   pub sub_title: Option<String>,
   pub keywords: Option<String>,
+  pub keyword_ids: Option<Vec<ObjectId>>,
   pub initial: Option<bool>,
 
   pub condition: Option<RuleBlocks>,
@@ -31,6 +32,7 @@ impl Default for Action {
       class: Activation::Boon,
       sub_title: None,
       keywords: None,
+      keyword_ids: None,
       initial: None,
       condition: None,
       cost: None,
@@ -69,6 +71,9 @@ impl Action {
 
   pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
+    if let Some(keyword_ids) = &self.keyword_ids {
+      ids.extend(keyword_ids.clone());
+    }
     if let Some(snippets) = &self.condition {
       for snippet in snippets {
         ids.extend(snippet.get_keyword_ids());
@@ -83,7 +88,7 @@ impl Action {
   }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum Activation {
   Boon,
   Action,
