@@ -92,24 +92,23 @@ pub fn SkillCard(id: String, display: TermDisplay) -> Element {
 
 #[component]
 fn ActionDetails(action: Action, display: TermDisplay) -> Element {
-  let keywords: Vec<String> = if let Some( ref keyword_ids) = action.keyword_ids {
+  let keywords: Vec<String> = if let Some(ref keyword_ids) = action.keyword_ids {
     let library = use_context::<ServerRequestSignals>();
     let keyword_results = library.get_keywords();
     match &keyword_results {
-      Some(map) => {
-        keyword_ids.iter()
-          .filter_map(|id| match map.get(&id.to_string()) {
-            Some(keyword) => Some( keyword.title.clone() ),
-            None => None,
-          })
-          .collect()
-      },
+      Some(map) => keyword_ids
+        .iter()
+        .filter_map(|id| match map.get(&id.to_string()) {
+          Some(keyword) => Some(keyword.title.clone()),
+          None => None,
+        })
+        .collect(),
       None => Vec::new(),
     }
   } else {
     Vec::new()
   };
-  let keyword_display = keywords.join( ", " );
+  let keyword_display = keywords.join(", ");
   let activation = action.base();
   let suffix_opt = action.suffix();
 

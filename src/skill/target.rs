@@ -39,6 +39,7 @@ pub enum Selection {
   Ally,
   Enemy,
   Space,
+  Object,
 }
 
 impl Target {
@@ -49,6 +50,7 @@ impl Target {
       (Some(Selection::Enemy), _) => "enemy".into(),
       (Some(Selection::Creature), _) => "creature".into(),
       (Some(Selection::Space), _) => "space".into(),
+      (Some(Selection::Object), _) => "object".into(),
       _ => "undefined".into(),
     }
   }
@@ -60,6 +62,7 @@ impl Target {
       (Some(Selection::Enemy), _) => "enemies".into(),
       (Some(Selection::Creature), _) => "creatures".into(),
       (Some(Selection::Space), _) => "spaces".into(),
+      (Some(Selection::Object), _) => "objects".into(),
       _ => "undefined".into(),
     }
   }
@@ -67,7 +70,10 @@ impl Target {
   pub fn article(&self) -> String {
     match (&self.selection, &self.custom_selection) {
       (Some(Selection::Creature) | Some(Selection::Space), _) => "A",
-      (Some(Selection::Ally) | Some(Selection::Enemy), _) => "An",
+      (
+        Some(Selection::Ally) | Some(Selection::Enemy) | 
+        Some(Selection::Object),
+      _) => "An",
       (_, Some(_)) => "",
       _ => "Some",
     }

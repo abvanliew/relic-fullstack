@@ -86,6 +86,13 @@ impl Action {
     }
     return ids;
   }
+
+  pub fn get_minimum_resource_cost(&self) -> i32 {
+    match &self.cost {
+      Some( cost ) => cost.minimum_resource_cost(),
+      None => 0,
+    }
+  }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]

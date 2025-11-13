@@ -39,7 +39,7 @@ pub fn StatBlockSnippet(stats: StatBlock) -> Element {
         div { class: "subheading", "Capabilites" }
         if let Some(physique) = attributes.physique {
           AttributeRow {
-            name: "Physique", 
+            name: "Physique",
             element: rsx!( Modifier { value: physique } ),
           }
         }
@@ -49,19 +49,19 @@ pub fn StatBlockSnippet(stats: StatBlock) -> Element {
         div { class: "subheading", "Defenses" }
         if let Some(tenacity) = attributes.tenacity {
           AttributeRow {
-            name: "Tenacity", 
+            name: "Tenacity",
             element: rsx!( "{tenacity + BASE_DEFENSE}" ),
           }
         }
         if let Some(fortitude) = attributes.fortitude {
           AttributeRow {
-            name: "Fortitude", 
+            name: "Fortitude",
             element: rsx!( "{fortitude + BASE_DEFENSE}" ),
           }
         }
         if let Some(dodge) = attributes.dodge {
           AttributeRow {
-            name: "Dodge", 
+            name: "Dodge",
             element: rsx!( "{dodge + BASE_DEFENSE}" ),
           }
         }
@@ -78,23 +78,23 @@ pub fn StatBlockSnippet(stats: StatBlock) -> Element {
         div { class: "subheading", "Body" }
         if let Some(hp_bonus) = stats.hp_bonus {
           AttributeRow {
-            name: "HP Bonus", 
+            name: "HP Bonus",
             element: rsx!( Modifier { value: hp_bonus } ),
           }
         }
         if let Some(speed) = stats.speed {
           AttributeRow {
-            name: "Speed", 
+            name: "Speed",
             element: rsx!( "{speed}" ),
           }
         }
         if let Some(dash) = stats.dash {
           AttributeRow {
-            name: "Dash", 
+            name: "Dash",
             element: rsx!( "{dash}" ),
           }
         }
       }
     }
-  }
+  };
 }

@@ -13,6 +13,6 @@ pub mod prelude {
   pub use super::attribute::{Capability, Defense, RankClass};
   pub use super::flow::Flow;
   pub use super::pool::{PoolModifier, ResourceCost};
-  pub use super::resistance::{DamageClass,Resistances,ResistanceDetails};
-  pub use super::sheet::{CharacterSheet, SheetDetails, SheetTable, AttributeRow, BASE_DEFENSE};
+  pub use super::resistance::{DamageClass, ResistanceDetails, Resistances};
+  pub use super::sheet::{AttributeRow, CharacterSheet, SheetDetails, SheetTable, BASE_DEFENSE};
 }

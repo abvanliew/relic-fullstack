@@ -51,11 +51,13 @@ pub async fn get_skill_map() -> Result<HashMap<String, Skill>, ServerFnError> {
   let mut results = skills_collection.find(doc! {}).await?;
   let mut skill_map: HashMap<String, Skill> = HashMap::new();
   let mut count: u32 = 0;
+  let mut previous: Option<String> = None;
   while let Some(result) = results.next().await {
     let Ok(skill) = result else {
-      tracing::error!("Unable to load skill [{}] {:?}", count, result);
+      tracing::error!("Unable to load skill [{}] {:?} previous {:?}", count, result, previous);
       continue;
     };
+    previous = Some(skill.id.to_string());
     skill_map.insert(skill.id.to_string(), skill);
     count += 1;
   }

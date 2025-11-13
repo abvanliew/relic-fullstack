@@ -216,7 +216,7 @@ pub struct AttributeRowProps {
 pub fn AttributeRow(props: AttributeRowProps) -> Element {
   let name = props.name;
   let element = props.element;
-  let name_class = props.name_class.unwrap_or( "highlight".into() );
+  let name_class = props.name_class.unwrap_or("highlight".into());
   rsx!(
     div {
       class: "row full",
@@ -264,15 +264,15 @@ pub fn AttributeBlock(attributes: AttributeRanks, dodge: i32) -> Element {
       class: "uv-capabilities column",
       div { class: "subheading", "Capabilites" }
       AttributeRow {
-        name: "Physique", 
+        name: "Physique",
         element: rsx!( Modifier { value: attributes.physique } ),
       }
       AttributeRow {
-        name: "Warfare", 
+        name: "Warfare",
         element: rsx!( Modifier { value: attributes.warfare } ),
       }
       AttributeRow {
-        name: "Spirit", 
+        name: "Spirit",
         element: rsx!( Modifier { value: attributes.spirit } ),
       }
       AttributeRow {

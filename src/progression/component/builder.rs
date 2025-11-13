@@ -43,7 +43,7 @@ pub fn CharacterProgression(paths: Vec<Path>) -> Element {
   let skill_selection = skills.selection;
   let level = build_context.level;
   let stats = track.character.stats(level());
-  let qualifiers = BuildContext::get_qualifiers(path_selection.into(),skill_selection.into());
+  let qualifiers = BuildContext::get_qualifiers(path_selection.into(), skill_selection.into());
 
   // use_memo(move || build_context.qualifiers.set(qualifiers));
 
@@ -388,7 +388,10 @@ impl BuildContext {
     })
   }
 
-  pub fn get_qualifiers(selected_paths: ReadOnlySignal<HashSet<String>>, selected_skills: ReadOnlySignal<HashSet<String>>) -> CharacterQualifiers {
+  pub fn get_qualifiers(
+    selected_paths: ReadOnlySignal<HashSet<String>>,
+    selected_skills: ReadOnlySignal<HashSet<String>>,
+  ) -> CharacterQualifiers {
     let library = GameLibrarySignal::use_context_provider();
     let paths = library.paths.read();
     let skills = library.skills.read();
@@ -431,12 +434,19 @@ impl BuildContext {
         }
         let mut minor_features_remaining: u32 = qualifiers.minor_features;
         for skill_id in selected_skills() {
-          let Some(skill) = skill_data.get(&skill_id) else { continue; };
+          let Some(skill) = skill_data.get(&skill_id) else {
+            continue;
+          };
           minor_features_remaining -= skill.minor_feature_cost();
         }
         for path_id in selected_paths() {
-          let Some( mono_skill_count ) = mono_skill_count_by_path.get(&path_id) else { continue; };
-          qualifiers.path_qualifiers.insert(path_id.clone(), minor_features_remaining > *mono_skill_count );
+          let Some(mono_skill_count) = mono_skill_count_by_path.get(&path_id) else {
+            continue;
+          };
+          qualifiers.path_qualifiers.insert(
+            path_id.clone(),
+            minor_features_remaining > *mono_skill_count,
+          );
         }
       }
     }

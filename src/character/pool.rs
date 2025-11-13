@@ -33,9 +33,9 @@ impl fmt::Display for ResourcePool {
         ResourcePool::Ki => "Ki",
         ResourcePool::Mastery => "Mastery",
         ResourcePool::Virtuoso => "Virtuoso",
-        ResourcePool::MinorMana => "Minor Mana",
-        ResourcePool::ModerateMana => "Moderate Mana",
-        ResourcePool::MajorMana => "Major Mana",
+        ResourcePool::MinorMana => "Mana (Minor)",
+        ResourcePool::ModerateMana => "Mana (Moderate)",
+        ResourcePool::MajorMana => "Mana (Major)",
       }
     )
   }
@@ -124,6 +124,14 @@ impl ResourceCost {
 
   pub fn simple(&self) -> String {
     return self.format(false);
+  }
+
+  pub fn minimum_resource_cost(&self) -> i32 {
+    match (&self.base_cost, &self.charge_cost) {
+      (Some(cost), _) => *cost,
+      (_, Some(cost)) => *cost,
+      _ => 0,
+    }
   }
 }
 

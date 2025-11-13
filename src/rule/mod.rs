@@ -23,6 +23,6 @@ mod internal {
   pub use super::roll::{Outcome, OutcomeDetail, Roll, RollSnippet};
   pub use super::snippet::{RulesSnippet, RulesSpippetDetail};
   pub use super::stack::{RuleBlockSet, RuleBlocks};
-  pub use super::term::TermDisplay;
   pub use super::stat_block::StatBlockSnippet;
+  pub use super::term::TermDisplay;
 }

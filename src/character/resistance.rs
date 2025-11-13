@@ -20,13 +20,12 @@ pub enum ResistanceDisplay {
   OnlyIncluded,
 }
 
-
 #[component]
 pub fn ResistanceDetails(props: ResistanceDetailsProps) -> Element {
   let resistances = props.resistances;
-  let physical_total = resistances.get_category( &DamageCategory::Physical );
-  let elemental_total = resistances.get_category( &DamageCategory::Elemental );
-  let esoteric_total = resistances.get_category( &DamageCategory::Esoteric );
+  let physical_total = resistances.get_category(&DamageCategory::Physical);
+  let elemental_total = resistances.get_category(&DamageCategory::Elemental);
+  let esoteric_total = resistances.get_category(&DamageCategory::Esoteric);
   rsx!(
     div {
       class: "row full",
@@ -145,16 +144,21 @@ impl Resistances {
     return match category {
       DamageCategory::Physical => {
         self.bashing.is_some() || self.slashing.is_some() || self.piercing.is_some()
-      },
+      }
       DamageCategory::Elemental => {
-        self.fire.is_some() || self.cold.is_some() || self.lighting.is_some() || 
-        self.thunder.is_some() || self.acid.is_some()
-      },
+        self.fire.is_some()
+          || self.cold.is_some()
+          || self.lighting.is_some()
+          || self.thunder.is_some()
+          || self.acid.is_some()
+      }
       DamageCategory::Esoteric => {
-        self.force.is_some() || self.radiant.is_some() || self.necrotic.is_some() || 
-        self.psionic.is_some()
-      },
-    }
+        self.force.is_some()
+          || self.radiant.is_some()
+          || self.necrotic.is_some()
+          || self.psionic.is_some()
+      }
+    };
   }
 
   pub fn show_damage(&self, damage: &DamageClass) -> (String, i32, bool) {
