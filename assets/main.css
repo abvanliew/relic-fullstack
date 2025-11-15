@@ -132,6 +132,11 @@ p {
   margin: 4px 0px;
 }
 
+.thin-border {
+  border: 0.01rem solid var(--main-border);
+  padding: 0.1rem;
+}
+
 .path-title {
   font-size: 1.1rem;
   font-weight: 700;
@@ -306,7 +311,7 @@ p {
 }
 
 .dim-keywords {
-  grid-template-columns: [title] min-content [title-end details] 1fr [property] max-content [end];
+  grid-template-columns: [title] max-content [title-end details] 1fr [property] max-content [end];
 }
 
 .dim-thirds {
@@ -330,7 +335,7 @@ p {
   grid-row: 1;
 }
 
-.uv-title { grid-column: title; }
+.uv-title { grid-column: title; max-width: 86px; }
 .uv-cost { grid-column: cost; }
 .uv-activation { grid-column: activation; }
 .uv-details { grid-column: details / end; }

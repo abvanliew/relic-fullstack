@@ -84,12 +84,17 @@ impl Action {
         ids.extend(snippet.get_keyword_ids());
       }
     }
+    if let Some(properties) = &self.properties {
+      for property in properties {
+        ids.extend(property.get_keyword_ids());
+      }
+    }
     return ids;
   }
 
   pub fn get_minimum_resource_cost(&self) -> i32 {
     match &self.cost {
-      Some( cost ) => cost.minimum_resource_cost(),
+      Some(cost) => cost.minimum_resource_cost(),
       None => 0,
     }
   }

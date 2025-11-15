@@ -48,7 +48,7 @@ impl Default for Skill {
 
 pub mod prelude {
   pub use super::activation::Action;
-  pub use super::aspect::{Keyword, Property, RelicOrdering, TrainingCost};
+  pub use super::aspect::{Keyword, KeywordClass, Property, RelicOrdering, TrainingCost};
   pub use super::component::{SkillCard, SkillDescription, SkillTable};
   pub use super::duration::Duration;
   pub use super::target::Target;

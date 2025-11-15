@@ -17,6 +17,7 @@ pub enum TermDisplay {
   Block,
   Hover,
   Row,
+  Embeded,
 }
 
 #[derive(PartialEq, Props, Clone)]
@@ -73,8 +74,8 @@ pub fn TermSnippet(props: TermSnippetProps) -> Element {
       }
     },
     TermDisplay::Row => rsx! {
-      div { class: "uv-title highlight", "{title}" }
-      div { class: "uv-details", "{blurb_text}" }
+      div { class: "uv-full highlight", "{title}" }
+      div { class: "uv-full indent", "{blurb_text}" }
     },
     _ => rsx! { span { class: "highlight", " {title}" } },
   }

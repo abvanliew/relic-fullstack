@@ -1,3 +1,4 @@
+use crate::rule::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::prelude::*;
 use dioxus::prelude::*;
@@ -39,7 +40,7 @@ pub fn SingleSkill(id: String) -> Element {
   match &*response_skill.read_unchecked() {
     Some(Ok(skill)) => {
       rsx! {
-        SkillDescription { id: skill.id.to_string(), show_terms: false }
+        SkillDescription { id: skill.id.to_string(), display: TermDisplay::Embeded }
       }
     }
     None => {
@@ -67,13 +68,13 @@ pub fn FullSkillList() -> Element {
           div {
             class: "column-wrap gap-xlarge",
             for skill in skills.iter().step_by(2) {
-              SkillDescription { id: skill.id.to_string(), show_terms: true }
+              SkillDescription { id: skill.id.to_string(), display: TermDisplay::Embeded }
             }
           }
           div {
             class: "column-wrap gap-xlarge",
             for skill in skills.iter().skip(1).step_by(2) {
-              SkillDescription { id: skill.id.to_string(), show_terms: true }
+              SkillDescription { id: skill.id.to_string(), display: TermDisplay::Embeded }
             }
           }
         }

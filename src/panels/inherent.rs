@@ -1,6 +1,6 @@
+use crate::rule::prelude::*;
 use crate::server::prelude::ServerRequestSignals;
-use crate::skill::prelude::TrainingCost;
-use crate::skill::{prelude::SkillDescription, Skill};
+use crate::skill::prelude::*;
 use dioxus::prelude::*;
 
 #[component]
@@ -33,7 +33,7 @@ pub fn InherentSkills() -> Element {
         div {
           class: "row-wrap",
           for skill in skills {
-            SkillDescription { id: skill.id.to_string(), show_terms: true }
+            SkillDescription { id: skill.id.to_string(), display: TermDisplay::Embeded }
           }
         }
       }

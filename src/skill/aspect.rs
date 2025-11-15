@@ -55,10 +55,17 @@ pub struct PathRef {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+pub enum KeywordClass {
+  Classifier,
+  Stack,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Keyword {
   #[serde(rename = "_id")]
   pub id: ObjectId,
+  pub class: Option<KeywordClass>,
   pub title: String,
   pub blurb: Option<String>,
   pub rules: Option<Vec<Snippet>>,

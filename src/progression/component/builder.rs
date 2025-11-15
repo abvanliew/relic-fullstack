@@ -8,8 +8,8 @@ use crate::path::Path;
 use crate::progression::fixed::MIN_LEVEL;
 use crate::progression::track::TrackContext;
 use crate::progression::training::TrainingClass;
-use crate::rule::prelude::TermDisplay;
-use crate::server::prelude::{GameLibrarySignal, ServerRequestSignals};
+use crate::rule::prelude::*;
+use crate::server::prelude::*;
 use crate::skill::prelude::*;
 
 #[derive(Debug, Clone)]
@@ -252,7 +252,7 @@ pub fn SkillSelector(props: SkillSelectorProps) -> Element {
         event.stop_propagation();
         build.skill_toggle(&id);
       },
-      SkillCard { id: id.clone(), display: TermDisplay::TitleOnly }
+      SkillCard { id: id.clone(), display: TermDisplay::Embeded }
     }
   }
 }

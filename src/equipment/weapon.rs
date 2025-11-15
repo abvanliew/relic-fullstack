@@ -64,7 +64,7 @@ pub fn WeaponEntry(weapon: ReadOnlySignal<Weapon>) -> Element {
         div { "Range {range}" }
       }
       if let Some( block ) = opt_block {
-        div { "Block {block}" }
+        div { "Block {block} Physical" }
       }
       if let Some( keywords ) = opt_keywords {
         div { class: "italics", "{keywords}" }

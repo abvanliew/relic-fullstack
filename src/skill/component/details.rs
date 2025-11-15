@@ -1,10 +1,13 @@
+use std::collections::HashSet;
+
 use crate::rule::prelude::*;
-use crate::server::prelude::{GameLibrarySignal, ServerRequestSignals};
+use crate::server::prelude::ServerRequestSignals;
 use crate::skill::prelude::*;
+use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
 #[component]
-pub fn SkillDescription(id: String, show_terms: bool) -> Element {
+pub fn SkillDescription(id: String, display: TermDisplay) -> Element {
   let library = use_context::<ServerRequestSignals>();
   let res_skills = library.get_skills();
   let skill = match res_skills {
@@ -17,35 +20,55 @@ pub fn SkillDescription(id: String, show_terms: bool) -> Element {
     }
   };
   let terms = skill.get_keyword_ids().clone();
-  let display = if show_terms {
-    TermDisplay::TitleOnly
-  } else {
-    TermDisplay::Hover
-  };
   rsx!(
     div {
       class: "group column",
       SkillCard { id, display }
-      if show_terms {
-        for term in terms {
-          TermSnippet {
-            id: Some( term.to_string() ),
-            display: TermDisplay::Block,
+      match &display {
+        TermDisplay::Block => {
+          rsx!{
+            for term in terms {
+              TermSnippet {
+                id: Some( term.to_string() ),
+                display: TermDisplay::Block,
+              }
+            }
           }
-        }
+        },
+        _ => rsx!{},
       }
     }
   )
+}
+
+pub fn filter_keywords(keywords: &HashSet<ObjectId>) -> HashSet<String> {
+  let library = use_context::<ServerRequestSignals>();
+  let keyword_result = library.get_keywords();
+  let keyword_map = match keyword_result {
+    Some(map) => map,
+    None => {
+      return HashSet::new();
+    }
+  };
+  keywords
+    .iter()
+    .map(|id| id.to_string())
+    .filter(|term| match keyword_map.get(term) {
+      None => false,
+      Some(keyword) => match keyword.class {
+        Some(KeywordClass::Classifier) => false,
+        _ => true,
+      },
+    })
+    .collect()
 }
 
 #[component]
 pub fn SkillCard(id: String, display: TermDisplay) -> Element {
   let library = use_context::<ServerRequestSignals>();
   let skill_result = library.get_skills();
-  // let library = GameLibrarySignal::use_context_provider();
-  // let skill_result = &*library.skills.read();
   let skill = match skill_result {
-    Some(map) => match map.get(&id) {
+    Some(skill_map) => match skill_map.get(&id) {
       Some(skill) => skill.clone(),
       None => return rsx! {},
     },
@@ -60,6 +83,11 @@ pub fn SkillCard(id: String, display: TermDisplay) -> Element {
   let action = skill.action.clone();
   let opt_sub_actions = skill.sub_actions.clone();
   let opt_pick_keywords = skill.pick_one_keyword.clone();
+  let keyword_ids = skill.get_keyword_ids();
+  let keywords = match &display {
+    TermDisplay::Embeded => filter_keywords( &keyword_ids ),
+    _ => HashSet::new(),
+  };
   rsx!(
     div {
       class: "card grid dim-keywords",
@@ -75,6 +103,15 @@ pub fn SkillCard(id: String, display: TermDisplay) -> Element {
         for action in sub_actions {
           div { class: "spacer" }
           ActionDetails { action, display }
+        }
+      }
+      if keywords.len() > 0 {
+        div { class: "uv-full horizontal-bar" }
+      }
+      for keyword in keywords {
+        TermSnippet {
+          id: Some( keyword.to_string() ),
+          display: TermDisplay::Row,
         }
       }
       if let Some( pick_keywords ) = opt_pick_keywords {

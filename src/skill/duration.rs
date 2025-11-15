@@ -56,7 +56,7 @@ impl fmt::Display for Duration {
       &self.upkeep_cost,
       self.class != DurationClass::WhileReserved,
     ) {
-      (_, Some(cost), true) => base = format!("{base}, upkeep: {cost}"),
+      (_, Some(cost), true) => base = format!("{base}, Upkeep: {cost}"),
       (Some(_), _, true) => base = format!("{base}, upkeep at cost"),
       _ => (),
     }

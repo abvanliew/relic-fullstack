@@ -146,7 +146,7 @@ impl fmt::Display for RollResult {
         RollResult::Hit => "Hit",
         RollResult::HitWilling => "Hit/Willing",
         RollResult::Critical => "Critical",
-        RollResult::CriticalFailure => "Critical Failure",
+        RollResult::CriticalFailure => "Botch",
         RollResult::Failure => "Failure",
         RollResult::Success => "Success",
         RollResult::CriticalSuccess => "Critical",

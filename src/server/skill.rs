@@ -54,7 +54,12 @@ pub async fn get_skill_map() -> Result<HashMap<String, Skill>, ServerFnError> {
   let mut previous: Option<String> = None;
   while let Some(result) = results.next().await {
     let Ok(skill) = result else {
-      tracing::error!("Unable to load skill [{}] {:?} previous {:?}", count, result, previous);
+      tracing::error!(
+        "Unable to load skill [{}] {:?} previous {:?}",
+        count,
+        result,
+        previous
+      );
       continue;
     };
     previous = Some(skill.id.to_string());

@@ -40,6 +40,7 @@ pub enum Selection {
   Enemy,
   Space,
   Object,
+  CreatureObject,
 }
 
 impl Target {
@@ -51,6 +52,7 @@ impl Target {
       (Some(Selection::Creature), _) => "creature".into(),
       (Some(Selection::Space), _) => "space".into(),
       (Some(Selection::Object), _) => "object".into(),
+      (Some(Selection::CreatureObject), _) => "creature or object".into(),
       _ => "undefined".into(),
     }
   }
@@ -63,17 +65,17 @@ impl Target {
       (Some(Selection::Creature), _) => "creatures".into(),
       (Some(Selection::Space), _) => "spaces".into(),
       (Some(Selection::Object), _) => "objects".into(),
+      (Some(Selection::CreatureObject), _) => "creatures and/or objects".into(),
       _ => "undefined".into(),
     }
   }
 
   pub fn article(&self) -> String {
     match (&self.selection, &self.custom_selection) {
-      (Some(Selection::Creature) | Some(Selection::Space), _) => "A",
-      (
-        Some(Selection::Ally) | Some(Selection::Enemy) | 
-        Some(Selection::Object),
-      _) => "An",
+      (Some(Selection::Creature) | Some(Selection::Space) | Some(Selection::CreatureObject), _) => {
+        "A"
+      }
+      (Some(Selection::Ally) | Some(Selection::Enemy) | Some(Selection::Object), _) => "An",
       (_, Some(_)) => "",
       _ => "Some",
     }
@@ -176,8 +178,8 @@ impl fmt::Display for Target {
       _ => format!("undefined"),
     };
     if let Some(suffix) = &self.suffix {
-      return write!(f, "{target} {suffix}.",);
+      return write!(f, "{target} {suffix}",);
     }
-    return write!(f, "{target}.",);
+    return write!(f, "{target}",);
   }
 }
