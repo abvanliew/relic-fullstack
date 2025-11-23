@@ -48,17 +48,20 @@ impl Stack {
 
 #[component]
 pub fn RulesStackDetail(stacks: RulesStack, display: TermDisplay) -> Element {
-  rsx!(for stack in stacks {
+  rsx! {for stack in stacks {
     StackDetail { stack, display }
-  })
+  }}
 }
 
 #[component]
 pub fn StackDetail(stack: Stack, display: TermDisplay) -> Element {
+  if let Some(property) = stack.property {
+    let title = property.term.title.unwrap_or("undefined".into());
+    let details = rsx! {RuleBlockSet { blocks: property.rules, display }};
+    return rsx! {PropertyDetail { title, details }};
+  }
+
   rsx!(
-    if let Some( property ) = stack.property {
-      PropertyDetail { title: property.title, blocks: property.rules, display }
-    }
     if let Some( outcomes ) = stack.outcomes {
       OutcomeDetail { outcomes, display }
     }
@@ -74,11 +77,24 @@ pub fn StackDetail(stack: Stack, display: TermDisplay) -> Element {
   )
 }
 
+// #[component]
+// pub fn RuleProperty(property: Property, display: TermDisplay) -> Element {
+
+// }
+
+#[derive(PartialEq, Props, Clone)]
+pub struct PropertyDetailProps {
+  title: String,
+  details: Element,
+}
+
 #[component]
-pub fn PropertyDetail(title: String, blocks: RuleBlocks, display: TermDisplay) -> Element {
+pub fn PropertyDetail(props: PropertyDetailProps) -> Element {
+  let title = props.title;
+  let details = props.details;
   return rsx!(
     div { class: "uv-title highlight", "{title}" }
-    div { class: "uv-details", RuleBlockSet { blocks, display } }
+    div { class: "uv-details", { details } }
   );
 }
 

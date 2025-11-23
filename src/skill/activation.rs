@@ -21,6 +21,7 @@ pub struct Action {
   pub duration: Option<Duration>,
   pub extended_duration: Option<Duration>,
   pub target: Option<Target>,
+  pub refresh: Option<RuleBlocks>,
   pub properties: Option<Vec<Property>>,
 
   pub rules: Option<RulesStack>,
@@ -39,6 +40,7 @@ impl Default for Action {
       duration: None,
       extended_duration: None,
       target: None,
+      refresh:None,
       properties: None,
       rules: None,
     }
@@ -75,6 +77,11 @@ impl Action {
       ids.extend(keyword_ids.clone());
     }
     if let Some(snippets) = &self.condition {
+      for snippet in snippets {
+        ids.extend(snippet.get_keyword_ids());
+      }
+    }
+    if let Some(snippets) = &self.refresh {
       for snippet in snippets {
         ids.extend(snippet.get_keyword_ids());
       }

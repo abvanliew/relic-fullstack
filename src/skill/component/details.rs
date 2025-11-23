@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use crate::rule::prelude::*;
 use crate::server::prelude::ServerRequestSignals;
@@ -85,7 +85,7 @@ pub fn SkillCard(id: String, display: TermDisplay) -> Element {
   let opt_pick_keywords = skill.pick_one_keyword.clone();
   let keyword_ids = skill.get_keyword_ids();
   let keywords = match &display {
-    TermDisplay::Embeded => filter_keywords( &keyword_ids ),
+    TermDisplay::Embeded => filter_keywords(&keyword_ids),
     _ => HashSet::new(),
   };
   rsx!(
@@ -129,19 +129,20 @@ pub fn SkillCard(id: String, display: TermDisplay) -> Element {
 
 #[component]
 fn ActionDetails(action: Action, display: TermDisplay) -> Element {
+  let library = use_context::<ServerRequestSignals>();
+  let keyword_results = library.get_keywords();
+  let keyword_map = match &keyword_results {
+    Some(map) => map.clone(),
+    None => HashMap::new(),
+  };
   let keywords: Vec<String> = if let Some(ref keyword_ids) = action.keyword_ids {
-    let library = use_context::<ServerRequestSignals>();
-    let keyword_results = library.get_keywords();
-    match &keyword_results {
-      Some(map) => keyword_ids
-        .iter()
-        .filter_map(|id| match map.get(&id.to_string()) {
-          Some(keyword) => Some(keyword.title.clone()),
-          None => None,
-        })
-        .collect(),
-      None => Vec::new(),
-    }
+    keyword_ids
+      .iter()
+      .filter_map(|id| match keyword_map.get(&id.to_string()) {
+        Some(keyword) => Some(keyword.title.clone()),
+        None => None,
+      })
+      .collect()
   } else {
     Vec::new()
   };
@@ -149,7 +150,23 @@ fn ActionDetails(action: Action, display: TermDisplay) -> Element {
   let activation = action.base();
   let suffix_opt = action.suffix();
 
-  rsx!(
+  let mut property_props: Vec<(String, RuleBlocks)> = Vec::new();
+  if let Some(properties) = action.properties {
+    for property in properties {
+      let title = match (property.term.title, property.term.keyword_id) {
+        (None, None) => "undefined".to_string(),
+        (_, Some(id)) => keyword_map
+          .get(&id.to_string())
+          .unwrap_or(&Keyword::default())
+          .title
+          .clone(),
+        (Some(term), _) => term,
+      };
+      property_props.push((title, property.rules))
+    }
+  }
+
+  rsx! {
     if let Some( sub_title ) = action.sub_title {
       div { class: "uv-full subtitle", "{sub_title}" }
     }
@@ -163,28 +180,43 @@ fn ActionDetails(action: Action, display: TermDisplay) -> Element {
       }
     }
     if let Some( blocks ) = action.condition {
-      PropertyDetail { title: "Condition", blocks, display }
+      PropertyDetail {
+        title: "Condition".to_string(),
+        details: rsx!{RuleBlockSet { blocks, display } }
+      }
     }
     if let Some( cost ) = action.cost {
-      div { class: "uv-title nowrap highlight", "Cost" }
-      div { class: "uv-details", "{cost}" }
+      PropertyDetail {
+        title: "Cost".to_string(),
+        details: rsx!{ "{cost}" }
+      }
     }
     if let Some( duration ) = action.duration {
-      div { class: "uv-title nowrap highlight", "Duration" }
-      div { class: "uv-details", "{duration}" }
+      PropertyDetail {
+        title: "Duration".to_string(),
+        details: rsx!{ "{duration}" }
+      }
     }
     if let Some( target ) = action.target {
-      div { class: "uv-title nowrap highlight", "Target" }
-      div { class: "uv-details", "{target}" }
+      PropertyDetail {
+        title: "Target".to_string(),
+        details: rsx!{ "{target}" }
+      }
     }
-    if let Some( properties ) = action.properties {
-      for property in properties {
-        div { class: "uv-title nowrap highlight", "{property.title}" }
-        div { class: "uv-details", RuleBlockSet { blocks: property.rules, display } }
+    if let Some( blocks ) = action.refresh {
+      PropertyDetail {
+        title: "Refresh".to_string(),
+        details: rsx!{RuleBlockSet { blocks, display } }
+      }
+    }
+    for (title,rules) in property_props {
+      PropertyDetail {
+        title,
+        details: rsx!{RuleBlockSet { blocks: rules, display }}
       }
     }
     if let Some( stacks ) = action.rules {
       RulesStackDetail { stacks, display }
     }
-  )
+  }
 }

@@ -60,22 +60,34 @@ pub enum KeywordClass {
   Stack,
 }
 
+pub trait KeywordClassified {
+  fn get_keyword_ids(&self) -> HashSet<ObjectId>;
+}
+
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Keyword {
   #[serde(rename = "_id")]
   pub id: ObjectId,
-  pub class: Option<KeywordClass>,
   pub title: String,
+  pub class: Option<KeywordClass>,
   pub blurb: Option<String>,
   pub rules: Option<Vec<Snippet>>,
 }
 
-impl Skill {
-  pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
-    return self.action.get_keyword_ids();
+impl Default for Keyword {
+  fn default() -> Self {
+    Self {
+      id: Default::default(),
+      title: "undefined".into(),
+      class: Default::default(),
+      blurb: Default::default(),
+      rules: Default::default(),
+    }
   }
+}
 
+impl Skill {
   pub fn minor_feature_cost(&self) -> u32 {
     match &self.training_cost {
       TrainingCost::Inherient | TrainingCost::Keystone => 0,
@@ -85,16 +97,26 @@ impl Skill {
   }
 }
 
+impl KeywordClassified for Skill {
+  fn get_keyword_ids(&self) -> HashSet<ObjectId> {
+    return self.action.get_keyword_ids();
+  }
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Property {
-  pub title: String,
+  pub term: Term,
   pub rules: RuleBlocks,
 }
 
 impl Property {
   pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
+
+    if let Some(id) = self.term.keyword_id {
+      ids.insert(id);
+    }
     for rule in &self.rules {
       ids.extend(rule.get_keyword_ids());
     }
