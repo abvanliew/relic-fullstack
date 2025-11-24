@@ -126,9 +126,9 @@ impl Outcome {
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum RollResult {
+  Botch,
   Miss,
   Hit,
-  HitWilling,
   Critical,
   CriticalFailure,
   Failure,
@@ -142,14 +142,12 @@ impl fmt::Display for RollResult {
       f,
       "{}",
       match self {
+        RollResult::CriticalFailure | RollResult::Botch => "Botch",
         RollResult::Miss => "Miss",
-        RollResult::Hit => "Hit",
-        RollResult::HitWilling => "Hit/Willing",
-        RollResult::Critical => "Critical",
-        RollResult::CriticalFailure => "Botch",
         RollResult::Failure => "Failure",
+        RollResult::Hit => "Hit",
         RollResult::Success => "Success",
-        RollResult::CriticalSuccess => "Critical",
+        RollResult::Critical | RollResult::CriticalSuccess => "Critical",
       }
     )
   }

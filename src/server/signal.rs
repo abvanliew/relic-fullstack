@@ -4,30 +4,9 @@ use crate::{
   skill::{prelude::Keyword, Skill},
 };
 use dioxus::prelude::*;
-use std::{collections::HashMap, future::Future};
-use tracing::info;
+use std::collections::HashMap;
 
 use super::{path::get_path_map, skill::get_skill_map};
-
-pub static KEYWORDS: GlobalSignal<Option<HashMap<String, Keyword>>> = Signal::global(|| None);
-
-pub async fn global_server_load() {
-  info!("Start keyword load");
-  *KEYWORDS.write() = parse_server_response(get_keyword_map()).await;
-  info!("Done with keyword load");
-  // *KEYWORDS.write() = parse_server_response(get_keyword_map()).await;
-  // *KEYWORDS.write() = parse_server_response(get_keyword_map()).await;
-}
-
-pub async fn parse_server_response<T: Clone>(
-  response: impl Future<Output = Result<T, ServerFnError>>,
-) -> Option<T> {
-  let result = response.await;
-  return match &result {
-    Ok(data) => Some(data.to_owned()),
-    _ => None,
-  };
-}
 
 fn resource_data<T: Clone>(resource: Resource<Result<T, ServerFnError>>) -> Option<T> {
   return match &*resource.read_unchecked() {

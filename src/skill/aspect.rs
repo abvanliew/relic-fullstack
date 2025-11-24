@@ -58,6 +58,7 @@ pub struct PathRef {
 pub enum KeywordClass {
   Classifier,
   Stack,
+  Debuff,
 }
 
 pub trait KeywordClassified {
