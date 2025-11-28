@@ -252,7 +252,7 @@ pub fn SkillSelector(props: SkillSelectorProps) -> Element {
         event.stop_propagation();
         build.skill_toggle(&id);
       },
-      SkillCard { id: id.clone(), display: TermDisplay::Embeded }
+      SkillCard { id: id.clone(), display: SkillTermDisplay::Embeded }
     }
   }
 }

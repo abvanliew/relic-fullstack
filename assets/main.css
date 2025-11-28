@@ -113,7 +113,16 @@ p {
   width: 600px;
   border: 0.2rem solid var( --main-border );
   border-radius: 0.6rem;
-  padding: 0.16rem 0.6rem 0.6rem;
+  padding: 0.4rem 0.6rem 0.6rem;
+  height: min-content;
+  flex-shrink: 0;
+}
+
+.card-thin {
+  width: 600px;
+  border: 0.1rem solid var( --main-border );
+  border-radius: 0.6rem;
+  padding: 0.4rem 0.6rem 0.6rem;
   height: min-content;
   flex-shrink: 0;
 }

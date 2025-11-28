@@ -6,7 +6,7 @@ use bson::oid::ObjectId;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
-pub type RulesSnippet = Vec<Snippet>;
+pub type RulesSnippets = Vec<Snippet>;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
 pub struct Snippet {
@@ -28,32 +28,25 @@ impl Snippet {
 }
 
 #[component]
-pub fn RulesSpippetDetail(snippets: RulesSnippet, display: TermDisplay) -> Element {
+pub fn RulesSpippetDetail(snippets: RulesSnippets) -> Element {
   rsx!(
     div {
       class: "inline",
       for snippet in snippets {
-        SnippetDetail { snippet, display }
+        SnippetDetail { snippet }
       }
     }
   )
 }
 
 #[component]
-pub fn SnippetDetail(snippet: Snippet, display: TermDisplay) -> Element {
-  let id = match snippet.term {
-    Some(ref term) => match term.keyword_id {
-      Some(id) => Some(id.to_string()),
-      _ => None,
-    },
-    None => None,
-  };
+pub fn SnippetDetail(snippet: Snippet) -> Element {
   rsx!(
     if let Some( text ) = snippet.text {
       TextSnippet { text }
     }
     if let Some( term ) = snippet.term {
-      TermSnippet { term, id, display }
+      TermSnippet { term }
     }
     if let Some( roll ) = snippet.roll {
       RollSnippet { roll }
@@ -63,5 +56,5 @@ pub fn SnippetDetail(snippet: Snippet, display: TermDisplay) -> Element {
 
 #[component]
 pub fn TextSnippet(text: String) -> Element {
-  return rsx!( span { "{text} " } );
+  return rsx!( span { " {text}" } );
 }

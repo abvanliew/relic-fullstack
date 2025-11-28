@@ -51,7 +51,7 @@ pub mod prelude {
   pub use super::aspect::{
     Keyword, KeywordClass, KeywordClassified, Property, RelicOrdering, TrainingCost,
   };
-  pub use super::component::{SkillCard, SkillDescription, SkillTable};
+  pub use super::component::{SkillCard, SkillDescription, SkillTable, SkillTermDisplay};
   pub use super::duration::Duration;
   pub use super::target::Target;
   pub use super::Skill;

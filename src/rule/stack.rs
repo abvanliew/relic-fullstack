@@ -4,18 +4,19 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
 use crate::rule::internal::*;
+use crate::rule::snippet::Snippet;
 use crate::rule::stat_block::StatBlock;
 use crate::skill::prelude::*;
 
 pub type RulesStack = Vec<Stack>;
-pub type RuleBlocks = Vec<Block>;
+pub type RulesBlocks = Vec<Block>;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
 pub struct Stack {
   pub property: Option<Property>,
   pub outcomes: Option<Vec<Outcome>>,
-  pub items: Option<Vec<RuleBlocks>>,
-  pub block: Option<RulesSnippet>,
+  pub items: Option<Vec<RulesBlocks>>,
+  pub block: Option<RulesSnippets>,
   pub stats: Option<StatBlock>,
 }
 
@@ -47,23 +48,23 @@ impl Stack {
 }
 
 #[component]
-pub fn RulesStackDetail(stacks: RulesStack, display: TermDisplay) -> Element {
+pub fn RulesStackDetail(stacks: RulesStack, display: SkillTermDisplay) -> Element {
   rsx! {for stack in stacks {
     StackDetail { stack, display }
   }}
 }
 
 #[component]
-pub fn StackDetail(stack: Stack, display: TermDisplay) -> Element {
+pub fn StackDetail(stack: Stack, display: SkillTermDisplay) -> Element {
   if let Some(property) = stack.property {
     let title = property.term.title.unwrap_or("undefined".into());
-    let details = rsx! {RuleBlockSet { blocks: property.rules, display }};
+    let details = rsx! {RulesBlockSet { blocks: property.rules }};
     return rsx! {PropertyDetail { title, details }};
   }
 
   rsx!(
     if let Some( outcomes ) = stack.outcomes {
-      OutcomeDetail { outcomes, display }
+      OutcomeDetail { outcomes }
     }
     if let Some(stats) = stack.stats {
       StatBlockSnippet { stats }
@@ -71,16 +72,11 @@ pub fn StackDetail(stack: Stack, display: TermDisplay) -> Element {
     if stack.block.is_some() || stack.items.is_some() {
       div {
         class: "uv-full",
-        BlockDetail { block: Block{ items: stack.items, block: stack.block }, display }
+        BlockDetail { block: Block{ items: stack.items, block: stack.block } }
       }
     }
   )
 }
-
-// #[component]
-// pub fn RuleProperty(property: Property, display: TermDisplay) -> Element {
-
-// }
 
 #[derive(PartialEq, Props, Clone)]
 pub struct PropertyDetailProps {
@@ -100,8 +96,8 @@ pub fn PropertyDetail(props: PropertyDetailProps) -> Element {
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
 pub struct Block {
-  pub items: Option<Vec<RuleBlocks>>,
-  pub block: Option<RulesSnippet>,
+  pub items: Option<Vec<RulesBlocks>>,
+  pub block: Option<RulesSnippets>,
 }
 
 impl Block {
@@ -123,31 +119,49 @@ impl Block {
   }
 }
 
+pub fn blurb_to_rules_blocks(blurb: String) -> RulesBlocks {
+  snippets_to_rules_blocks(blurb_to_snippets(blurb))
+}
+
+pub fn snippets_to_rules_blocks(snippets: Vec<Snippet>) -> RulesBlocks {
+  vec![Block {
+    block: Some(snippets),
+    ..Default::default()
+  }]
+}
+
+pub fn blurb_to_snippets(blurb: String) -> Vec<Snippet> {
+  vec![Snippet {
+    text: Some(blurb),
+    ..Default::default()
+  }]
+}
+
 #[component]
-pub fn RuleBlockSet(blocks: RuleBlocks, display: TermDisplay) -> Element {
+pub fn RulesBlockSet(blocks: RulesBlocks) -> Element {
   return rsx!(for block in blocks {
-    BlockDetail { block, display }
+    BlockDetail { block }
   });
 }
 
 #[component]
-pub fn BlockDetail(block: Block, display: TermDisplay) -> Element {
+pub fn BlockDetail(block: Block) -> Element {
   return rsx!(
     if let Some( items ) = block.items {
-      ListSnippet { items, display }
+      ListSnippet { items }
     }
     if let Some( snippets ) = block.block {
-      RulesSpippetDetail { snippets, display }
+      RulesSpippetDetail { snippets }
     }
   );
 }
 
 #[component]
-pub fn ListSnippet(items: Vec<RuleBlocks>, display: TermDisplay) -> Element {
+pub fn ListSnippet(items: Vec<RulesBlocks>) -> Element {
   rsx!(
     ul {
       for blocks in items {
-        li { RuleBlockSet { blocks, display } }
+        li { RulesBlockSet { blocks } }
       }
     }
   )

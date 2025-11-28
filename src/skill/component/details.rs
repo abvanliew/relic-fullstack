@@ -6,8 +6,16 @@ use crate::skill::prelude::*;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
+#[derive(Debug, Clone, Copy, PartialEq, Default, Eq)]
+pub enum SkillTermDisplay {
+  #[default]
+  Minimal,
+  Embeded,
+  External,
+}
+
 #[component]
-pub fn SkillDescription(id: String, display: TermDisplay) -> Element {
+pub fn SkillDescription(id: String, display: SkillTermDisplay) -> Element {
   let library = use_context::<ServerRequestSignals>();
   let res_skills = library.get_skills();
   let skill = match res_skills {
@@ -19,19 +27,16 @@ pub fn SkillDescription(id: String, display: TermDisplay) -> Element {
       return rsx! { div { "Loading" } };
     }
   };
-  let terms = skill.get_keyword_ids().clone();
+  let keywords = filter_keywords( &skill.get_keyword_ids() );
   rsx!(
     div {
       class: "group column",
       SkillCard { id, display }
       match &display {
-        TermDisplay::Block => {
+        SkillTermDisplay::External => {
           rsx!{
-            for term in terms {
-              TermSnippet {
-                id: Some( term.to_string() ),
-                display: TermDisplay::Block,
-              }
+            for keyword in keywords {
+              TermSnippet { term: Term::keyword(keyword), display: TermDisplay::Card }
             }
           }
         },
@@ -41,7 +46,7 @@ pub fn SkillDescription(id: String, display: TermDisplay) -> Element {
   )
 }
 
-pub fn filter_keywords(keywords: &HashSet<ObjectId>) -> HashSet<String> {
+pub fn filter_keywords(keywords: &HashSet<ObjectId>) -> HashSet<ObjectId> {
   let library = use_context::<ServerRequestSignals>();
   let keyword_result = library.get_keywords();
   let keyword_map = match keyword_result {
@@ -52,19 +57,18 @@ pub fn filter_keywords(keywords: &HashSet<ObjectId>) -> HashSet<String> {
   };
   keywords
     .iter()
-    .map(|id| id.to_string())
-    .filter(|term| match keyword_map.get(term) {
-      None => false,
+    .filter_map(|&id| match keyword_map.get(&id.to_string()) {
+      None => None,
       Some(keyword) => match keyword.class {
-        Some(KeywordClass::Classifier) => false,
-        _ => true,
+        Some(KeywordClass::Classifier) => None,
+        _ => Some(id),
       },
     })
     .collect()
 }
 
 #[component]
-pub fn SkillCard(id: String, display: TermDisplay) -> Element {
+pub fn SkillCard(id: String, display: SkillTermDisplay) -> Element {
   let library = use_context::<ServerRequestSignals>();
   let skill_result = library.get_skills();
   let skill = match skill_result {
@@ -85,7 +89,7 @@ pub fn SkillCard(id: String, display: TermDisplay) -> Element {
   let opt_pick_keywords = skill.pick_one_keyword.clone();
   let keyword_ids = skill.get_keyword_ids();
   let keywords = match &display {
-    TermDisplay::Embeded => filter_keywords(&keyword_ids),
+    SkillTermDisplay::Embeded => filter_keywords(&keyword_ids),
     _ => HashSet::new(),
   };
   rsx!(
@@ -110,16 +114,16 @@ pub fn SkillCard(id: String, display: TermDisplay) -> Element {
       }
       for keyword in keywords {
         TermSnippet {
-          id: Some( keyword.to_string() ),
-          display: TermDisplay::Row,
+          term: Term::keyword(keyword),
+          display: TermDisplay::Block
         }
       }
       if let Some( pick_keywords ) = opt_pick_keywords {
         for keyword in pick_keywords {
           div { class: "uv-full horizontal-bar" }
           TermSnippet {
-            id: Some( keyword.to_string() ),
-            display: TermDisplay::Row,
+            term: Term::keyword(keyword),
+            display: TermDisplay::Block
           }
         }
       }
@@ -128,7 +132,7 @@ pub fn SkillCard(id: String, display: TermDisplay) -> Element {
 }
 
 #[component]
-fn ActionDetails(action: Action, display: TermDisplay) -> Element {
+fn ActionDetails(action: Action, display: SkillTermDisplay) -> Element {
   let library = use_context::<ServerRequestSignals>();
   let keyword_results = library.get_keywords();
   let keyword_map = match &keyword_results {
@@ -154,7 +158,7 @@ fn ActionDetails(action: Action, display: TermDisplay) -> Element {
     None => (None, None),
   };
 
-  let mut property_props: Vec<(String, RuleBlocks)> = Vec::new();
+  let mut property_props: Vec<(String, RulesBlocks)> = Vec::new();
   if let Some(properties) = action.properties {
     for property in properties {
       let title = match (property.term.title, property.term.keyword_id) {
@@ -186,7 +190,7 @@ fn ActionDetails(action: Action, display: TermDisplay) -> Element {
     if let Some( blocks ) = action.condition {
       PropertyDetail {
         title: "Condition".to_string(),
-        details: rsx!{RuleBlockSet { blocks, display } }
+        details: rsx!{RulesBlockSet { blocks } }
       }
     }
     if let Some( cost ) = action.cost {
@@ -216,13 +220,13 @@ fn ActionDetails(action: Action, display: TermDisplay) -> Element {
     if let Some( blocks ) = action.refresh {
       PropertyDetail {
         title: "Refresh".to_string(),
-        details: rsx!{RuleBlockSet { blocks, display } }
+        details: rsx!{RulesBlockSet { blocks } }
       }
     }
-    for (title,rules) in property_props {
+    for (title,blocks) in property_props {
       PropertyDetail {
         title,
-        details: rsx!{RuleBlockSet { blocks: rules, display }}
+        details: rsx!{RulesBlockSet { blocks }}
       }
     }
     if let Some( stacks ) = action.rules {

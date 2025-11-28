@@ -16,12 +16,12 @@ pub struct Action {
   pub keyword_ids: Option<Vec<ObjectId>>,
   pub initial: Option<bool>,
 
-  pub condition: Option<RuleBlocks>,
+  pub condition: Option<RulesBlocks>,
   pub cost: Option<ResourceCost>,
   pub duration: Option<Duration>,
   pub extended_duration: Option<Duration>,
   pub target: Option<Target>,
-  pub refresh: Option<RuleBlocks>,
+  pub refresh: Option<RulesBlocks>,
   pub properties: Option<Vec<Property>>,
 
   pub rules: Option<RulesStack>,

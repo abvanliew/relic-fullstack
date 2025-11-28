@@ -6,12 +6,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::character::expertise::ExpertiseComponent;
 use crate::character::flow::FlowResourcesBlock;
-// use crate::character::prelude::*;
 use crate::equipment::armor::Armor;
 use crate::equipment::weapon::{Weapon, WeaponEntry};
 use crate::path::Path;
 use crate::rule::components::Modifier;
-use crate::rule::prelude::*;
 use crate::skill::prelude::*;
 use crate::Route;
 
@@ -197,7 +195,7 @@ pub fn SheetDetails(
       div {
         class: "row-wrap",
         for skill in selected_skills {
-          SkillDescription { id: skill.id.to_string(), display: TermDisplay::Embeded }
+          SkillDescription { id: skill.id.to_string(), display: SkillTermDisplay::Embeded }
         }
       }
     }

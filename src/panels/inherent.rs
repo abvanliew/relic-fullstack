@@ -1,4 +1,3 @@
-use crate::rule::prelude::*;
 use crate::server::prelude::ServerRequestSignals;
 use crate::skill::prelude::*;
 use dioxus::prelude::*;
@@ -33,7 +32,7 @@ pub fn InherentSkills() -> Element {
         div {
           class: "row-wrap",
           for skill in skills {
-            SkillDescription { id: skill.id.to_string(), display: TermDisplay::Embeded }
+            SkillDescription { id: skill.id.to_string(), display: SkillTermDisplay::Embeded }
           }
         }
       }

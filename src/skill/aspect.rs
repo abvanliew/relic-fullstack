@@ -59,6 +59,24 @@ pub enum KeywordClass {
   Classifier,
   Term,
   Affect,
+  Attribute,
+  CoreRule,
+}
+
+impl fmt::Display for KeywordClass {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
+        KeywordClass::Classifier => "Classifier",
+        KeywordClass::Term => "Term",
+        KeywordClass::Affect => "Affect",
+        KeywordClass::Attribute => "Attribute",
+        KeywordClass::CoreRule => "Core Rule",
+      }
+    )
+  }
 }
 
 pub trait KeywordClassified {
@@ -102,9 +120,9 @@ impl KeywordClassified for Skill {
   fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
     ids.extend(self.action.get_keyword_ids());
-    if let Some( sub_actions ) = &self.sub_actions {
+    if let Some(sub_actions) = &self.sub_actions {
       for action in sub_actions {
-        ids.extend( action.get_keyword_ids() );
+        ids.extend(action.get_keyword_ids());
       }
     }
     return ids;
@@ -115,7 +133,7 @@ impl KeywordClassified for Skill {
 #[serde(rename_all = "camelCase")]
 pub struct Property {
   pub term: Term,
-  pub rules: RuleBlocks,
+  pub rules: RulesBlocks,
 }
 
 impl Property {

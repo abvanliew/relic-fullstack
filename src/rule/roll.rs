@@ -5,7 +5,7 @@ use std::collections::HashSet;
 use std::fmt;
 
 use crate::character::prelude::*;
-use crate::rule::internal::*;
+use crate::rule::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -72,8 +72,8 @@ impl fmt::Display for RollClass {
 #[component]
 pub fn RollSnippet(roll: Roll) -> Element {
   let defense = match (&roll.defense, &roll.alternate_defense) {
-    (_, Some(defense)) => Some( defense.clone() ),
-    (Some(defense), _) => Some (defense.to_string() ),
+    (_, Some(defense)) => Some(defense.clone()),
+    (Some(defense), _) => Some(defense.to_string()),
     (None, None) => None,
   };
   let roll_class = &roll.class;
@@ -81,7 +81,7 @@ pub fn RollSnippet(roll: Roll) -> Element {
     Some(true) => "each",
     _ => "the",
   };
-  return rsx!{
+  return rsx! {
     match &roll.opening {
       Some(Opening::None) => rsx! {},
       Some(Opening::Lower) => rsx! {span { " make a" }},
@@ -112,14 +112,13 @@ pub fn RollSnippet(roll: Roll) -> Element {
       _ => rsx! {},
     }
     span { "." }
-  }
+  };
 }
-
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct Outcome {
   pub result: RollResult,
-  pub rules: RuleBlocks,
+  pub rules: RulesBlocks,
 }
 
 impl Outcome {
@@ -162,7 +161,7 @@ impl fmt::Display for RollResult {
 }
 
 #[component]
-pub fn OutcomeDetail(outcomes: Vec<Outcome>, display: TermDisplay) -> Element {
+pub fn OutcomeDetail(outcomes: Vec<Outcome>) -> Element {
   rsx!(
     for outcome in outcomes {
       div {
@@ -171,7 +170,7 @@ pub fn OutcomeDetail(outcomes: Vec<Outcome>, display: TermDisplay) -> Element {
       }
       div {
         class: "uv-details",
-        RuleBlockSet { blocks: outcome.rules, display }
+        RulesBlockSet { blocks: outcome.rules }
       }
     }
   )
