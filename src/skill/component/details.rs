@@ -149,6 +149,10 @@ fn ActionDetails(action: Action, display: TermDisplay) -> Element {
   let keyword_display = keywords.join(", ");
   let activation = action.base();
   let suffix_opt = action.suffix();
+  let (duration, upkeep) = match &action.duration {
+    Some(duration) => (Some(duration.base()), duration.upkeep()),
+    None => (None, None),
+  };
 
   let mut property_props: Vec<(String, RuleBlocks)> = Vec::new();
   if let Some(properties) = action.properties {
@@ -171,12 +175,12 @@ fn ActionDetails(action: Action, display: TermDisplay) -> Element {
       div { class: "uv-full subtitle", "{sub_title}" }
     }
     div { class: "uv-full inline",
-      span { class: "highlight", "{activation} " }
+      span { class: "highlight", "{activation}" }
       if let Some( suffix ) = suffix_opt {
-        span {"{suffix} "}
+        span {" {suffix} "}
       }
       if keywords.len() > 0 {
-        span {class: "italics", "- {keyword_display}"}
+        span {class: "italics", " - {keyword_display}"}
       }
     }
     if let Some( blocks ) = action.condition {
@@ -191,10 +195,16 @@ fn ActionDetails(action: Action, display: TermDisplay) -> Element {
         details: rsx!{ "{cost}" }
       }
     }
-    if let Some( duration ) = action.duration {
+    if let Some( duration ) = duration {
       PropertyDetail {
         title: "Duration".to_string(),
         details: rsx!{ "{duration}" }
+      }
+    }
+    if let Some( upkeep ) = upkeep {
+      PropertyDetail {
+        title: "Upkeep".to_string(),
+        details: rsx!{ "{upkeep}" }
       }
     }
     if let Some( target ) = action.target {

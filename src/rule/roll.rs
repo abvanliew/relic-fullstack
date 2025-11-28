@@ -11,16 +11,21 @@ use crate::rule::internal::*;
 #[serde(rename_all = "camelCase")]
 pub struct Roll {
   pub class: RollClass,
+  pub opening: Option<Opening>,
+
+  pub keyword: Option<String>,
   pub capability: Option<Capability>,
+
   pub defense: Option<Defense>,
   pub alternate_defense: Option<String>,
-  pub each: Option<bool>,
-  pub keyword: Option<String>,
-  pub custom_target: Option<String>,
-  pub triggered: Option<bool>,
-  pub difficulty: Option<String>,
-  pub opening: Option<Opening>,
+
   pub modifier: Option<Modifier>,
+  pub custom_modifier: Option<String>,
+
+  pub each: Option<bool>,
+  pub custom_target: Option<String>,
+  pub difficulty: Option<String>,
+  pub target: Option<Target>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
@@ -44,6 +49,12 @@ pub enum Modifier {
   Disadvantage,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+pub enum Target {
+  None,
+  Triggering,
+}
+
 impl fmt::Display for RollClass {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(
@@ -52,7 +63,7 @@ impl fmt::Display for RollClass {
       match self {
         RollClass::Attack => "attack",
         RollClass::Check => "check",
-        RollClass::LuckCheck => "Luck Check",
+        RollClass::LuckCheck => "Luck check",
       }
     )
   }
@@ -60,53 +71,50 @@ impl fmt::Display for RollClass {
 
 #[component]
 pub fn RollSnippet(roll: Roll) -> Element {
-  let keyword = roll.keyword.clone().unwrap_or("".into());
-  let target = match (&roll.custom_target, roll.triggered) {
-    (Some(custom_target), _) => custom_target.clone(),
-    (_, Some(true)) => "triggering target".into(),
-    _ => "target".into(),
+  let defense = match (&roll.defense, &roll.alternate_defense) {
+    (_, Some(defense)) => Some( defense.clone() ),
+    (Some(defense), _) => Some (defense.to_string() ),
+    (None, None) => None,
   };
-  let capability: String = match &roll.capability {
-    Some(capability) => capability.to_string(),
-    None => "undefined".into(),
-  };
-  let defense: String = match (&roll.defense, &roll.alternate_defense) {
-    (_, Some(defense)) => defense.clone(),
-    (Some(defense), _) => defense.to_string(),
-    (None, None) => "undefined".into(),
-  };
-  let class = roll.class.clone();
-  let difficulty = roll.difficulty.clone().unwrap_or("undefined".into());
+  let roll_class = &roll.class;
   let article = match &roll.each {
     Some(true) => "each",
     _ => "the",
   };
-  let opening = match &roll.opening {
-    Some(Opening::None) => "",
-    Some(Opening::Lower) => "make a",
-    _ => "Make a",
-  };
-  let modifier = match &roll.modifier {
-    Some(Modifier::Advantage) => "with advantage",
-    Some(Modifier::Disadvantage) => "with disadvantage",
-    _ => "",
-  };
-  return match (&roll.class, &roll.each) {
-    (RollClass::LuckCheck, _) => rsx!(
-      span { " {opening}" }
-      span { " {keyword}" }
-      span { class: "highlight", " {class}" }
-      span { " difficulty {difficulty}." }
-    ),
-    _ => rsx!(
-      span { " {opening}" }
+  return rsx!{
+    match &roll.opening {
+      Some(Opening::None) => rsx! {},
+      Some(Opening::Lower) => rsx! {span { " make a" }},
+      _ => rsx! {span { "Make a" }},
+    }
+    if let Some( capability ) = roll.capability {
       span { class: "highlight", " {capability}" }
+    }
+    if let Some( defense ) = defense {
       span { " vs" }
       span { class: "highlight", " {defense}" }
-      span { " {keyword} {class} {modifier} against {article} {target}." }
-    ),
-  };
+    }
+    if let Some( keyword ) = &roll.keyword {
+      span { " {keyword}" }
+    }
+    span { " {roll_class}" }
+    match ( &roll.custom_target, &roll.difficulty, &roll.target ) {
+      ( Some(target), _, _ ) => rsx! { span { " against {article} {target}" } },
+      ( _, Some(difficulty), _ ) => rsx! { span { " difficulty {difficulty}" } },
+      ( _, _, Some( Target::Triggering ) ) => rsx! { span { " against {article} triggering target" } },
+      ( _, _, Some( Target::None ) ) => rsx! {},
+      _ => rsx! { span { " against {article} target" } },
+    }
+    match (&roll.custom_modifier, &roll.modifier) {
+      ( Some(custom_modifier), _ ) => rsx! { span { " {custom_modifier}" } },
+      ( _, Some(Modifier::Advantage) ) => rsx! { span { " with advantage" } },
+      ( _, Some(Modifier::Disadvantage) ) => rsx! { span { " with disadvantage" } },
+      _ => rsx! {},
+    }
+    span { "." }
+  }
 }
+
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct Outcome {

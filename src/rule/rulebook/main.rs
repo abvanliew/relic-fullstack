@@ -37,7 +37,7 @@ pub fn DiceRollsThread() -> Element {
     }
     div {
       class: "underhang",
-      "Anytime an Attack or Check rolls triples it is potentially a Critical roll. A roll of triples is considered a success even if the total would not succeed, but if the total would have succeeded then it is a Critical success. Critical attacks deal an extra dice of damage which stacks with boosted damage rolls. A roll of triple 1s is considered to be a Critical Failure and does not affect the target in any way, it is considered Negated and does not apply Miss affects."
+      "Anytime an Attack or Check rolls triples it is a potential a Critical. If the roll would have succeeded then it is considered a critical, if it would have failed then it is instead considered to a hit. With the exception of a roll of triple 1s, that is a Botch and does not affect the target in any way, it is considered Negated and does not apply Miss affects. Critical attacks deal an extra dice of damage which stacks with boosted damage rolls."
     }
     div {
       class: "underline",

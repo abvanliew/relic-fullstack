@@ -57,8 +57,8 @@ pub struct PathRef {
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub enum KeywordClass {
   Classifier,
-  Stack,
-  Debuff,
+  Term,
+  Affect,
 }
 
 pub trait KeywordClassified {
@@ -100,7 +100,14 @@ impl Skill {
 
 impl KeywordClassified for Skill {
   fn get_keyword_ids(&self) -> HashSet<ObjectId> {
-    return self.action.get_keyword_ids();
+    let mut ids: HashSet<ObjectId> = HashSet::new();
+    ids.extend(self.action.get_keyword_ids());
+    if let Some( sub_actions ) = &self.sub_actions {
+      for action in sub_actions {
+        ids.extend( action.get_keyword_ids() );
+      }
+    }
+    return ids;
   }
 }
 

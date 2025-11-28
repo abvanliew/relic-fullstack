@@ -25,8 +25,8 @@ pub enum DurationClass {
   Custom,
 }
 
-impl fmt::Display for Duration {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl Duration {
+  pub fn base(&self) -> String {
     let length = match self.length {
       Some(amount) => amount,
       None => 1,
@@ -51,15 +51,28 @@ impl fmt::Display for Duration {
     if self.expendable.is_some() && self.expendable.unwrap() {
       base = format!("{base} or until expended")
     }
+    return base;
+  }
+
+  pub fn upkeep(&self) -> Option<String> {
     match (
       &self.upkeep,
       &self.upkeep_cost,
       self.class != DurationClass::WhileReserved,
     ) {
-      (_, Some(cost), true) => base = format!("{base}, Upkeep: {cost}"),
-      (Some(_), _, true) => base = format!("{base}, upkeep at cost"),
-      _ => (),
+      (_, Some(cost), true) => Some(cost.to_string()),
+      (Some(_), _, true) => Some("At cost".into()),
+      _ => None,
     }
-    return write!(f, "{base}");
+  }
+}
+
+impl fmt::Display for Duration {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    let base = self.base();
+    match &self.upkeep() {
+      Some(upkeep) => write!(f, "{base} {upkeep}"),
+      None => write!(f, "{base}"),
+    }
   }
 }

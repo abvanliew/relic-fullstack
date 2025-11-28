@@ -78,8 +78,8 @@ pub fn StatBlockSnippet(stats: StatBlock) -> Element {
         div { class: "subheading", "Body" }
         if let Some(hp_bonus) = stats.hp_bonus {
           AttributeRow {
-            name: "HP Bonus",
-            element: rsx!( Modifier { value: hp_bonus } ),
+            name: "HP Pool",
+            element: rsx!( "{hp_bonus}" ),
           }
         }
         if let Some(speed) = stats.speed {

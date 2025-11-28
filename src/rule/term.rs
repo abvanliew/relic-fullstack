@@ -10,8 +10,6 @@ pub struct Term {
   pub title: Option<String>,
 }
 
-impl Term {}
-
 #[derive(Debug, Clone, Copy, PartialEq, Default, Eq)]
 pub enum TermDisplay {
   #[default]

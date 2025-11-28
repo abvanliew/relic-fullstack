@@ -40,7 +40,7 @@ impl Default for Action {
       duration: None,
       extended_duration: None,
       target: None,
-      refresh:None,
+      refresh: None,
       properties: None,
       rules: None,
     }
