@@ -1,27 +1,30 @@
-use crate::rule::stack::{blurb_to_rules_blocks, snippets_to_rules_blocks,RulesBlockSet};
+use super::internal::*;
+use crate::rules::prelude::*;
 use crate::server::prelude::ServerRequestSignals;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Term {
   pub keyword_id: Option<ObjectId>,
   pub title: Option<String>,
+  pub tense: Option<Tense>,
 }
 
 impl Term {
   pub fn title(title: String) -> Self {
     Self {
       title: Some(title),
-      keyword_id: None,
+      ..Default::default()
     }
   }
+
   pub fn keyword(keyword_id: ObjectId) -> Self {
     Self {
-      title: None,
       keyword_id: Some(keyword_id),
+      ..Default::default()
     }
   }
 }
@@ -35,14 +38,14 @@ pub enum TermDisplay {
 }
 
 #[derive(PartialEq, Props, Clone)]
-pub struct TermSnippetProps {
+pub(crate) struct TermSnippetProps {
   term: Term,
   #[props(default)]
   display: TermDisplay,
 }
 
 #[component]
-pub fn TermSnippet(props: TermSnippetProps) -> Element {
+pub(crate) fn TermSnippet(props: TermSnippetProps) -> Element {
   let keyword_opt = match &props.term.keyword_id {
     Some(id) => {
       let signal = use_context::<ServerRequestSignals>();
@@ -55,7 +58,7 @@ pub fn TermSnippet(props: TermSnippetProps) -> Element {
     _ => None,
   };
   let title = match (&keyword_opt, &props.term.title) {
-    (Some(keyword), _) => keyword.title.clone(),
+    (Some(keyword), _) => keyword.title_as(&props.term.tense),
     (_, Some(title)) => title.clone(),
     _ => "undefined".into(),
   };
@@ -81,8 +84,8 @@ pub fn TermSnippet(props: TermSnippetProps) -> Element {
     }
     TermDisplay::Card => {
       let class = match &keyword_opt {
-        Some( keyword ) => match &keyword.class {
-          Some( class ) => class.to_string(),
+        Some(keyword) => match &keyword.class {
+          Some(class) => class.to_string(),
           None => "".into(),
         },
         None => "".into(),
@@ -99,6 +102,6 @@ pub fn TermSnippet(props: TermSnippetProps) -> Element {
           }
         }
       }
-    },
-  }
+    }
+  };
 }

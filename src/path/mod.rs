@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 
 use crate::path::ranked_bonus::RankedBonuses;
-use crate::rule::prelude::*;
+use crate::rules::prelude::*;
 use crate::skill::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]

@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use super::internal::*;
-use crate::rule::prelude::*;
+use crate::keyword::prelude::*;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 pub type RulesSnippets = Vec<Snippet>;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
-pub struct Snippet {
+pub(crate) struct Snippet {
   pub text: Option<String>,
   pub roll: Option<Roll>,
   pub term: Option<Term>,
@@ -56,5 +56,5 @@ pub fn SnippetDetail(snippet: Snippet) -> Element {
 
 #[component]
 pub fn TextSnippet(text: String) -> Element {
-  return rsx!( span { " {text}" } );
+  return rsx!( span { "{text}" } );
 }

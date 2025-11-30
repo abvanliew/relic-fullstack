@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use dioxus::prelude::*;
 
-use crate::{character::ResourcePool, rule::prelude::Bonus};
+use crate::{character::ResourcePool, rules::prelude::Bonus};
 
 #[derive(Debug, Clone)]
 pub struct PathQualifier {

@@ -1,11 +1,13 @@
 mod asset;
 mod character;
+mod common;
 mod equipment;
+mod keyword;
 mod operator;
 mod panels;
 mod path;
 mod progression;
-mod rule;
+mod rules;
 mod server;
 mod skill;
 

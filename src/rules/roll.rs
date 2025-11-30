@@ -5,7 +5,7 @@ use std::collections::HashSet;
 use std::fmt;
 
 use crate::character::prelude::*;
-use crate::rule::prelude::*;
+use crate::rules::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]

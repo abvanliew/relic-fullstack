@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 // use crate::progression::component::qualifiers::BuildQualifiers;
 use crate::path::Path;
 use crate::progression::track::TrackContext;
-use crate::rule::prelude::Tier;
+use crate::rules::prelude::Tier;
 
 #[component]
 pub fn PathSelections(paths: Vec<Path>, tier: Tier, level: ReadOnlySignal<usize>) -> Element {

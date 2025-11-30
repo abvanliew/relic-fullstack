@@ -3,9 +3,9 @@ use dioxus::prelude::*;
 use crate::progression::prelude::*;
 use crate::progression::training::FlowBonus;
 use crate::progression::training::RankBonus;
-use crate::rule::prelude::*;
+use crate::rules::prelude::*;
 
-use crate::operator::InstanceBonus as I;
+// use crate::operator::InstanceBonus as I;
 use crate::operator::StackingBonus as S;
 
 #[derive(Debug, Clone)]

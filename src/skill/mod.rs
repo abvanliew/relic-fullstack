@@ -7,7 +7,7 @@ mod target;
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
-use crate::rule::prelude::*;
+use crate::rules::prelude::*;
 use activation::Action;
 use aspect::*;
 
@@ -48,9 +48,7 @@ impl Default for Skill {
 
 pub mod prelude {
   pub use super::activation::Action;
-  pub use super::aspect::{
-    Keyword, KeywordClass, KeywordClassified, Property, RelicOrdering, TrainingCost,
-  };
+  pub use super::aspect::{Property, RelicOrdering, TrainingCost};
   pub use super::component::{SkillCard, SkillDescription, SkillTable, SkillTermDisplay};
   pub use super::duration::Duration;
   pub use super::target::Target;

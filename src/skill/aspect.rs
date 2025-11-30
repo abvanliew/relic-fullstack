@@ -1,5 +1,6 @@
 use super::Skill;
-use crate::rule::prelude::*;
+use crate::keyword::prelude::*;
+use crate::rules::prelude::*;
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -32,15 +33,6 @@ impl fmt::Display for TrainingCost {
   }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub enum EditingState {
-  Ready,
-  Editing,
-  #[serde(rename = "In Progress")]
-  InProgress,
-  Concept,
-}
-
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default, PartialOrd, Ord, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct RelicOrdering {
@@ -52,58 +44,6 @@ pub struct RelicOrdering {
 pub struct PathRef {
   id: ObjectId,
   title: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub enum KeywordClass {
-  Classifier,
-  Term,
-  Affect,
-  Attribute,
-  CoreRule,
-}
-
-impl fmt::Display for KeywordClass {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(
-      f,
-      "{}",
-      match self {
-        KeywordClass::Classifier => "Classifier",
-        KeywordClass::Term => "Term",
-        KeywordClass::Affect => "Affect",
-        KeywordClass::Attribute => "Attribute",
-        KeywordClass::CoreRule => "Core Rule",
-      }
-    )
-  }
-}
-
-pub trait KeywordClassified {
-  fn get_keyword_ids(&self) -> HashSet<ObjectId>;
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct Keyword {
-  #[serde(rename = "_id")]
-  pub id: ObjectId,
-  pub title: String,
-  pub class: Option<KeywordClass>,
-  pub blurb: Option<String>,
-  pub rules: Option<Vec<Snippet>>,
-}
-
-impl Default for Keyword {
-  fn default() -> Self {
-    Self {
-      id: Default::default(),
-      title: "undefined".into(),
-      class: Default::default(),
-      blurb: Default::default(),
-      rules: Default::default(),
-    }
-  }
 }
 
 impl Skill {

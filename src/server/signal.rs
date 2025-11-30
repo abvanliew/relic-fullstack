@@ -1,8 +1,5 @@
-use crate::{
-  path::Path,
-  server::prelude::get_keyword_map,
-  skill::{prelude::Keyword, Skill},
-};
+use crate::keyword::prelude::*;
+use crate::{path::Path, server::prelude::get_keyword_map, skill::Skill};
 use dioxus::prelude::*;
 use std::collections::HashMap;
 

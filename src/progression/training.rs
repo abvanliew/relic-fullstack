@@ -6,7 +6,7 @@ use std::fmt;
 use crate::character::prelude::*;
 use crate::operator::{opt_sum, InstanceBonus, StackingBonus};
 use crate::progression::track::*;
-use crate::rule::components::Modifier;
+use crate::rules::components::Modifier;
 // use crate::progression::component::TrainingSignal;
 
 #[derive(Debug, Clone, PartialEq)]

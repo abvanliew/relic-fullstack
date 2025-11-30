@@ -1,4 +1,4 @@
-use crate::rule::components::Modifier;
+use crate::rules::components::Modifier;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 

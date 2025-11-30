@@ -8,7 +8,7 @@ use crate::path::Path;
 use crate::progression::fixed::MIN_LEVEL;
 use crate::progression::track::TrackContext;
 use crate::progression::training::TrainingClass;
-use crate::rule::prelude::*;
+use crate::rules::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::prelude::*;
 

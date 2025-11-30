@@ -1,8 +1,12 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::rule::prelude::*;
+use crate::common::HorizontalBar;
+use crate::keyword::prelude::*;
+use crate::rules::prelude::*;
 use crate::server::prelude::ServerRequestSignals;
 use crate::skill::prelude::*;
+use crate::Route;
+
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
@@ -15,7 +19,11 @@ pub enum SkillTermDisplay {
 }
 
 #[component]
-pub fn SkillDescription(id: String, display: SkillTermDisplay) -> Element {
+pub fn SkillDescription(
+  id: String,
+  display: SkillTermDisplay,
+  #[props(default)] title_as_link: bool,
+) -> Element {
   let library = use_context::<ServerRequestSignals>();
   let res_skills = library.get_skills();
   let skill = match res_skills {
@@ -27,11 +35,11 @@ pub fn SkillDescription(id: String, display: SkillTermDisplay) -> Element {
       return rsx! { div { "Loading" } };
     }
   };
-  let keywords = filter_keywords( &skill.get_keyword_ids() );
+  let keywords = filter_keywords(&skill.get_keyword_ids());
   rsx!(
     div {
       class: "group column",
-      SkillCard { id, display }
+      SkillCard { id, display,title_as_link }
       match &display {
         SkillTermDisplay::External => {
           rsx!{
@@ -68,7 +76,11 @@ pub fn filter_keywords(keywords: &HashSet<ObjectId>) -> HashSet<ObjectId> {
 }
 
 #[component]
-pub fn SkillCard(id: String, display: SkillTermDisplay) -> Element {
+pub fn SkillCard(
+  id: String,
+  display: SkillTermDisplay,
+  #[props(default)] title_as_link: bool,
+) -> Element {
   let library = use_context::<ServerRequestSignals>();
   let skill_result = library.get_skills();
   let skill = match skill_result {
@@ -95,7 +107,13 @@ pub fn SkillCard(id: String, display: SkillTermDisplay) -> Element {
   rsx!(
     div {
       class: "card grid dim-keywords",
-      div { class: "uv-title-property title nowrap", "{title}" }
+      div { class: "uv-title-property title nowrap",
+        if title_as_link {
+          Link { to: Route::SingleSkill { id }, "{title}" }
+        } else {
+          "{title}"
+        }
+      }
       div { class: "uv-property",
         div { class: "nowrap italics", "{tier} {training_cost}" }
       }
@@ -110,7 +128,7 @@ pub fn SkillCard(id: String, display: SkillTermDisplay) -> Element {
         }
       }
       if keywords.len() > 0 {
-        div { class: "uv-full horizontal-bar" }
+        HorizontalBar {}
       }
       for keyword in keywords {
         TermSnippet {
@@ -120,7 +138,7 @@ pub fn SkillCard(id: String, display: SkillTermDisplay) -> Element {
       }
       if let Some( pick_keywords ) = opt_pick_keywords {
         for keyword in pick_keywords {
-          div { class: "uv-full horizontal-bar" }
+          HorizontalBar {}
           TermSnippet {
             term: Term::keyword(keyword),
             display: TermDisplay::Block
@@ -223,7 +241,7 @@ fn ActionDetails(action: Action, display: SkillTermDisplay) -> Element {
         details: rsx!{RulesBlockSet { blocks } }
       }
     }
-    for (title,blocks) in property_props {
+    for (title, blocks) in property_props {
       PropertyDetail {
         title,
         details: rsx!{RulesBlockSet { blocks }}

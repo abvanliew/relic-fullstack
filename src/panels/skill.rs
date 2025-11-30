@@ -67,13 +67,21 @@ pub fn FullSkillList() -> Element {
           div {
             class: "column-wrap gap-xlarge",
             for skill in skills.iter().step_by(2) {
-              SkillDescription { id: skill.id.to_string(), display: SkillTermDisplay::Embeded }
+              SkillDescription {
+                id: skill.id.to_string(),
+                display: SkillTermDisplay::Embeded,
+                title_as_link: true,
+              }
             }
           }
           div {
             class: "column-wrap gap-xlarge",
             for skill in skills.iter().skip(1).step_by(2) {
-              SkillDescription { id: skill.id.to_string(), display: SkillTermDisplay::Embeded }
+              SkillDescription {
+                id: skill.id.to_string(),
+                display: SkillTermDisplay::Embeded,
+                title_as_link: true,
+              }
             }
           }
         }

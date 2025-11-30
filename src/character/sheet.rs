@@ -8,8 +8,9 @@ use crate::character::expertise::ExpertiseComponent;
 use crate::character::flow::FlowResourcesBlock;
 use crate::equipment::armor::Armor;
 use crate::equipment::weapon::{Weapon, WeaponEntry};
+use crate::keyword::prelude::*;
 use crate::path::Path;
-use crate::rule::components::Modifier;
+use crate::rules::components::Modifier;
 use crate::skill::prelude::*;
 use crate::Route;
 

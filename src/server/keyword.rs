@@ -11,7 +11,7 @@ use futures::stream::StreamExt;
 #[cfg(feature = "server")]
 use mongodb::{Client, Collection};
 
-use crate::skill::prelude::Keyword;
+use crate::keyword::prelude::*;
 
 #[server(ListKeywords)]
 pub async fn get_keyword_map() -> Result<HashMap<String, Keyword>, ServerFnError> {

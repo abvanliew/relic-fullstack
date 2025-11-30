@@ -3,9 +3,10 @@ use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
-use crate::rule::internal::*;
-use crate::rule::snippet::Snippet;
-use crate::rule::stat_block::StatBlock;
+use crate::common::HorizontalBar;
+use crate::rules::internal::*;
+use crate::rules::snippet::Snippet;
+use crate::rules::stat_block::StatBlock;
 use crate::skill::prelude::*;
 
 pub type RulesStack = Vec<Stack>;
@@ -18,6 +19,7 @@ pub struct Stack {
   pub items: Option<Vec<RulesBlocks>>,
   pub block: Option<RulesSnippets>,
   pub stats: Option<StatBlock>,
+  pub hr: Option<bool>,
 }
 
 impl Stack {
@@ -49,9 +51,11 @@ impl Stack {
 
 #[component]
 pub fn RulesStackDetail(stacks: RulesStack, display: SkillTermDisplay) -> Element {
-  rsx! {for stack in stacks {
-    StackDetail { stack, display }
-  }}
+  rsx! {
+    for stack in stacks {
+      StackDetail { stack, display }
+    }
+  }
 }
 
 #[component]
@@ -61,7 +65,6 @@ pub fn StackDetail(stack: Stack, display: SkillTermDisplay) -> Element {
     let details = rsx! {RulesBlockSet { blocks: property.rules }};
     return rsx! {PropertyDetail { title, details }};
   }
-
   rsx!(
     if let Some( outcomes ) = stack.outcomes {
       OutcomeDetail { outcomes }
@@ -74,6 +77,9 @@ pub fn StackDetail(stack: Stack, display: SkillTermDisplay) -> Element {
         class: "uv-full",
         BlockDetail { block: Block{ items: stack.items, block: stack.block } }
       }
+    }
+    if stack.hr.unwrap_or(false) {
+      HorizontalBar {}
     }
   )
 }
@@ -95,7 +101,7 @@ pub fn PropertyDetail(props: PropertyDetailProps) -> Element {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
-pub struct Block {
+pub(crate) struct Block {
   pub items: Option<Vec<RulesBlocks>>,
   pub block: Option<RulesSnippets>,
 }
@@ -119,18 +125,18 @@ impl Block {
   }
 }
 
-pub fn blurb_to_rules_blocks(blurb: String) -> RulesBlocks {
+pub(crate) fn blurb_to_rules_blocks(blurb: String) -> RulesBlocks {
   snippets_to_rules_blocks(blurb_to_snippets(blurb))
 }
 
-pub fn snippets_to_rules_blocks(snippets: Vec<Snippet>) -> RulesBlocks {
+pub(crate) fn snippets_to_rules_blocks(snippets: Vec<Snippet>) -> RulesBlocks {
   vec![Block {
     block: Some(snippets),
     ..Default::default()
   }]
 }
 
-pub fn blurb_to_snippets(blurb: String) -> Vec<Snippet> {
+pub(crate) fn blurb_to_snippets(blurb: String) -> Vec<Snippet> {
   vec![Snippet {
     text: Some(blurb),
     ..Default::default()

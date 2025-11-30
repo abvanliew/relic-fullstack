@@ -1,4 +1,4 @@
-use crate::rule::prelude::Tier;
+use crate::rules::prelude::Tier;
 
 #[derive(Clone, Debug)]
 pub struct CharacterGrowth {

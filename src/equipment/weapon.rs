@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use crate::{character::prelude::DamageClass, rule::prelude::*};
+use crate::{character::prelude::DamageClass, rules::prelude::*};
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
