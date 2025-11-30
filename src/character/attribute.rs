@@ -123,25 +123,6 @@ impl fmt::Display for RankClass {
   }
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum Attribute {
-  Capability(Capability),
-  Defense(Defense),
-}
-
-impl fmt::Display for Attribute {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(
-      f,
-      "{}",
-      match self {
-        Attribute::Capability(capability) => format!("{capability}"),
-        Attribute::Defense(defense) => format!("{defense}"),
-      }
-    )
-  }
-}
-
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum Capability {
   Physique,

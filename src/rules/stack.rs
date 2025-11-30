@@ -101,7 +101,7 @@ pub fn PropertyDetail(props: PropertyDetailProps) -> Element {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
-pub(crate) struct Block {
+pub struct Block {
   pub items: Option<Vec<RulesBlocks>>,
   pub block: Option<RulesSnippets>,
 }
