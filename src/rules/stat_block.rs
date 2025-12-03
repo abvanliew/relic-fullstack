@@ -39,110 +39,125 @@ pub fn StatBlockSnippet(stats: StatBlock) -> Element {
       class: "uv-full grid dim-forths gap-2xlarge",
       div {
         class: "column",
-        div { class: "subheading", "Capabilites" }
+        div { class: "highlight underline", "Capabilites" }
         if let Some(physique) = attributes.physique {
           AttributeRow {
             name: "Physique",
             element: rsx!( Modifier { value: physique } ),
+            name_class: Some("".into()),
           }
         }
         if let Some(warfare) = attributes.warfare {
           AttributeRow {
             name: "Warfare",
             element: rsx!( Modifier { value: warfare } ),
+            name_class: Some("".into()),
           }
         }
         if let Some(spirit) = attributes.spirit {
           AttributeRow {
             name: "Spirit",
             element: rsx!( Modifier { value: spirit } ),
+            name_class: Some("".into()),
           }
         }
         if let Some(manipulation) = attributes.manipulation {
           AttributeRow {
             name: "Manipulation",
             element: rsx!( Modifier { value: manipulation } ),
+            name_class: Some("".into()),
           }
         }
       }
       div {
         class: "column",
-        div { class: "subheading", "Defenses" }
+        div { class: "highlight underline", "Defenses" }
         if let Some(tenacity) = attributes.tenacity {
           AttributeRow {
             name: "Tenacity",
             element: rsx!( "{tenacity + BASE_DEFENSE}" ),
+            name_class: Some("".into()),
           }
         }
         if let Some(fortitude) = attributes.fortitude {
           AttributeRow {
             name: "Fortitude",
             element: rsx!( "{fortitude + BASE_DEFENSE}" ),
+            name_class: Some("".into()),
           }
         }
         if let Some(resolve) = attributes.resolve {
           AttributeRow {
             name: "Resolve",
             element: rsx!( "{resolve + BASE_DEFENSE}" ),
+            name_class: Some("".into()),
           }
         }
         if let Some(insight) = attributes.insight {
           AttributeRow {
             name: "Insight",
             element: rsx!( "{insight + BASE_DEFENSE}" ),
+            name_class: Some("".into()),
           }
         }
         if let Some(dodge) = attributes.dodge {
           AttributeRow {
             name: "Dodge",
             element: rsx!( "{dodge + BASE_DEFENSE}" ),
+            name_class: "",
           }
         }
       }
       div {
         class: "column",
-        div { class: "subheading", "Resistances" }
+        div { class: "highlight underline", "Resistances" }
         if let Some( resistances ) = resistances_opt {
           ResistanceDetails { resistances }
         }
       }
       div {
         class: "column",
-        div { class: "subheading", "Body" }
+        div { class: "highlight underline", "Body" }
         if let Some(ap) = stats.ap {
           AttributeRow {
             name: "Action Point",
             element: rsx!( "{ap}" ),
+            name_class: "",
           }
         }
         if let Some(hp) = stats.hp {
           AttributeRow {
             name: "HP",
             element: rsx!( "{hp}" ),
+            name_class: "",
           }
         }
         if let Some(hp_pool) = stats.hp_pool {
           AttributeRow {
             name: "HP Pool",
             element: rsx!( "{hp_pool}" ),
+            name_class: "",
           }
         }
         if let Some(con) = stats.con {
           AttributeRow {
             name: "Constitution",
             element: rsx!( "{con}" ),
+            name_class: "",
           }
         }
         if let Some(speed) = stats.speed {
           AttributeRow {
             name: "Speed",
             element: rsx!( "{speed}" ),
+            name_class: "",
           }
         }
         if let Some(dash) = stats.dash {
           AttributeRow {
             name: "Dash",
             element: rsx!( "{dash}" ),
+            name_class: "",
           }
         }
       }

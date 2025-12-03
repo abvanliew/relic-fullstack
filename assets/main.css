@@ -43,6 +43,24 @@ p {
   margin: 4px 0px;
 }
 
+/* input[type="number"] {
+  -webkit-appearance: textfield;
+     -moz-appearance: textfield;
+          appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
+} */
+
+.input {
+  width: 56px;
+  font-size: 1.6em;
+  text-align: center;
+  border-radius: 0.4rem;
+  margin-left: 2px;
+}
+
 .row {
   display: flex;
   flex-direction: row;
@@ -127,10 +145,15 @@ p {
   flex-shrink: 0;
 }
 
+.path-grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: grid;
+  grid-auto-flow: dense;
+}
+
 .path-card {
   width: 100%;
-  min-width: 640px;
-  max-width: 1250px;
+  width: 300px;
   height: 80px;
   overflow: hidden;
   border: 0.16rem solid var( --main-border );
@@ -166,6 +189,7 @@ p {
   display: flow-root;
   width: 1240px;
   margin-bottom: 8px;
+  grid-column: 1/-1;
 }
 
 .path-skill-group {

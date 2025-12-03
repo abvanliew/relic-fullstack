@@ -30,7 +30,7 @@ pub fn ResistanceDetails(props: ResistanceDetailsProps) -> Element {
     div {
       class: "row full",
       AttributeRow {
-        name: "Physical", name_class: "highlight",
+        name: "Physical", name_class: "",
         element: rsx!( "{physical_total}" ),
       }
     }
@@ -40,7 +40,7 @@ pub fn ResistanceDetails(props: ResistanceDetailsProps) -> Element {
     div {
       class: "row full",
       AttributeRow {
-        name: "Elemental", name_class: "highlight",
+        name: "Elemental", name_class: "",
         element: rsx!( "{elemental_total}" ),
       }
     }
@@ -52,7 +52,7 @@ pub fn ResistanceDetails(props: ResistanceDetailsProps) -> Element {
     div {
       class: "row full",
       AttributeRow {
-        name: "Esoteric", name_class: "highlight",
+        name: "Esoteric", name_class: "",
         element: rsx!( "{esoteric_total}" ),
       }
     }

@@ -54,3 +54,22 @@ pub mod prelude {
   pub use super::target::Target;
   pub use super::Skill;
 }
+
+// impl Ord for Skill {
+//   fn cmp(&self, other: &Self) -> Ordering {
+//     match self.tier.cmp(&other.tier) {
+//       Ordering::Equal => (),
+//       ord => return ord,
+//     }
+//     match (&self.order, &other.order) {
+//       (None, None) => (),
+//       (Some(_), None) => return Ordering::Less,
+//       (None, Some(_)) => return Ordering::Greater,
+//       (Some(self_order), Some(other_order)) => match self_order.cmp(&other_order) {
+//         Ordering::Equal => (),
+//         ord => return ord,
+//       },
+//     }
+//     return self.title.cmp(&other.title);
+//   }
+// }

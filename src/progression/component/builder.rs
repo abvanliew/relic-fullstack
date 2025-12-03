@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
+use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
 use super::level::LevelSelector;
@@ -8,7 +9,6 @@ use crate::path::Path;
 use crate::progression::fixed::MIN_LEVEL;
 use crate::progression::track::TrackContext;
 use crate::progression::training::TrainingClass;
-use crate::rules::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::prelude::*;
 
@@ -18,22 +18,31 @@ pub enum BuilderTab {
   Growth,
 }
 
-#[component]
-pub fn CharacterProgression(paths: Vec<Path>) -> Element {
-  let mut current_tab: Signal<BuilderTab> = use_signal(|| BuilderTab::Paths);
+pub fn sorted_paths() -> Vec<(String, Path)> {
   let library = use_context::<ServerRequestSignals>();
   let res_paths = library.get_paths();
   let path_map: HashMap<String, Path>;
   match res_paths {
     Some(result) => path_map = result,
-    _ => {
-      return rsx! {
-        div { "Loading" }
-      };
-    }
+    _ => { return Vec::new(); }
   };
-  let mut path_sorted: Vec<(String, Path)> = path_map.clone().into_iter().collect();
+  let mut path_sorted: Vec<(String, Path)> = path_map.clone()
+    .into_iter()
+    .filter(|(_, path)| path.inherient != Some(true))
+    .collect();
   path_sorted.sort_by(|(_, lhs_path), (_, rhs_path)| lhs_path.cmp(rhs_path));
+  return path_sorted
+}
+
+#[derive(Clone)]
+struct PathDisplay(Signal<Option<String>>);
+
+#[component]
+pub fn CharacterProgression(paths: Vec<Path>) -> Element {
+  let mut current_tab: Signal<BuilderTab> = use_signal(|| BuilderTab::Paths);
+  let signal_path_display = PathDisplay(use_signal(|| None));
+  use_context_provider(|| signal_path_display );
+  let path_sorted = sorted_paths();
   let track = TrackContext::use_context_provider();
   let build_context = BuildContext::use_context_provider();
   let paths = build_context.paths;
@@ -43,11 +52,22 @@ pub fn CharacterProgression(paths: Vec<Path>) -> Element {
   let skill_selection = skills.selection;
   let level = build_context.level;
   let stats = track.character.stats(level());
-  let qualifiers = BuildContext::get_qualifiers(path_selection.into(), skill_selection.into());
-
-  // use_memo(move || build_context.qualifiers.set(qualifiers));
-
+  let qualifiers = BuildContext::get_qualifiers(
+    path_selection.into(), 
+    skill_selection.into()
+  );
+  let extra_path_features = 
+    if path_count.max(stats.iniatite.path_min) >= stats.iniatite.path_max { 
+      0
+    } 
+    else { 
+      stats.iniatite.path_max - path_count.max(stats.iniatite.path_min)
+    } 
+  ;
   rsx! {
+    div { "{stats:?}" }
+    div { "{extra_path_features:?}" }
+    // div { "{qualifiers:?}" }
     div {
       class: "row",
       LevelSelector {}
@@ -64,26 +84,50 @@ pub fn CharacterProgression(paths: Vec<Path>) -> Element {
         "Growth"
       }
     }
-    div { "{stats:?}" }
-    div { "{qualifiers:?}" }
     match current_tab() {
       BuilderTab::Paths =>rsx!(
+        div { "You must select at least one path, then you can choose up to X additional paths or gain additional features in your existing paths" }
         div { "Path Count: {path_count}" }
         div {
-          class: "column",
+          class: "path-grid",
+          RankedSelector { max: extra_path_features }
           for ( id, path ) in path_sorted {
             PathSelector { id, path }
           }
         }
       ),
       BuilderTab::Growth =>rsx!(
-        GrowthSelector { training:TrainingClass::Adept, level }
-        GrowthSelector { training:TrainingClass::Endurance, level }
-        GrowthSelector { training:TrainingClass::Expert, level }
-        GrowthSelector { training:TrainingClass::Innate, level }
-        GrowthSelector { training:TrainingClass::Resonance, level }
-        GrowthSelector { training:TrainingClass::Magic, level }
+        GrowthSelector { training: TrainingClass::Adept, level }
+        GrowthSelector { training: TrainingClass::Endurance, level }
+        GrowthSelector { training: TrainingClass::Expert, level }
+        GrowthSelector { training: TrainingClass::Innate, level }
+        GrowthSelector { training: TrainingClass::Resonance, level }
+        GrowthSelector { training: TrainingClass::Magic, level }
       ),
+    }
+  }
+}
+
+#[component]
+pub fn RankedSelector( max: usize ) -> Element {
+  let mut number = use_signal(|| 0);
+  let max = max;
+  rsx! {
+    div {
+      class: "path-card row",
+      input {
+        class: "input",
+        type: "number",
+        value: number(),
+        oninput: move |event| {
+          let value = event.value().parse::<usize>().unwrap_or(0).min(max);
+          number.set(value);
+        },
+        onclick: move |event| {
+          event.stop_propagation();
+        }
+      }
+      div { class: "italics", "Extra Features" }
     }
   }
 }
@@ -106,6 +150,7 @@ pub fn GrowthSelector(props: GrowthSelectorProps) -> Element {
       class: "path-card row",
       input {
         type: "number",
+        class: "input",
         value: number(),
         oninput: move |event| {
           let value = event.value().parse::<usize>().unwrap_or(0);
@@ -122,37 +167,28 @@ pub fn GrowthSelector(props: GrowthSelectorProps) -> Element {
   }
 }
 
-#[derive(PartialEq, Props, Clone)]
-struct PathSelectorProps {
-  id: String,
-  path: ReadOnlySignal<Path>,
-}
 
-#[component]
-pub fn PathSelector(props: PathSelectorProps) -> Element {
-  let mut build = use_context::<BuildContext>();
+pub fn split_sort_skill_ids(
+  result_skill_ids: Option<Vec<ObjectId>>
+) -> Option<(Vec<String>, Vec<String>, Vec<String>)> {
   let library = use_context::<ServerRequestSignals>();
   let res_skills = library.get_skills();
   let skill_map: HashMap<String, Skill>;
   match res_skills {
     Some(result) => skill_map = result,
-    _ => {
-      return rsx! {
-        div { "Loading" }
-      };
-    }
+    _ => { return None; }
   };
-  let path = (props.path)();
-  // let path_debug = path.clone();
-  let id = props.id;
-  let title = path.title;
-  let summary = path.summary.unwrap_or("".to_string());
-  let skill_ids: Vec<String> = path
-    .skill_ids
+  let skill_ids: Vec<String> = result_skill_ids
     .unwrap_or(Vec::new())
     .iter()
     .map(|x| x.to_string())
     .collect();
+  // let mut sorted_skills: Vec<Skill> = skill_ids.iter()
+  //   .filter_map(|ids| match skill_map.get(ids) {
+  //     Some( skill) => Some( skill.clone() ),
+  //     None => None,
+  //   } )
+  //   .collect();
   let mut keystone_ids: Vec<String> = Vec::new();
   let mut feature_ids: Vec<String> = Vec::new();
   let mut minor_features_ids: Vec<String> = Vec::new();
@@ -166,7 +202,25 @@ pub fn PathSelector(props: PathSelectorProps) -> Element {
       TrainingCost::Half | TrainingCost::Cantrip => minor_features_ids.push(id.clone()),
     }
   }
-  let mut display: Signal<bool> = use_signal(|| false);
+  return Some(
+    (keystone_ids, feature_ids, minor_features_ids)
+  )
+}
+
+
+#[component]
+pub fn PathSelector(
+  id: String,
+  path: ReadOnlySignal<Path>,
+) -> Element {
+  let mut build = use_context::<BuildContext>();
+  let path = path();
+  let title = path.title;
+  let Some( ( keystone_ids, feature_ids, minor_features_ids ) ) = split_sort_skill_ids(path.skill_ids.clone()) else {
+    return rsx ! {
+      div { "loading ..." }
+    }
+  };
   let behavoir = build.path_behavoir(&id);
   let (class, img_src) = match behavoir {
     SelectionState::Deselected => ("", IMG_UNSELECTED),
@@ -175,12 +229,31 @@ pub fn PathSelector(props: PathSelectorProps) -> Element {
     SelectionState::Disabled => ("hidden", IMG_UNSELECTED),
     SelectionState::Invalid => ("disabled", IMG_SELECTED),
     SelectionState::Visibile => ("", IMG_UNSELECTED),
-  }
-  .into();
+  };
+  let PathDisplay( mut path_display ) = use_context::<PathDisplay>();
+  let result_path_display = path_display();
+  let display = match &result_path_display {
+    Some( display_id ) => *display_id == id,
+    None => false, 
+  };
+  let current_id = id.clone();
   return rsx! {
     div {
       class: "row path-card {class}",
-      onclick: move |_| { display.set(!display()); },
+      onclick: move |_| {
+        path_display.set(
+          match &result_path_display {
+            None => Some( current_id.to_owned() ),
+            Some( path_id ) => {
+              if current_id.eq( path_id ) {
+                None
+              } else {
+                Some( current_id.to_owned() )
+              }
+            }
+          }
+        )
+      },
       div {
         class: "path-checkbox-wrapper",
         onclick: move |evt: Event<MouseData>| {
@@ -190,34 +263,35 @@ pub fn PathSelector(props: PathSelectorProps) -> Element {
         img { src: "{img_src}" }
       }
       div { class: "path-title", "{title}" }
-      div { class: "path-description", "{summary}" }
     }
-    div {
-      class: if display() { "path-skill-panels {class}" } else { "hidden" },
-      if keystone_ids.len() > 0 {
-        div { class: "small-text dotted-underline spacer-medium", "Keystones" }
-        for skill_id in keystone_ids {
-          div {
-            class: "path-skill-group",
-            SkillSelector { id: skill_id, path_id: id.clone() }
+    if display {
+      div {
+        class: "path-skill-panels {class}",
+        if keystone_ids.len() > 0 {
+          div { class: "small-text dotted-underline spacer-medium", "Keystones" }
+          for skill_id in keystone_ids {
+            div {
+              class: "path-skill-group",
+              SkillSelector { id: skill_id, path_id: id.clone() }
+            }
           }
         }
-      }
-      if feature_ids.len() > 0 {
-        div { class: "small-text dotted-underline spacer-medium", "Features" }
-        for skill_id in feature_ids {
-          div {
-            class: "path-skill-group",
-            SkillSelector { id: skill_id, path_id: id.clone() }
+        if feature_ids.len() > 0 {
+          div { class: "small-text dotted-underline spacer-medium", "Features" }
+          for skill_id in feature_ids {
+            div {
+              class: "path-skill-group",
+              SkillSelector { id: skill_id, path_id: id.clone() }
+            }
           }
         }
-      }
-      if minor_features_ids.len() > 0 {
-        div { class: "small-text dotted-underline spacer-medium", "Minor Features" }
-        for skill_id in minor_features_ids {
-          div {
-            class: "path-skill-group",
-            SkillSelector { id: skill_id, path_id: id.clone() }
+        if minor_features_ids.len() > 0 {
+          div { class: "small-text dotted-underline spacer-medium", "Minor Features" }
+          for skill_id in minor_features_ids {
+            div {
+              class: "path-skill-group",
+              SkillSelector { id: skill_id, path_id: id.clone() }
+            }
           }
         }
       }
@@ -366,6 +440,7 @@ pub struct CharacterQualifiers {
 pub struct BuildContext {
   pub level: Signal<usize>,
   pub paths: HashSelectorContext,
+  pub feature_path: Signal<usize>,
   pub skills: HashSelectorContext,
   pub qualifiers: Signal<CharacterQualifiers>,
   pub training: Signal<TrainingSet>,
@@ -375,13 +450,14 @@ impl BuildContext {
   pub fn use_context_provider() -> Self {
     let level = use_signal(|| MIN_LEVEL);
     let paths = HashSelectorContext::use_context_provider();
+    let feature_path = use_signal(|| 0);
     let skills = HashSelectorContext::use_context_provider();
     let qualifiers = use_signal(|| CharacterQualifiers::default());
     let training: Signal<TrainingSet> = use_signal(|| TrainingSet::default());
-
     use_context_provider(|| Self {
       level,
       paths,
+      feature_path,
       skills,
       qualifiers,
       training,
@@ -405,12 +481,10 @@ impl BuildContext {
       if let Some(skill_data) = &*skills {
         let mut skill_paths: HashMap<String, HashSet<String>> = HashMap::new();
         for path_id in selected_paths().iter() {
-          let Some(path) = path_data.get(path_id) else {
-            continue;
-          };
-          let Some(skill_ids) = &path.skill_ids else {
-            continue;
-          };
+          let Some(path) = path_data.get(path_id)
+          else { continue; };
+          let Some(skill_ids) = &path.skill_ids
+          else { continue; };
           let skill_set: HashSet<String> = skill_ids.iter().map(|id| id.to_string()).collect();
           let x = selected_skills();
           let intersection_ids = x.intersection(&skill_set);
@@ -424,9 +498,8 @@ impl BuildContext {
           if path_set.len() != 1 {
             continue;
           }
-          let Some(skill) = skill_data.get(&skill_id) else {
-            continue;
-          };
+          let Some(skill) = skill_data.get(&skill_id) 
+          else { continue; };
           for path_id in path_set {
             let count = mono_skill_count_by_path.entry(path_id).or_default();
             *count += skill.minor_feature_cost();
@@ -434,15 +507,13 @@ impl BuildContext {
         }
         let mut minor_features_remaining: u32 = qualifiers.minor_features;
         for skill_id in selected_skills() {
-          let Some(skill) = skill_data.get(&skill_id) else {
-            continue;
-          };
+          let Some(skill) = skill_data.get(&skill_id)
+          else { continue; };
           minor_features_remaining -= skill.minor_feature_cost();
         }
         for path_id in selected_paths() {
-          let Some(mono_skill_count) = mono_skill_count_by_path.get(&path_id) else {
-            continue;
-          };
+          let Some(mono_skill_count) = mono_skill_count_by_path.get(&path_id) 
+          else { continue; };
           qualifiers.path_qualifiers.insert(
             path_id.clone(),
             minor_features_remaining > *mono_skill_count,
