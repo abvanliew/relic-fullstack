@@ -21,7 +21,7 @@ pub enum SkillTermDisplay {
 #[component]
 pub fn SkillDescription(
   id: String,
-  display: SkillTermDisplay,
+  #[props(default)] display: SkillTermDisplay,
   #[props(default)] title_as_link: bool,
 ) -> Element {
   let library = use_context::<ServerRequestSignals>();
@@ -76,9 +76,25 @@ pub fn filter_keywords(keywords: &HashSet<ObjectId>) -> HashSet<ObjectId> {
 }
 
 #[component]
+pub fn SkillCardList(
+  skills: Vec<Skill>,
+  #[props(default)] display: SkillTermDisplay,
+  #[props(default)] title_as_link: bool,
+) -> Element {
+  rsx! {
+    div {
+      class: "block-columns",
+      for skill in skills {
+        SkillCard { id: skill.id.to_string(), display, title_as_link }
+      }
+    }
+  }
+}
+
+#[component]
 pub fn SkillCard(
   id: String,
-  display: SkillTermDisplay,
+  #[props(default)] display: SkillTermDisplay,
   #[props(default)] title_as_link: bool,
 ) -> Element {
   let library = use_context::<ServerRequestSignals>();

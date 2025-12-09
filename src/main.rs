@@ -4,6 +4,7 @@ mod common;
 mod equipment;
 mod keyword;
 mod operator;
+mod pages;
 mod panels;
 mod path;
 mod progression;
@@ -14,6 +15,9 @@ mod skill;
 use dioxus::prelude::*;
 use panels::*;
 use server::prelude::ServerRequestSignals;
+use pages::*;
+
+use crate::server::prelude::{KeywordCache, SkillCache, PathCache};
 
 const FAVICON: Asset = asset!("assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("assets/main.css");
@@ -36,7 +40,7 @@ pub enum Route {
   #[end_nest]
   #[nest("/paths")]
     #[route("/")]
-    PathList {},
+    PathsPage {},
   #[end_nest]
   #[route("/builder")]
   CharacterBuilder {},
@@ -59,6 +63,9 @@ pub enum Route {
 #[component]
 fn App() -> Element {
   ServerRequestSignals::use_context_provider();
+  SkillCache::use_context_provider();
+  KeywordCache::use_context_provider();
+  PathCache::use_context_provider();
   rsx! {
     document::Link { rel: "icon", href: FAVICON }
     document::Link { rel: "stylesheet", href: MAIN_CSS }

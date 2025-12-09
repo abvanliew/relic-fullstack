@@ -2,7 +2,6 @@ pub mod components;
 mod feature;
 mod keystone;
 mod ranked_bonus;
-mod skills;
 
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
@@ -20,7 +19,6 @@ pub struct Path {
   pub tier: Tier,
   pub title: String,
   pub summary: Option<String>,
-  pub skills: Option<Vec<Skill>>,
   pub skill_ids: Option<Vec<ObjectId>>,
   pub inherient: Option<bool>,
   pub order: Option<RelicOrdering>,

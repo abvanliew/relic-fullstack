@@ -96,6 +96,14 @@ pub fn ActionEconomyThread() -> Element {
     }
     div {
       class: "underline",
+      "Readied Actions"
+    }
+    div {
+      class: "underhang",
+      "Many skills will grant a readied actions. A readied action can be used in place of an action point but is restricted to certain use cases. The action point can be used to activate a skill or gain advantage or boost the damage of the skill. These do not count as Action Points for purposes of conditions or action point limits."
+    }
+    div {
+      class: "underline",
       "Movement"
     }
     div {

@@ -134,6 +134,7 @@ input[type=number]::-webkit-outer-spin-button {
   padding: 0.4rem 0.6rem 0.6rem;
   height: min-content;
   flex-shrink: 0;
+  break-inside: avoid;
 }
 
 .card-thin {
@@ -143,6 +144,17 @@ input[type=number]::-webkit-outer-spin-button {
   padding: 0.4rem 0.6rem 0.6rem;
   height: min-content;
   flex-shrink: 0;
+  break-inside: avoid;
+}
+
+.block-columns {
+  display: block;
+  column-fill: balance;
+  column-count: 2;
+}
+
+.block-columns > * {
+  margin-bottom: 16px;
 }
 
 .path-grid {
@@ -570,6 +582,7 @@ input[type=number]::-webkit-outer-spin-button {
 .bold { font-weight: bold; }
 
 /* .gap { gap: 8px; } */
+.gap-large { gap: 16px; }
 .gap-xlarge { gap: 24px; }
 .gap-2xlarge { gap: 32px; }
 .no-gap { gap: 0px; }

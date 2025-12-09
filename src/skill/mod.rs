@@ -2,6 +2,7 @@ mod activation;
 mod aspect;
 pub mod component;
 mod duration;
+mod filters;
 mod target;
 
 use bson::oid::ObjectId;
@@ -53,6 +54,7 @@ pub mod prelude {
   pub use super::duration::Duration;
   pub use super::target::Target;
   pub use super::Skill;
+  pub use super::filters::{partion_skills_by_cost, keyword_ids_of};
 }
 
 // impl Ord for Skill {
