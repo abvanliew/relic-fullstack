@@ -18,8 +18,7 @@ pub struct MapCache<T: Clone + 'static> {
   resource: Resource<Result<HashMap<String, T>, ServerFnError>>
 }
 
-impl<T> MapCache<T> where T: Clone + 'static
-{
+impl<T> MapCache<T> where T: Clone + 'static {
   pub fn into_result_vec(&self) -> Option<Vec<T>> {
     let data = resource_data(self.resource);
     match data {

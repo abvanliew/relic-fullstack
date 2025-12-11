@@ -64,15 +64,15 @@ pub fn filter_keywords(keywords: &HashSet<ObjectId>) -> HashSet<ObjectId> {
     }
   };
   keywords
-    .iter()
-    .filter_map(|&id| match keyword_map.get(&id.to_string()) {
-      None => None,
-      Some(keyword) => match keyword.class {
-        Some(KeywordClass::Classifier) => None,
-        _ => Some(id),
-      },
-    })
-    .collect()
+  .iter()
+  .filter_map(|&id| match keyword_map.get(&id.to_string()) {
+    None => None,
+    Some(keyword) => match keyword.class {
+      Some(KeywordClass::Classifier) => None,
+      _ => Some(id),
+    },
+  })
+  .collect()
 }
 
 #[component]

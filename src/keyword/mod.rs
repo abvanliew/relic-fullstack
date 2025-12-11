@@ -1,4 +1,5 @@
 mod classifiers;
+mod filter;
 mod tense;
 mod term;
 
@@ -35,9 +36,10 @@ impl Default for Keyword {
 
 pub mod prelude {
   pub(crate) use super::classifiers::{KeywordClass, KeywordClassified};
-  pub(crate) use super::term::TermSnippet;
+  pub(crate) use super::term::{TermSnippet, KeywordCardList};
   pub use super::term::{Term, TermDisplay};
   pub use super::Keyword;
+  pub use super::filter::rules_specific;
 }
 
 mod internal {

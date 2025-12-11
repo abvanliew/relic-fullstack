@@ -105,3 +105,42 @@ pub(crate) fn TermSnippet(props: TermSnippetProps) -> Element {
     }
   };
 }
+
+
+
+#[component]
+pub(crate) fn KeywordCardList(keywords: Vec<Keyword>) -> Element {
+  return rsx! {
+    div {
+      class: "block-columns",
+      for keyword in keywords {
+        KeywordCard { keyword }
+      }
+    }
+  }
+}
+
+
+#[component]
+pub(crate) fn KeywordCard(keyword: Keyword) -> Element {
+  let title = keyword.title;
+  let blocks = match ( keyword.rules, keyword.blurb ) {
+    (Some( blocks), _ ) => snippets_to_rules_blocks(blocks),
+    (_, Some( blurb ) ) => blurb_to_rules_blocks(blurb),
+    _ => Vec::new(),
+  };
+  let class = match keyword.class {
+    Some( class ) => class.to_string(),
+    None => "".into(),
+  };
+  return rsx! {
+    div {
+      class: "card-thin grid dim-keywords",
+      div { class: "uv-title-property highlight", "{title}" }
+      div { class: "uv-property italics", "{class}" }
+      div { class: "uv-full indent",
+        RulesBlockSet { blocks }
+      }
+    }
+  };
+}

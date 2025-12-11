@@ -150,7 +150,9 @@ input[type=number]::-webkit-outer-spin-button {
 .block-columns {
   display: block;
   column-fill: balance;
-  column-count: 2;
+  column-count: auto;
+  column-width: 600px;
+  column-gap: 20px;
 }
 
 .block-columns > * {
@@ -217,7 +219,7 @@ input[type=number]::-webkit-outer-spin-button {
   float: right
 } */
 
-@media (width <= 1350px) {
+@media (width <= 1275px) {
   .path-skill-panels {
     width: unset;
     display: flex;

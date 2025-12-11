@@ -22,7 +22,7 @@ pub fn partion_skills_by_cost(
   return ( keystones, features, minor_features );
 }
 
-pub fn keyword_ids_of(
+pub fn keywords_from_skills(
   skills: &Vec<Skill>
 ) -> Vec<ObjectId> {
   let set: HashSet<ObjectId> = skills.iter().flat_map(|skill| skill.get_keyword_ids()).collect();
