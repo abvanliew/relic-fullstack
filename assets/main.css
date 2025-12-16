@@ -164,7 +164,7 @@ input[type=number]::-webkit-outer-spin-button {
   border-radius: .4rem;
   padding: .25rem;
   font-size: 1.2rem;
-  width: min-content;
+  width: max-content;
   padding: .4rem .6rem;
   margin-left: auto;
 }
@@ -178,15 +178,20 @@ input[type=number]::-webkit-outer-spin-button {
 
 .path-card {
   width: 100%;
-  width: 300px;
+  width: 290px;
   padding: 8px;
   overflow: hidden;
-  border: 0.08rem solid var(--main-border);
   border-radius: 0.6rem;
+  border: 0.08rem solid var(--main-border);
   padding: 0.4rem 0.6rem;
   display: flex;
   align-items: center;
   margin: 4px 0px;
+}
+
+.path-card-highlight {
+  border: 0.18rem solid var(--selected);
+  padding: 0.3rem 0.5rem;
 }
 
 .red-border {
@@ -201,7 +206,6 @@ input[type=number]::-webkit-outer-spin-button {
 .path-title {
   font-size: 1.1rem;
   font-weight: 700;
-  width: 216px;
   flex-shrink: 0;
 }
 
@@ -226,6 +230,11 @@ input[type=number]::-webkit-outer-spin-button {
   display: flex;
   padding: 8px 8px;
 }
+
+.path-skil-wrapper {
+  padding: 8px 0px;
+}
+
 
 /* .path-skill-group:nth-child(odd) {
   float: left

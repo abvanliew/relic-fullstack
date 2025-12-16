@@ -81,7 +81,7 @@ pub fn SkillCard(
       class: "card grid dim-keywords",
       div { class: "uv-title-property title nowrap",
         if title_as_link {
-          Link { to: Route::SingleSkill { id }, "{title}" }
+          Link { to: Route::SingleSkillPage { id }, "{title}" }
         } else {
           "{title}"
         }

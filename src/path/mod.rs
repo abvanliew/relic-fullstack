@@ -7,7 +7,6 @@ use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 
-use crate::path::ranked_bonus::RankedBonuses;
 use crate::rules::prelude::*;
 use crate::skill::prelude::*;
 
@@ -22,7 +21,6 @@ pub struct Path {
   pub skill_ids: Option<Vec<ObjectId>>,
   pub inherient: Option<bool>,
   pub order: Option<RelicOrdering>,
-  pub ranked_bonuses: Option<Vec<RankedBonuses>>,
 }
 
 impl PartialOrd for Path {

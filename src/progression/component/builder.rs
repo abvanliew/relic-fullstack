@@ -5,7 +5,9 @@ use std::fmt;
 use dioxus::prelude::*;
 
 use super::level::LevelSelector;
+use crate::path::Path;
 use crate::progression::training::TrainingClass;
+use crate::server::prelude::*;
 use super::paths::CharacterPaths;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -27,6 +29,9 @@ impl fmt::Display for BuilderTab {
 
 #[component]
 pub fn CharacterProgression() -> Element {
+  let path_cache = use_context::<PathCache>();
+  let paths = path_cache.get_sorted_paths(false);
+
   let level_signal: Signal<u32> = use_signal(|| 1);
   let current_tab: Signal<BuilderTab> = use_signal(|| BuilderTab::Paths);
   let path_feature_count_signal: Signal<u32> = use_signal(|| 0);
@@ -42,7 +47,7 @@ pub fn CharacterProgression() -> Element {
     }
     match current_tab() {
       BuilderTab::Paths =>rsx! {
-        CharacterPaths { path_min, path_max, path_feature_count_signal, selected_paths }
+        CharacterPaths { paths, path_min, path_max, path_feature_count_signal, selected_paths }
       },
       BuilderTab::Growth =>rsx! {
         // CharacterGrowth {}

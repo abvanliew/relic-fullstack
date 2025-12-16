@@ -8,7 +8,7 @@ use crate::skill::prelude::*;
 use dioxus::prelude::*;
 
 #[component]
-pub fn CharacterSheetList() -> Element {
+pub fn CharacterSheetPage() -> Element {
   let response_paths: Resource<Result<Vec<Path>, ServerFnError>> =
     use_resource(move || list_paths());
   let response_skills: Resource<Result<Vec<Skill>, ServerFnError>> =

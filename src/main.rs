@@ -29,36 +29,37 @@ fn main() {
 #[rustfmt::skip]
 pub enum Route {
   #[layout(Navbar)]
+
   #[route("/")]
   Home {},
-  #[nest("/skills")]
-    #[route("/")]
-    SkillList {},
-    #[route("/:id")]
-    SingleSkill { id: String },
-  #[end_nest]
+
+  #[route("/rules")]
+  MainRules {},
+
+  #[route("/builder")]
+  CharacterBuilder {},
+
   #[nest("/paths")]
     #[route("/")]
     PathsPage {},
+
     #[route("/:id")]
     SinglePath { id: String },
   #[end_nest]
-  #[route("/builder")]
-  CharacterBuilder {},
-  #[route("/keywords")]
-  KeywordList {},
+
+  #[nest("/skills")]
+    #[route("/")]
+    SkillsPage {},
+
+    #[route("/:id")]
+    SingleSkillPage { id: String },
+  #[end_nest]
+  
   #[nest("/sheets")]
     #[route("/")]
-    CharacterSheetList {},
+    CharacterSheetPage {},
     #[route("/:id")]
     SingleChracterSheet { id: String },
-  #[end_nest]
-  #[route("/all_skills")]
-  FullSkillList {},
-  #[route("/inherent")]
-  InherentSkillsPage {},
-  #[route("/rules")]
-  MainRules {},
 }
 
 #[component]

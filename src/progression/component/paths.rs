@@ -17,20 +17,12 @@ use crate::skill::prelude::*;
 
 #[component]
 pub fn CharacterPaths(
+  paths: Vec<Path>,
   path_min: u32,
   path_max: u32,
   path_feature_count_signal: Signal<u32>,
   selected_paths: Signal<HashSet<String>>,
 ) -> Element {
-  let PathCache(path_cache) = use_context::<PathCache>();
-  let mut paths: Vec<Path> = path_cache.into_vec().into_iter().filter(
-    |path|
-    match path.inherient {
-      Some(true ) => false,
-      _ => true,
-    }
-  ).collect();
-  paths.sort();
   let display_path_signal: Signal<Option<String>> = use_signal(|| None);
   let selected_path_count = (selected_paths)().len().try_into().ok().unwrap_or(0);
   let path_only = max(selected_path_count, path_min);
@@ -57,10 +49,13 @@ pub fn CharacterPaths(
       for path in paths {
         PathSelector { path, selected_paths, path_selection_state, display_path_signal }
       }
-    }
-    div {
-      class: "next-button {next_class}",
-      "Continue"
+      div {
+        class: "uv-full",
+        div {
+          class: "next-button {next_class}",
+          "Continue"
+        }
+      }
     }
   }
 }
@@ -119,9 +114,10 @@ pub fn PathSelector(
     (_, true) | (SelectionState::Unfinished, _ ) => "",
     (SelectionState::Finished | SelectionState::Invalid, false) => "disabled",
   };
+  let highlight_class = if display { "path-card-highlight" } else { "" };
   return rsx! {
     div {
-      class: "row path-card {conditional_class}",
+      class: "row path-card {highlight_class} {conditional_class}",
       onclick: move |_| {
         display_path_signal.set(new_display_value.to_owned())
       },
@@ -143,7 +139,7 @@ pub fn PathSelector(
     }
     if display {
       div {
-        class: "uv-full column gap-large {conditional_class}",
+        class: "uv-full column gap-large path-skil-wrapper {conditional_class}",
         PathPanel { path, hide_description: true }
       }
     }

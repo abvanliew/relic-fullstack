@@ -7,13 +7,11 @@ pub fn Navbar() -> Element {
     div {
       class: "row underhang no-print",
       Link { to: Route::Home {}, "Home" }
-      Link { to: Route::SkillList {}, "Skills" }
-      Link { to: Route::FullSkillList {}, "Skills Display" }
-      Link { to: Route::PathsPage {}, "Paths" }
-      Link { to: Route::CharacterBuilder {}, "Builder" }
-      Link { to: Route::CharacterSheetList {}, "Sheets" }
-      Link { to: Route::InherentSkillsPage {}, "Inherent" }
       Link { to: Route::MainRules {}, "Rules" }
+      Link { to: Route::CharacterBuilder {}, "Builder" }
+      Link { to: Route::PathsPage {}, "Paths" }
+      Link { to: Route::SkillsPage {}, "Skills" }
+      Link { to: Route::CharacterSheetPage {}, "Sheets" }
     }
     Outlet::<Route> {}
   }

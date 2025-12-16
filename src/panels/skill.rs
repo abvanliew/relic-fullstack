@@ -36,7 +36,7 @@ pub fn SkillList() -> Element {
 }
 
 #[component]
-pub fn SingleSkill(id: String) -> Element {
+pub fn SingleSkillPage(id: String) -> Element {
   let SkillCache( skill_cache) = use_context();
   if let Some( element ) = skill_cache.status_element() {
     return element;
@@ -68,7 +68,7 @@ pub fn SingleSkill(id: String) -> Element {
 }
 
 #[component]
-pub fn FullSkillList() -> Element {
+pub fn SkillsPage() -> Element {
   let SkillCache( skill_cache) = use_context();
   if let Some( element ) = skill_cache.status_element() {
     return element;

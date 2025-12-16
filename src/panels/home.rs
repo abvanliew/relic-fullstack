@@ -7,6 +7,6 @@ pub fn Home() -> Element {
     div {
       "Relic TTRPG"
     }
-    Link { to: Route::SingleSkill { id: "66f45f6b7e098103fc4220a1".into() }, "Aid (Skill)" }
+    Link { to: Route::SingleSkillPage { id: "66f45f6b7e098103fc4220a1".into() }, "Aid (Skill)" }
   }
 }

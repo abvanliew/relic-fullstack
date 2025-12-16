@@ -50,7 +50,7 @@ pub fn PathPanelList(paths: ReadOnlySignal<Vec<Path>>) -> Element {
   let paths = paths();
   return rsx! {
     div {
-      class: "column gap-large",
+      class: "column gap-large path-skil-wrapper",
       for path in paths {
         PathPanel { path }
       }
