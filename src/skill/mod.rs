@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use crate::rules::prelude::*;
 use activation::Action;
 use aspect::*;
+use crate::path::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -27,6 +28,7 @@ pub struct Skill {
   pub order: RelicOrdering,
   pub paths: Option<Vec<PathRef>>,
   pub pick_one_keyword: Option<Vec<ObjectId>>,
+  pub modifiers: Option<ModifierSet>,
 }
 
 impl Default for Skill {
@@ -43,6 +45,7 @@ impl Default for Skill {
       order: Default::default(),
       paths: None,
       pick_one_keyword: Default::default(),
+      modifiers: None,
     }
   }
 }
@@ -50,11 +53,11 @@ impl Default for Skill {
 pub mod prelude {
   pub use super::activation::Action;
   pub use super::aspect::{Property, RelicOrdering, TrainingCost};
-  pub use super::component::{SkillCard, SkillDescription, SkillTable, SkillTermDisplay};
+  pub use super::component::{SkillCardLoader, SkillTermDisplay};
   pub use super::duration::Duration;
+  pub use super::filters::{keywords_from_skills, partion_skills_by_cost};
   pub use super::target::Target;
   pub use super::Skill;
-  pub use super::filters::{partion_skills_by_cost, keywords_from_skills};
 }
 
 // impl Ord for Skill {

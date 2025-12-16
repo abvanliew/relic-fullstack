@@ -6,9 +6,7 @@ use crate::keyword::prelude::KeywordClassified;
 
 use super::prelude::*;
 
-pub fn partion_skills_by_cost(
-  skills: Vec<Skill>
-) -> ( Vec<Skill>, Vec<Skill>, Vec<Skill> ) {
+pub fn partion_skills_by_cost(skills: Vec<Skill>) -> (Vec<Skill>, Vec<Skill>, Vec<Skill>) {
   let mut keystones: Vec<Skill> = Vec::new();
   let mut features: Vec<Skill> = Vec::new();
   let mut minor_features: Vec<Skill> = Vec::new();
@@ -19,12 +17,11 @@ pub fn partion_skills_by_cost(
       TrainingCost::Half | TrainingCost::Cantrip => minor_features.push(skill),
     }
   }
-  return ( keystones, features, minor_features );
+  return (keystones, features, minor_features);
 }
 
-pub fn keywords_from_skills(
-  skills: &Vec<Skill>
-) -> Vec<ObjectId> {
-  let set: HashSet<ObjectId> = skills.iter().flat_map(|skill| skill.get_keyword_ids()).collect();
-  Vec::from_iter(set)
+pub fn keywords_from_skills(skills: &Vec<Skill>) -> HashSet<ObjectId> {
+  skills.iter()
+  .flat_map(|skill| skill.get_keyword_ids())
+  .collect()
 }

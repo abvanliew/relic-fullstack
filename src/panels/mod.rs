@@ -1,6 +1,5 @@
 mod builder;
 mod home;
-mod inherent;
 mod keyword;
 mod navbar;
 mod rulebook;
@@ -9,7 +8,6 @@ mod skill;
 
 pub use builder::CharacterBuilder;
 pub use home::Home;
-pub use inherent::InherentSkills;
 pub use keyword::KeywordList;
 pub use navbar::Navbar;
 pub use rulebook::MainRules;

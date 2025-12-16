@@ -54,8 +54,8 @@ input[type=number]::-webkit-outer-spin-button {
 } */
 
 .input {
-  width: 56px;
-  font-size: 1.6em;
+  width: 48px;
+  font-size: 1em;
   text-align: center;
   border-radius: 0.4rem;
   margin-left: 2px;
@@ -159,23 +159,38 @@ input[type=number]::-webkit-outer-spin-button {
   margin-bottom: 16px;
 }
 
+.next-button {
+  border: solid .2rem;
+  border-radius: .4rem;
+  padding: .25rem;
+  font-size: 1.2rem;
+  width: min-content;
+  padding: .4rem .6rem;
+  margin-left: auto;
+}
+
 .path-grid {
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, 300px);
   display: grid;
   grid-auto-flow: dense;
+  column-gap: 12px;
 }
 
 .path-card {
   width: 100%;
   width: 300px;
-  height: 80px;
+  padding: 8px;
   overflow: hidden;
-  border: 0.16rem solid var( --main-border );
+  border: 0.08rem solid var(--main-border);
   border-radius: 0.6rem;
   padding: 0.4rem 0.6rem;
   display: flex;
   align-items: center;
   margin: 4px 0px;
+}
+
+.red-border {
+  border-color: #FF0000
 }
 
 .thin-border {
@@ -316,6 +331,11 @@ input[type=number]::-webkit-outer-spin-button {
 
 .disabled {
   filter: grayscale(1) brightness(50%);
+}
+
+.errored {
+  color: #f00;
+  filter: grayscale(50%) brightness(75%);
 }
 
 .grid {

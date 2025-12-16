@@ -51,12 +51,12 @@ impl Action {
   pub fn activation(&self) -> String {
     return format!(
       "{} {}",
-      self.base(),
+      self.title(),
       self.suffix().unwrap_or("".to_string())
     );
   }
 
-  pub fn base(&self) -> String {
+  pub fn title(&self) -> String {
     return match self.initial {
       Some(true) => format!("Initial {}", self.class),
       _ => format!("{}", self.class),
@@ -110,6 +110,7 @@ impl Action {
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum Activation {
   Boon,
+  Ranked,
   Action,
   Interaction,
   Reaction,
@@ -127,6 +128,7 @@ impl fmt::Display for Activation {
       "{}",
       match self {
         Activation::Boon => "Boon",
+        Activation::Ranked => "Ranked Boon",
         Activation::Action => "Action",
         Activation::Interaction => "Interaction",
         Activation::Reaction => "Reaction",

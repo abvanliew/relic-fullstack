@@ -84,16 +84,8 @@ pub fn StackDetail(stack: Stack, display: SkillTermDisplay) -> Element {
   )
 }
 
-#[derive(PartialEq, Props, Clone)]
-pub struct PropertyDetailProps {
-  title: String,
-  details: Element,
-}
-
 #[component]
-pub fn PropertyDetail(props: PropertyDetailProps) -> Element {
-  let title = props.title;
-  let details = props.details;
+pub fn PropertyDetail(title: String, details: Element) -> Element {
   return rsx!(
     div { class: "uv-title highlight", "{title}" }
     div { class: "uv-details", { details } }

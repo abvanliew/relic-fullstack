@@ -1,5 +1,8 @@
+use crate::keyword::prelude::KeywordSnippetsLoader;
+use crate::keyword::prelude::KeywordClassified;
 use crate::server::prelude::*;
 use crate::skill::prelude::*;
+use crate::skill::component::*;
 use dioxus::prelude::*;
 
 #[component]
@@ -34,69 +37,44 @@ pub fn SkillList() -> Element {
 
 #[component]
 pub fn SingleSkill(id: String) -> Element {
-  let response_skill: Resource<Result<Skill, ServerFnError>> =
-    use_resource(move || get_skill(id.clone()));
-  match &*response_skill.read_unchecked() {
-    Some(Ok(skill)) => {
-      rsx! {
-        SkillDescription { id: skill.id.to_string(), display: SkillTermDisplay::External }
-      }
+  let SkillCache( skill_cache) = use_context();
+  if let Some( element ) = skill_cache.status_element() {
+    return element;
+  }
+  let skill_result = skill_cache.from_id(&id);
+  let Some( skill ) =skill_result else {
+    return rsx! {
+      div { "Cannot find skill with id: {id}" }
     }
-    None => {
-      rsx! { "Loading skill" }
-    }
-    skill_status => {
-      rsx!(
-        div { "Loading Skill Failure" }
-        if let Some( Err( err ) ) = skill_status {
-          div { "An error occurred when loading skill: {err}" }
+  };
+  let KeywordCache( keyword_cache) = use_context();
+  let keyword_status_element = keyword_cache.status_element();
+  let keyword_id_objects = skill.get_keyword_ids();
+  return rsx! {
+    div {
+      class: "group column",
+      SkillCard { skill, display: SkillTermDisplay::Minimal }
+      match keyword_status_element {
+        Some( element ) => element,
+        None => rsx! {
+          div {
+            class: "block-columns",
+            KeywordSnippetsLoader { keyword_id_objects  }
+          }
         }
-      )
+      }
     }
   }
 }
 
 #[component]
 pub fn FullSkillList() -> Element {
-  let response: Resource<Result<Vec<Skill>, ServerFnError>> = use_resource(move || list_skills());
-  return match &*response.read_unchecked() {
-    Some(Ok(skills)) => {
-      rsx! {
-        div {
-          class: "row-wrap gap-xlarge",
-          div {
-            class: "column-wrap gap-xlarge",
-            for skill in skills.iter().step_by(2) {
-              SkillDescription {
-                id: skill.id.to_string(),
-                display: SkillTermDisplay::Embeded,
-                title_as_link: true,
-              }
-            }
-          }
-          div {
-            class: "column-wrap gap-xlarge",
-            for skill in skills.iter().skip(1).step_by(2) {
-              SkillDescription {
-                id: skill.id.to_string(),
-                display: SkillTermDisplay::Embeded,
-                title_as_link: true,
-              }
-            }
-          }
-        }
-      }
-    }
-    None => {
-      rsx! { "Loading skills" }
-    }
-    skill_status => {
-      rsx!(
-        div { "Loading Skill Failure" }
-        if let Some( Err( err ) ) = skill_status {
-          div { "An error occurred when loading skill: {err}" }
-        }
-      )
-    }
-  };
+  let SkillCache( skill_cache) = use_context();
+  if let Some( element ) = skill_cache.status_element() {
+    return element;
+  }
+  let skills = skill_cache.into_vec();
+  return rsx! {
+    SkillCardList { skills, title_as_link: true }
+  }
 }

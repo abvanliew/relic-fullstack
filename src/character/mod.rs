@@ -1,6 +1,5 @@
 mod aspects;
 mod attribute;
-pub mod component;
 mod expertise;
 mod flow;
 mod pool;

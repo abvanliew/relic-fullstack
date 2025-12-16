@@ -12,7 +12,7 @@ pub fn Navbar() -> Element {
       Link { to: Route::PathsPage {}, "Paths" }
       Link { to: Route::CharacterBuilder {}, "Builder" }
       Link { to: Route::CharacterSheetList {}, "Sheets" }
-      Link { to: Route::InherentSkills {}, "Inherent" }
+      Link { to: Route::InherentSkillsPage {}, "Inherent" }
       Link { to: Route::MainRules {}, "Rules" }
     }
     Outlet::<Route> {}

@@ -1,25 +1,11 @@
 use dioxus::prelude::*;
 
 use crate::progression::{
-  component::builder::BuildContext,
   fixed::{MAX_LEVEL, MIN_LEVEL},
 };
 
-#[derive(Debug, Clone)]
-pub struct LevelContext {
-  pub level: Signal<usize>,
-}
-
-impl LevelContext {
-  pub fn use_context_provider() -> Self {
-    let level = use_signal(|| MIN_LEVEL);
-    use_context_provider(|| Self { level })
-  }
-}
-
 #[component]
-pub fn LevelSelector() -> Element {
-  let mut level = use_context::<BuildContext>().level;
+pub fn LevelSelector( level_signal: Signal<u32> ) -> Element {
   rsx!(
     div {
       class: "grid dim-keywords",
@@ -28,13 +14,13 @@ pub fn LevelSelector() -> Element {
         class: "uv-after-title",
         select {
           onchange: move |event| {
-            let mut new_level = event.value().parse().unwrap_or( MIN_LEVEL );
+            let mut new_level = event.value().parse::<u32>().ok().unwrap_or(MIN_LEVEL);
             if new_level > MAX_LEVEL { new_level = MAX_LEVEL; }
             if new_level < MIN_LEVEL { new_level = MIN_LEVEL; }
-            level.set( new_level );
+            level_signal.set( new_level );
           },
           for lvl in MIN_LEVEL..=MAX_LEVEL {
-            option { value: lvl, label: lvl, selected: level() == lvl, }
+            option { value: lvl, label: lvl, selected: level_signal() == lvl, }
           }
         }
       }

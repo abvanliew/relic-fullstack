@@ -1,10 +1,10 @@
-use serde::{Deserialize, Serialize};
 use super::internal::*;
+use serde::{Deserialize, Serialize};
 
 impl Keyword {
   pub fn title_as(&self, tense: &Option<Tense>) -> String {
-    return match ( &self.tenses, tense) {
-      (Some(tenses),Some(tense)) => match tenses.get(tense) {
+    return match (&self.tenses, tense) {
+      (Some(tenses), Some(tense)) => match tenses.get(tense) {
         None => self.title.clone(),
         Some(title) => title,
       },

@@ -1,5 +1,5 @@
 mod builder;
 mod level;
-mod path;
+mod paths;
 
 pub use builder::CharacterProgression;

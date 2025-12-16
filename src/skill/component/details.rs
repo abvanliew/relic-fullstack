@@ -1,13 +1,12 @@
-use std::collections::{HashMap, HashSet};
+
 
 use crate::common::HorizontalBar;
 use crate::keyword::prelude::*;
 use crate::rules::prelude::*;
-use crate::server::prelude::ServerRequestSignals;
+use crate::server::prelude::{KeywordCache, SkillCache};
 use crate::skill::prelude::*;
 use crate::Route;
 
-use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Default, Eq)]
@@ -15,64 +14,6 @@ pub enum SkillTermDisplay {
   #[default]
   Minimal,
   Embeded,
-  External,
-}
-
-#[component]
-pub fn SkillDescription(
-  id: String,
-  #[props(default)] display: SkillTermDisplay,
-  #[props(default)] title_as_link: bool,
-) -> Element {
-  let library = use_context::<ServerRequestSignals>();
-  let res_skills = library.get_skills();
-  let skill = match res_skills {
-    Some(map) => match map.get(&id) {
-      Some(skill) => skill.clone(),
-      None => return rsx! {},
-    },
-    _ => {
-      return rsx! { div { "Loading" } };
-    }
-  };
-  let keywords = filter_keywords(&skill.get_keyword_ids());
-  rsx!(
-    div {
-      class: "group column",
-      SkillCard { id, display,title_as_link }
-      match &display {
-        SkillTermDisplay::External => {
-          rsx!{
-            for keyword in keywords {
-              TermSnippet { term: Term::keyword(keyword), display: TermDisplay::Card }
-            }
-          }
-        },
-        _ => rsx!{},
-      }
-    }
-  )
-}
-
-pub fn filter_keywords(keywords: &HashSet<ObjectId>) -> HashSet<ObjectId> {
-  let library = use_context::<ServerRequestSignals>();
-  let keyword_result = library.get_keywords();
-  let keyword_map = match keyword_result {
-    Some(map) => map,
-    None => {
-      return HashSet::new();
-    }
-  };
-  keywords
-  .iter()
-  .filter_map(|&id| match keyword_map.get(&id.to_string()) {
-    None => None,
-    Some(keyword) => match keyword.class {
-      Some(KeywordClass::Classifier) => None,
-      _ => Some(id),
-    },
-  })
-  .collect()
 }
 
 #[component]
@@ -85,40 +26,55 @@ pub fn SkillCardList(
     div {
       class: "block-columns",
       for skill in skills {
-        SkillCard { id: skill.id.to_string(), display, title_as_link }
+        SkillCard { skill, display, title_as_link }
       }
     }
   }
 }
 
 #[component]
-pub fn SkillCard(
+pub fn SkillCardLoader(
   id: String,
   #[props(default)] display: SkillTermDisplay,
   #[props(default)] title_as_link: bool,
 ) -> Element {
-  let library = use_context::<ServerRequestSignals>();
-  let skill_result = library.get_skills();
-  let skill = match skill_result {
-    Some(skill_map) => match skill_map.get(&id) {
-      Some(skill) => skill.clone(),
-      None => return rsx! {},
+  let SkillCache( skill_cache ) = use_context();
+  let skill_result = skill_cache.from_id(&id);
+  return match skill_result {
+    None =>  rsx! { 
+      div { class: "card", "No Skill found with id: {id}" }
     },
-    _ => {
-      return rsx! { div { class: "card", "Loading" } };
-    }
+    Some( skill ) => rsx! {
+      SkillCard { skill, display, title_as_link }
+    },
   };
+}
+
+
+#[component]
+pub fn SkillCard(
+  skill: Skill,
+  #[props(default)] display: SkillTermDisplay,
+  #[props(default)] title_as_link: bool,
+) -> Element {
+  let id = skill.id.to_string();
   let title = skill.title.clone();
   let tier = skill.tier.clone();
   let training_cost = skill.training_cost.clone();
   let opt_description = skill.description.clone();
   let action = skill.action.clone();
   let opt_sub_actions = skill.sub_actions.clone();
-  let opt_pick_keywords = skill.pick_one_keyword.clone();
-  let keyword_ids = skill.get_keyword_ids();
-  let keywords = match &display {
-    SkillTermDisplay::Embeded => filter_keywords(&keyword_ids),
-    _ => HashSet::new(),
+  let KeywordCache( keyword_cache ) = use_context();
+  let selectable_keyword_ids = skill.pick_one_keyword.clone().unwrap_or_default();
+  let selectable_keywords = keyword_cache.from_object_ids(&selectable_keyword_ids);
+  let keywords_optional = match &display {
+    SkillTermDisplay::Minimal => None,
+    SkillTermDisplay::Embeded => {
+      let keyword_object_ids = skill.get_keyword_ids();
+      Some( rules_specific( keyword_cache.from_object_ids(
+        &Vec::from_iter(keyword_object_ids)
+      )))
+    },
   };
   rsx!(
     div {
@@ -143,23 +99,15 @@ pub fn SkillCard(
           ActionDetails { action, display }
         }
       }
-      if keywords.len() > 0 {
-        HorizontalBar {}
-      }
-      for keyword in keywords {
-        TermSnippet {
-          term: Term::keyword(keyword),
-          display: TermDisplay::Block
-        }
-      }
-      if let Some( pick_keywords ) = opt_pick_keywords {
-        for keyword in pick_keywords {
+      if let Some( keywords ) = keywords_optional {
+        if keywords.len() > 0 {
           HorizontalBar {}
-          TermSnippet {
-            term: Term::keyword(keyword),
-            display: TermDisplay::Block
-          }
+          KeywordSnippets { keywords, display: KeywordDisplay::Block }
         }
+      }
+      for keyword in selectable_keywords {
+        HorizontalBar {}
+        KeywordBlock { keyword }
       }
     }
   )
@@ -167,47 +115,26 @@ pub fn SkillCard(
 
 #[component]
 fn ActionDetails(action: Action, display: SkillTermDisplay) -> Element {
-  let library = use_context::<ServerRequestSignals>();
-  let keyword_results = library.get_keywords();
-  let keyword_map = match &keyword_results {
-    Some(map) => map.clone(),
-    None => HashMap::new(),
-  };
-  let keywords: Vec<String> = if let Some(ref keyword_ids) = action.keyword_ids {
-    keyword_ids
-      .iter()
-      .filter_map(|id| match keyword_map.get(&id.to_string()) {
-        Some(keyword) => Some(keyword.title.clone()),
-        None => None,
-      })
-      .collect()
-  } else {
-    Vec::new()
-  };
-  let keyword_display = keywords.join(", ");
-  let activation = action.base();
+  let activation = action.title();
   let suffix_opt = action.suffix();
+  let KeywordCache(keyword_cache) = use_context::<KeywordCache>();
+  let keyword_ids = action.keyword_ids.unwrap_or_default();
+  let keywords = keyword_cache
+  .from_object_ids(&keyword_ids).iter()
+  .map(|keyword| keyword.title.clone())
+  .collect::<Vec<String>>();
+  let keyword_display = keywords.join(", ");
   let (duration, upkeep) = match &action.duration {
     Some(duration) => (Some(duration.base()), duration.upkeep()),
     None => (None, None),
   };
-
   let mut property_props: Vec<(String, RulesBlocks)> = Vec::new();
   if let Some(properties) = action.properties {
     for property in properties {
-      let title = match (property.term.title, property.term.keyword_id) {
-        (None, None) => "undefined".to_string(),
-        (_, Some(id)) => keyword_map
-          .get(&id.to_string())
-          .unwrap_or(&Keyword::default())
-          .title
-          .clone(),
-        (Some(term), _) => term,
-      };
-      property_props.push((title, property.rules))
+      let title = property.term.to_title();
+      property_props.push((title, property.rules));
     }
   }
-
   rsx! {
     if let Some( sub_title ) = action.sub_title {
       div { class: "uv-full subtitle", "{sub_title}" }
@@ -224,7 +151,7 @@ fn ActionDetails(action: Action, display: SkillTermDisplay) -> Element {
     if let Some( blocks ) = action.condition {
       PropertyDetail {
         title: "Condition".to_string(),
-        details: rsx!{RulesBlockSet { blocks } }
+        details: rsx!{ RulesBlockSet { blocks } }
       }
     }
     if let Some( cost ) = action.cost {

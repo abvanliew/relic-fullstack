@@ -79,3 +79,7 @@ impl Ord for Path {
     return self.title.cmp(&other.title);
   }
 }
+
+pub mod prelude {
+  pub use super::ranked_bonus::ModifierSet;
+}

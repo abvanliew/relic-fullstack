@@ -1,6 +1,9 @@
+use std::collections::HashSet;
+
 use super::internal::*;
+use crate::keyword::filter::rules_specific;
 use crate::rules::prelude::*;
-use crate::server::prelude::ServerRequestSignals;
+use crate::server::prelude::KeywordCache;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -27,112 +30,89 @@ impl Term {
       ..Default::default()
     }
   }
-}
 
-#[derive(Debug, Clone, Copy, PartialEq, Default, Eq)]
-pub enum TermDisplay {
-  #[default]
-  Title,
-  Block,
-  Card,
-}
-
-#[derive(PartialEq, Props, Clone)]
-pub(crate) struct TermSnippetProps {
-  term: Term,
-  #[props(default)]
-  display: TermDisplay,
-}
-
-#[component]
-pub(crate) fn TermSnippet(props: TermSnippetProps) -> Element {
-  let keyword_opt = match &props.term.keyword_id {
-    Some(id) => {
-      let signal = use_context::<ServerRequestSignals>();
-      let keywords_response = signal.get_keywords();
-      let Some(keyword_map) = keywords_response else {
-        return rsx!( div { "Loading" } );
-      };
-      keyword_map.get(&id.to_string()).cloned()
-    }
-    _ => None,
-  };
-  let title = match (&keyword_opt, &props.term.title) {
-    (Some(keyword), _) => keyword.title_as(&props.term.tense),
-    (_, Some(title)) => title.clone(),
-    _ => "undefined".into(),
-  };
-  let blocks_opt = match &keyword_opt {
-    Some(keyword) => match (&keyword.rules, &keyword.blurb) {
-      (Some(block), _) => Some(snippets_to_rules_blocks(block.clone())),
-      (_, Some(blurb)) => Some(blurb_to_rules_blocks(blurb.clone())),
-      _ => None,
-    },
-    _ => None,
-  };
-  return match &props.display {
-    TermDisplay::Title => rsx! { span { class: "highlight", " {title}" } },
-    TermDisplay::Block => {
-      rsx! {
-        div { class: "uv-full highlight", "{title}" }
-        if let Some( blocks ) = blocks_opt {
-          div { class: "uv-full indent",
-            RulesBlockSet { blocks }
-          }
+  pub fn to_title(&self) -> String {
+    return match (self.keyword_id, &self.title) {
+      (Some(keyword_id), _) => {
+        let KeywordCache(keyword_cache) = use_context::<KeywordCache>();
+        let keyword_result = keyword_cache.from_object_id(&keyword_id);
+        match keyword_result {
+          Some(keyword) => keyword.title_as(&self.tense),
+          None => "undefined".into(),
         }
       }
-    }
-    TermDisplay::Card => {
-      let class = match &keyword_opt {
-        Some(keyword) => match &keyword.class {
-          Some(class) => class.to_string(),
-          None => "".into(),
-        },
-        None => "".into(),
-      };
-      rsx! {
-        div {
-          class: "card-thin grid dim-keywords",
-          div { class: "uv-title-property highlight", "{title}" }
-          div { class: "uv-property italics", "{class}" }
-          if let Some( blocks ) = blocks_opt {
-            div { class: "uv-full indent",
-              RulesBlockSet { blocks }
-            }
-          }
-        }
-      }
-    }
-  };
-}
-
-
-
-#[component]
-pub(crate) fn KeywordCardList(keywords: Vec<Keyword>) -> Element {
-  return rsx! {
-    div {
-      class: "block-columns",
-      for keyword in keywords {
-        KeywordCard { keyword }
-      }
-    }
+      (_, Some(title)) => title.clone(),
+      _ => "undefined".into(),
+    };
   }
 }
 
+#[component]
+pub(crate) fn TermSnippet(term: Term) -> Element {
+  let title = term.to_title();
+  return rsx! { span { class: "highlight", " {title}" } }
+}
+
+
+#[derive(Debug, Clone, PartialEq, Default)]
+pub enum KeywordDisplay {
+  #[default]
+  Card,
+  Block
+}
+
 
 #[component]
-pub(crate) fn KeywordCard(keyword: Keyword) -> Element {
-  let title = keyword.title;
-  let blocks = match ( keyword.rules, keyword.blurb ) {
-    (Some( blocks), _ ) => snippets_to_rules_blocks(blocks),
-    (_, Some( blurb ) ) => blurb_to_rules_blocks(blurb),
-    _ => Vec::new(),
+pub(crate) fn KeywordSnippetsLoader(
+  keyword_id_objects: HashSet<ObjectId>,
+  #[props(default)]
+  display: KeywordDisplay,
+  #[props(default)]
+  all_keywords: bool,
+) -> Element {
+  let KeywordCache(keyword_cache) = use_context::<KeywordCache>();
+  let keywords_vec = Vec::from_iter(keyword_id_objects);
+  let keywords = match all_keywords {
+    true => keyword_cache.from_object_ids(&keywords_vec),
+    false => rules_specific(keyword_cache.from_object_ids(&keywords_vec))
   };
-  let class = match keyword.class {
-    Some( class ) => class.to_string(),
-    None => "".into(),
+  return rsx! {
+    KeywordSnippets { keywords, display }
+  }
+}
+
+#[component]
+pub(crate) fn KeywordSnippets(
+  keywords: Vec<Keyword>,
+  #[props(default)]
+  display: KeywordDisplay,
+) -> Element {
+  return rsx! {
+    for keyword in keywords {
+      KeywordSnippet { keyword, display: display.clone() }
+    }
   };
+}
+
+#[component]
+pub(crate) fn KeywordSnippet(
+  keyword: Keyword,
+  #[props(default)]
+  display: KeywordDisplay,
+) -> Element {
+  return match &display {
+    KeywordDisplay::Card => rsx! { KeywordCard { keyword } },
+    KeywordDisplay::Block => rsx! { KeywordBlock { keyword } },
+  }
+}
+
+#[component]
+pub(crate) fn KeywordCard(
+  keyword: Keyword
+) -> Element {
+  let title = keyword.title.clone();
+  let blocks = keyword.blocks();
+  let class = keyword.class_title();
   return rsx! {
     div {
       class: "card-thin grid dim-keywords",
@@ -142,5 +122,20 @@ pub(crate) fn KeywordCard(keyword: Keyword) -> Element {
         RulesBlockSet { blocks }
       }
     }
-  };
+  }
+}
+
+#[component]
+pub(crate) fn KeywordBlock(
+  keyword: Keyword
+) -> Element {
+  let title = keyword.title.clone();
+  let blocks = keyword.blocks();
+  return rsx! {
+    div { class: "uv-full highlight", "{title}" }
+    div {
+      class: "uv-full indent",
+      RulesBlockSet { blocks }
+    }
+  }
 }

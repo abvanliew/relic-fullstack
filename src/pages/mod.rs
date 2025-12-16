@@ -1,3 +1,5 @@
+mod inherent;
 mod paths;
 
-pub use paths::PathsPage;
+pub use inherent::InherentSkillsPage;
+pub use paths::{PathsPage,SinglePath};

@@ -13,11 +13,10 @@ mod server;
 mod skill;
 
 use dioxus::prelude::*;
-use panels::*;
-use server::prelude::ServerRequestSignals;
 use pages::*;
+use panels::*;
 
-use crate::server::prelude::{KeywordCache, SkillCache, PathCache};
+use crate::server::prelude::{KeywordCache, PathCache, SkillCache};
 
 const FAVICON: Asset = asset!("assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("assets/main.css");
@@ -41,6 +40,8 @@ pub enum Route {
   #[nest("/paths")]
     #[route("/")]
     PathsPage {},
+    #[route("/:id")]
+    SinglePath { id: String },
   #[end_nest]
   #[route("/builder")]
   CharacterBuilder {},
@@ -55,16 +56,15 @@ pub enum Route {
   #[route("/all_skills")]
   FullSkillList {},
   #[route("/inherent")]
-  InherentSkills {},
+  InherentSkillsPage {},
   #[route("/rules")]
   MainRules {},
 }
 
 #[component]
 fn App() -> Element {
-  ServerRequestSignals::use_context_provider();
-  SkillCache::use_context_provider();
   KeywordCache::use_context_provider();
+  SkillCache::use_context_provider();
   PathCache::use_context_provider();
   rsx! {
     document::Link { rel: "icon", href: FAVICON }

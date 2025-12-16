@@ -12,6 +12,7 @@ use crate::keyword::prelude::*;
 use crate::path::Path;
 use crate::rules::components::Modifier;
 use crate::skill::prelude::*;
+use crate::skill::component::*;
 use crate::Route;
 
 use super::aspects::{BodyStats, TrainingRanks};
@@ -195,8 +196,9 @@ pub fn SheetDetails(
       class: "column print-break",
       div {
         class: "row-wrap",
-        for skill in selected_skills {
-          SkillDescription { id: skill.id.to_string(), display: SkillTermDisplay::Embeded }
+        SkillCardList {
+          skills: selected_skills,
+          display: SkillTermDisplay::Embeded
         }
       }
     }
