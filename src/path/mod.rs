@@ -1,7 +1,6 @@
 pub mod components;
 mod feature;
 mod keystone;
-mod ranked_bonus;
 
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
@@ -78,6 +77,4 @@ impl Ord for Path {
   }
 }
 
-pub mod prelude {
-  pub use super::ranked_bonus::ModifierSet;
-}
+pub mod prelude {}

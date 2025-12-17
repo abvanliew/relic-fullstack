@@ -1,11 +1,9 @@
 use dioxus::prelude::*;
 
-use crate::progression::{
-  fixed::{MAX_LEVEL, MIN_LEVEL},
-};
+use crate::progression::fixed::{MAX_LEVEL, MIN_LEVEL};
 
 #[component]
-pub fn LevelSelector( level_signal: Signal<u32> ) -> Element {
+pub fn LevelSelector(level_signal: Signal<u32>) -> Element {
   rsx!(
     div {
       class: "grid dim-keywords",

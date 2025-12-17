@@ -18,10 +18,10 @@ pub struct BasicObject {
 
 pub mod prelude {
   pub use super::keyword::get_keyword_map;
-  pub use super::path::{list_paths};
+  pub use super::path::list_paths;
   pub use super::sheet::{get_chracter_sheet, list_character_sheets};
   pub use super::signal::{
-    KeywordCache, PathCache, SkillCache, status_element_paths_skills_keywords
+    status_element_paths_skills_keywords, KeywordCache, PathCache, SkillCache,
   };
   pub use super::skill::list_skills;
 }

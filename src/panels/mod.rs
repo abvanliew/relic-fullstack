@@ -12,4 +12,4 @@ pub use keyword::KeywordList;
 pub use navbar::Navbar;
 pub use rulebook::MainRules;
 pub use sheet::{CharacterSheetPage, SingleChracterSheet};
-pub use skill::{SkillsPage, SkillList, SingleSkillPage};
+pub use skill::{SingleSkillPage, SkillList, SkillsPage};

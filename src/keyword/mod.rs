@@ -37,9 +37,11 @@ impl Default for Keyword {
 
 pub mod prelude {
   pub(crate) use super::classifiers::KeywordClassified;
-  pub(crate) use super::term::{KeywordDisplay, KeywordBlock,KeywordSnippets, KeywordSnippetsLoader, TermSnippet};
   pub(crate) use super::filter::rules_specific;
   pub use super::term::Term;
+  pub(crate) use super::term::{
+    KeywordBlock, KeywordDisplay, KeywordSnippets, KeywordSnippetsLoader, TermSnippet,
+  };
   pub use super::Keyword;
 }
 

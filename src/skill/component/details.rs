@@ -1,5 +1,3 @@
-
-
 use crate::common::HorizontalBar;
 use crate::keyword::prelude::*;
 use crate::rules::prelude::*;
@@ -38,18 +36,17 @@ pub fn SkillCardLoader(
   #[props(default)] display: SkillTermDisplay,
   #[props(default)] title_as_link: bool,
 ) -> Element {
-  let SkillCache( skill_cache ) = use_context();
+  let SkillCache(skill_cache) = use_context();
   let skill_result = skill_cache.from_id(&id);
   return match skill_result {
-    None =>  rsx! { 
+    None => rsx! {
       div { class: "card", "No Skill found with id: {id}" }
     },
-    Some( skill ) => rsx! {
+    Some(skill) => rsx! {
       SkillCard { skill, display, title_as_link }
     },
   };
 }
-
 
 #[component]
 pub fn SkillCard(
@@ -64,17 +61,17 @@ pub fn SkillCard(
   let opt_description = skill.description.clone();
   let action = skill.action.clone();
   let opt_sub_actions = skill.sub_actions.clone();
-  let KeywordCache( keyword_cache ) = use_context();
+  let KeywordCache(keyword_cache) = use_context();
   let selectable_keyword_ids = skill.pick_one_keyword.clone().unwrap_or_default();
   let selectable_keywords = keyword_cache.from_object_ids(&selectable_keyword_ids);
   let keywords_optional = match &display {
     SkillTermDisplay::Minimal => None,
     SkillTermDisplay::Embeded => {
       let keyword_object_ids = skill.get_keyword_ids();
-      Some( rules_specific( keyword_cache.from_object_ids(
-        &Vec::from_iter(keyword_object_ids)
-      )))
-    },
+      Some(rules_specific(
+        keyword_cache.from_object_ids(&Vec::from_iter(keyword_object_ids)),
+      ))
+    }
   };
   rsx!(
     div {
@@ -120,9 +117,10 @@ fn ActionDetails(action: Action, display: SkillTermDisplay) -> Element {
   let KeywordCache(keyword_cache) = use_context::<KeywordCache>();
   let keyword_ids = action.keyword_ids.unwrap_or_default();
   let keywords = keyword_cache
-  .from_object_ids(&keyword_ids).iter()
-  .map(|keyword| keyword.title.clone())
-  .collect::<Vec<String>>();
+    .from_object_ids(&keyword_ids)
+    .iter()
+    .map(|keyword| keyword.title.clone())
+    .collect::<Vec<String>>();
   let keyword_display = keywords.join(", ");
   let (duration, upkeep) = match &action.duration {
     Some(duration) => (Some(duration.base()), duration.upkeep()),

@@ -1,11 +1,13 @@
 use crate::keyword::prelude::*;
-use crate::server::skill;
-use crate::{path::Path, server::prelude::get_keyword_map, skill::Skill};
+use crate::path::Path;
+use crate::server::prelude::get_keyword_map;
+use crate::skill::Skill;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 use std::collections::HashMap;
 
-use super::{path::get_path_map, skill::get_skill_map};
+use super::path::get_path_map;
+use super::skill::get_skill_map;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum ResourceStatus {
@@ -23,18 +25,14 @@ fn resource_data<T: Clone>(resource: Resource<Result<T, ServerFnError>>) -> Opti
 
 fn elements_by_status(status: &ResourceStatus, title: &str) -> Option<Element> {
   return match status {
-    ResourceStatus::Loading => {
-      Some( rsx! {
-        div { "Loading {title} ..." }
-      } )
-    },
-    ResourceStatus::Errored( error ) => {
-      Some( rsx! {
-        div { "Cannot load {title} recieved error: {error}" }
-      } )
-    },
+    ResourceStatus::Loading => Some(rsx! {
+      div { "Loading {title} ..." }
+    }),
+    ResourceStatus::Errored(error) => Some(rsx! {
+      div { "Cannot load {title} recieved error: {error}" }
+    }),
     ResourceStatus::Ready => None,
-  }
+  };
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -54,8 +52,8 @@ where
     }
   }
 
-  pub fn status_element(&self,) -> Option<Element> {
-    return elements_by_status(&self.status(), "" );
+  pub fn status_element(&self) -> Option<Element> {
+    return elements_by_status(&self.status(), "");
   }
 
   pub fn into_result_vec(&self) -> Option<Vec<T>> {
@@ -84,9 +82,9 @@ where
 
   pub fn from_object_ids(&self, object_ids: &Vec<ObjectId>) -> Vec<T> {
     object_ids
-    .iter()
-    .filter_map(|id| self.from_id(&id.to_string()))
-    .collect()
+      .iter()
+      .filter_map(|id| self.from_id(&id.to_string()))
+      .collect()
   }
 }
 
@@ -120,62 +118,63 @@ impl PathCache {
   }
 
   pub fn get_sorted_paths(&self, include_inherent: bool) -> Vec<Path> {
-    let PathCache( cache ) = &self;
-    let mut paths: Vec<Path> = cache.into_vec().into_iter().filter(
-      |path|
-      match path.inherient {
-        Some( true ) => include_inherent,
+    let PathCache(cache) = &self;
+    let mut paths: Vec<Path> = cache
+      .into_vec()
+      .into_iter()
+      .filter(|path| match path.inherient {
+        Some(true) => include_inherent,
         _ => true,
-      }
-    ).collect();
+      })
+      .collect();
     paths.sort();
     return paths;
   }
 }
 
 pub fn status_element_paths_skills_keywords() -> Option<Element> {
-  let PathCache( path_cache ) = use_context::<PathCache>();
-  let SkillCache( skill_cache ) = use_context::<SkillCache>();
-  let KeywordCache( keyword_cache ) = use_context::<KeywordCache>();
+  let PathCache(path_cache) = use_context::<PathCache>();
+  let SkillCache(skill_cache) = use_context::<SkillCache>();
+  let KeywordCache(keyword_cache) = use_context::<KeywordCache>();
   let mut errors: Vec<ServerFnError> = Vec::new();
   let mut loading: bool = false;
   match path_cache.status() {
-    ResourceStatus::Errored( error ) => {
+    ResourceStatus::Errored(error) => {
       errors.push(error);
-    },
+    }
     ResourceStatus::Loading => {
       loading = true;
-    },
-    _ => ()
+    }
+    _ => (),
   }
   match skill_cache.status() {
-    ResourceStatus::Errored( error ) => {
+    ResourceStatus::Errored(error) => {
       errors.push(error);
-    },
+    }
     ResourceStatus::Loading => {
       loading = true;
-    },
-    _ => ()
+    }
+    _ => (),
   }
   match keyword_cache.status() {
-    ResourceStatus::Errored( error ) => {
+    ResourceStatus::Errored(error) => {
       errors.push(error);
-    },
+    }
     ResourceStatus::Loading => {
       loading = true;
-    },
-    _ => ()
+    }
+    _ => (),
   }
-  return match (errors.len()>0, loading) {
-    (true, _) => Some( rsx! {
+  return match (errors.len() > 0, loading) {
+    (true, _) => Some(rsx! {
       div { "Error when loading Paths, Skills, and Keywords ..." }
       for error in errors {
         div { "{error}" }
       }
-    } ),
-    (_, true) => Some( rsx! {
+    }),
+    (_, true) => Some(rsx! {
       div { "Loading Paths, Skills, and Keywords ..." }
-    } ),
-    _ => None
-  }
+    }),
+    _ => None,
+  };
 }

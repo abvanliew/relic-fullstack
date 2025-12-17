@@ -1,31 +1,67 @@
 use serde::{Deserialize, Serialize};
 use std::{
   cmp::max,
+  fmt,
   ops::{Add, AddAssign},
 };
 
 #[derive(Debug, Clone, PartialEq, Default, Deserialize, Serialize, Eq)]
-pub struct BonusPair<T>
+pub struct Modifier<T>
 where
   T: Add + Ord + Clone,
 {
+  #[serde(default)]
   pub base: InstanceBonus<T>,
+  #[serde(default)]
   pub bonus: StackingBonus<T>,
 }
 
-// impl<T: Add<Output = T> + Clone + Ord + Default> ModifierBonus<T> {
-//   pub fn value(&self) -> T {
-//     return self.base.as_opt().unwrap_or_default() + self.bonus.as_opt().unwrap_or_default();
-//   }
-// }
+impl<T: Add<Output = T> + Clone + Ord + Default> Modifier<T> {
+  pub fn from_bonus(value: T) -> Self {
+    Self {
+      base: InstanceBonus::default(),
+      bonus: StackingBonus::from(value),
+    }
+  }
 
-impl<T: Add<Output = T> + Clone + Ord> Add for BonusPair<T> {
-  type Output = BonusPair<T>;
+  pub fn value(&self) -> T {
+    return self.base.as_opt().unwrap_or_default() + self.bonus.as_opt().unwrap_or_default();
+  }
+
+  pub fn scalar(&self) -> T {
+    return self.bonus.as_opt().unwrap_or_default();
+  }
+}
+
+impl<T: Add<Output = T> + Clone + Ord + Default + fmt::Display> fmt::Display for Modifier<T> {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    let value = self.value();
+    let scalar = self.scalar();
+    match (value != T::default(), scalar != T::default()) {
+      (true, true) => write!(f, "{value} (+{scalar} per additional instance)"),
+      (true, false) => write!(f, "{value}"),
+      (false, true) => write!(f, "+{scalar} per instance"),
+      _ => write!(f, "0"),
+    }
+  }
+}
+
+impl<T: Add<Output = T> + Clone + Ord> Add for Modifier<T> {
+  type Output = Modifier<T>;
   fn add(self, rhs: Self) -> Self::Output {
-    BonusPair {
+    Modifier {
       bonus: self.bonus + rhs.bonus,
       base: self.base + rhs.base,
     }
+  }
+}
+
+impl<T: Add<Output = T> + Clone + Ord> AddAssign for Modifier<T>
+where
+  for<'a> &'a mut Modifier<T>: std::ops::Add<Modifier<T>, Output = Modifier<T>>,
+{
+  fn add_assign(&mut self, rhs: Self) {
+    *self = self.clone() + rhs;
   }
 }
 
@@ -35,7 +71,7 @@ where
   T: Add + Clone;
 
 impl<T: Add<Output = T> + Clone> StackingBonus<T> {
-  pub fn plus(value: T) -> Self {
+  pub fn from(value: T) -> Self {
     StackingBonus(Some(value))
   }
 

@@ -11,8 +11,8 @@ use crate::equipment::weapon::{Weapon, WeaponEntry};
 use crate::keyword::prelude::*;
 use crate::path::Path;
 use crate::rules::components::Modifier;
-use crate::skill::prelude::*;
 use crate::skill::component::*;
+use crate::skill::prelude::*;
 use crate::Route;
 
 use super::aspects::{BodyStats, TrainingRanks};

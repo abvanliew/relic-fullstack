@@ -1,19 +1,11 @@
-use std::cmp::max;
-use std::collections::{HashMap, HashSet};
-use std::fmt;
-
-use bson::oid::ObjectId;
 use dioxus::prelude::*;
+use std::cmp::max;
+use std::collections::HashSet;
 
+use super::SelectionState;
 use crate::asset::icon::{IMG_SELECTED, IMG_UNSELECTED};
-use crate::path::Path;
 use crate::path::components::*;
-use crate::progression::component::builder::{SelectionState};
-use crate::progression::fixed::MIN_LEVEL;
-use crate::progression::track::TrackContext;
-use crate::progression::training::TrainingClass;
-use crate::server::prelude::*;
-use crate::skill::prelude::*;
+use crate::path::Path;
 
 #[component]
 pub fn CharacterPaths(
@@ -26,10 +18,13 @@ pub fn CharacterPaths(
   let display_path_signal: Signal<Option<String>> = use_signal(|| None);
   let selected_path_count = (selected_paths)().len().try_into().ok().unwrap_or(0);
   let path_only = max(selected_path_count, path_min);
-  let feature_max = if path_only >= path_max { 0 } else { path_max - path_only };
+  let feature_max = if path_only >= path_max {
+    0
+  } else {
+    path_max - path_only
+  };
   let path_options_used = selected_path_count + path_feature_count_signal();
-  let path_selection_state = 
-  if path_options_used == path_max && selected_path_count >= path_min {
+  let path_selection_state = if path_options_used == path_max && selected_path_count >= path_min {
     SelectionState::Finished
   } else if path_options_used > path_max {
     SelectionState::Invalid
@@ -67,7 +62,7 @@ pub fn ExtraFeatureSelector(
   path_selection_state: SelectionState,
 ) -> Element {
   let conditional_class = match (path_selection_state, path_feature_count_signal() > 0) {
-    (_, true) | (SelectionState::Unfinished, _ ) => "",
+    (_, true) | (SelectionState::Unfinished, _) => "",
     (SelectionState::Finished | SelectionState::Invalid, false) => "disabled",
   };
   rsx! {
@@ -102,16 +97,20 @@ pub fn PathSelector(
   let title = path.title.clone();
   let id = path.id.to_string();
   let (display, new_display_value) = match display_path_signal() {
-    Some( display_id ) => match display_id.eq(&id) {
+    Some(display_id) => match display_id.eq(&id) {
       true => (true, None),
-      false => (false, Some(id.clone()))
+      false => (false, Some(id.clone())),
     },
     _ => (false, Some(id.clone())),
   };
   let selected = selected_paths().contains(&id);
-  let img_src = if selected { IMG_SELECTED } else { IMG_UNSELECTED };
+  let img_src = if selected {
+    IMG_SELECTED
+  } else {
+    IMG_UNSELECTED
+  };
   let conditional_class = match (path_selection_state, selected) {
-    (_, true) | (SelectionState::Unfinished, _ ) => "",
+    (_, true) | (SelectionState::Unfinished, _) => "",
     (SelectionState::Finished | SelectionState::Invalid, false) => "disabled",
   };
   let highlight_class = if display { "path-card-highlight" } else { "" };

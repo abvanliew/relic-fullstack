@@ -1,8 +1,9 @@
-use crate::operator::{opt_max, opt_sum};
 use serde::{Deserialize, Serialize};
 use std::cmp::Ord;
 use std::fmt::{Display, Formatter, Result};
 use std::ops::{Add, AddAssign};
+
+use crate::modifiers::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Bonus<Integer>

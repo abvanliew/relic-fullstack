@@ -21,7 +21,8 @@ pub fn partion_skills_by_cost(skills: Vec<Skill>) -> (Vec<Skill>, Vec<Skill>, Ve
 }
 
 pub fn keywords_from_skills(skills: &Vec<Skill>) -> HashSet<ObjectId> {
-  skills.iter()
-  .flat_map(|skill| skill.get_keyword_ids())
-  .collect()
+  skills
+    .iter()
+    .flat_map(|skill| skill.get_keyword_ids())
+    .collect()
 }

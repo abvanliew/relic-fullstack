@@ -59,11 +59,7 @@ pub fn PathPanelList(paths: ReadOnlySignal<Vec<Path>>) -> Element {
 }
 
 #[component]
-pub fn PathPanel(
-  path: Path,
-  #[props(default)]
-  hide_description: bool
-) -> Element {
+pub fn PathPanel(path: Path, #[props(default)] hide_description: bool) -> Element {
   let title = path.title;
   let optional_summary = path.summary;
 

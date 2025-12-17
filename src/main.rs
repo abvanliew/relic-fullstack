@@ -3,7 +3,7 @@ mod character;
 mod common;
 mod equipment;
 mod keyword;
-mod operator;
+mod modifiers;
 mod pages;
 mod panels;
 mod path;

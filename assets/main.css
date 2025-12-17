@@ -198,11 +198,6 @@ input[type=number]::-webkit-outer-spin-button {
   border-color: #FF0000
 }
 
-.thin-border {
-  border: 0.01rem solid var(--main-border);
-  padding: 0.1rem;
-}
-
 .path-title {
   font-size: 1.1rem;
   font-weight: 700;
@@ -233,25 +228,6 @@ input[type=number]::-webkit-outer-spin-button {
 
 .path-skil-wrapper {
   padding: 8px 0px;
-}
-
-
-/* .path-skill-group:nth-child(odd) {
-  float: left
-}
-.path-skill-group:nth-child(even) {
-  float: right
-} */
-
-@media (width <= 1275px) {
-  .path-skill-panels {
-    width: unset;
-    display: flex;
-    flex-direction: column;
-  }
-  .path-skill-group { width: unset; }
-  .path-skill-group:nth-child(odd) { float: unset }
-  .path-skill-group:nth-child(even) { float: unset }
 }
 
 .group {
@@ -411,7 +387,9 @@ input[type=number]::-webkit-outer-spin-button {
   grid-row: 1;
 }
 
-.uv-title { grid-column: title; max-width: 86px; }
+.uv-title { 
+  grid-column: title;
+}
 .uv-cost { grid-column: cost; }
 .uv-activation { grid-column: activation; }
 .uv-details { grid-column: details / end; }
@@ -447,6 +425,7 @@ input[type=number]::-webkit-outer-spin-button {
 .uv-resistances { grid-column: resistances; }
 .uv-expertise { grid-column: expertise; }
 .uv-other { grid-column: defenses / end; }
+.uv-rank { grid-column: rank; }
 
 .dim-resource-chart {
   grid-template-columns: repeat(3, max-content);
@@ -507,6 +486,41 @@ input[type=number]::-webkit-outer-spin-button {
 
 .sheet {
   width: 668px;
+}
+
+.dim-growth {
+  grid-template-columns: [rank] min-content [rank-end title] max-content [title-end property] 1fr [end];
+  gap: 0px;
+}
+
+.growth-selector {
+  border: 0.1rem solid var( --main-border );
+  border-radius: 0.4rem;
+}
+
+.left-cap {
+  margin-top: 16px;
+  border: .1rem solid;
+  border-radius: .4rem 0rem 0rem .4rem;
+  border-right: 0px;
+  padding: 1rem .5rem;
+}
+
+.mid-cap {
+  margin-top: 16px;
+  border: .1rem solid;
+  border-left: 0px;
+  border-right: 0px;
+  padding: 1rem .5rem;
+}
+
+.right-cap {
+  margin-top: 16px;
+  border: .1rem solid;
+  border-radius: 0rem .4rem .4rem 0rem;
+  border-left: 0px;
+  padding: 1rem .5rem;
+  max-width: 650px;
 }
 
 .min-height {

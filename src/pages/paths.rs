@@ -9,7 +9,7 @@ pub fn PathsPage() -> Element {
 }
 
 #[component]
-pub fn SinglePath( id: String ) -> Element {
+pub fn SinglePath(id: String) -> Element {
   return rsx! {
     PathLoader {id}
   };

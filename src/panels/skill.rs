@@ -1,8 +1,8 @@
-use crate::keyword::prelude::KeywordSnippetsLoader;
 use crate::keyword::prelude::KeywordClassified;
+use crate::keyword::prelude::KeywordSnippetsLoader;
 use crate::server::prelude::*;
-use crate::skill::prelude::*;
 use crate::skill::component::*;
+use crate::skill::prelude::*;
 use dioxus::prelude::*;
 
 #[component]
@@ -37,17 +37,17 @@ pub fn SkillList() -> Element {
 
 #[component]
 pub fn SingleSkillPage(id: String) -> Element {
-  let SkillCache( skill_cache) = use_context();
-  if let Some( element ) = skill_cache.status_element() {
+  let SkillCache(skill_cache) = use_context();
+  if let Some(element) = skill_cache.status_element() {
     return element;
   }
   let skill_result = skill_cache.from_id(&id);
-  let Some( skill ) =skill_result else {
+  let Some(skill) = skill_result else {
     return rsx! {
       div { "Cannot find skill with id: {id}" }
-    }
+    };
   };
-  let KeywordCache( keyword_cache) = use_context();
+  let KeywordCache(keyword_cache) = use_context();
   let keyword_status_element = keyword_cache.status_element();
   let keyword_id_objects = skill.get_keyword_ids();
   return rsx! {
@@ -64,17 +64,17 @@ pub fn SingleSkillPage(id: String) -> Element {
         }
       }
     }
-  }
+  };
 }
 
 #[component]
 pub fn SkillsPage() -> Element {
-  let SkillCache( skill_cache) = use_context();
-  if let Some( element ) = skill_cache.status_element() {
+  let SkillCache(skill_cache) = use_context();
+  if let Some(element) = skill_cache.status_element() {
     return element;
   }
   let skills = skill_cache.into_vec();
   return rsx! {
     SkillCardList { skills, title_as_link: true }
-  }
+  };
 }

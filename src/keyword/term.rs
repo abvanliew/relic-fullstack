@@ -50,42 +50,37 @@ impl Term {
 #[component]
 pub(crate) fn TermSnippet(term: Term) -> Element {
   let title = term.to_title();
-  return rsx! { span { class: "highlight", " {title}" } }
+  return rsx! { span { class: "highlight", " {title}" } };
 }
-
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum KeywordDisplay {
   #[default]
   Card,
-  Block
+  Block,
 }
-
 
 #[component]
 pub(crate) fn KeywordSnippetsLoader(
   keyword_id_objects: HashSet<ObjectId>,
-  #[props(default)]
-  display: KeywordDisplay,
-  #[props(default)]
-  all_keywords: bool,
+  #[props(default)] display: KeywordDisplay,
+  #[props(default)] all_keywords: bool,
 ) -> Element {
   let KeywordCache(keyword_cache) = use_context::<KeywordCache>();
   let keywords_vec = Vec::from_iter(keyword_id_objects);
   let keywords = match all_keywords {
     true => keyword_cache.from_object_ids(&keywords_vec),
-    false => rules_specific(keyword_cache.from_object_ids(&keywords_vec))
+    false => rules_specific(keyword_cache.from_object_ids(&keywords_vec)),
   };
   return rsx! {
     KeywordSnippets { keywords, display }
-  }
+  };
 }
 
 #[component]
 pub(crate) fn KeywordSnippets(
   keywords: Vec<Keyword>,
-  #[props(default)]
-  display: KeywordDisplay,
+  #[props(default)] display: KeywordDisplay,
 ) -> Element {
   return rsx! {
     for keyword in keywords {
@@ -97,19 +92,16 @@ pub(crate) fn KeywordSnippets(
 #[component]
 pub(crate) fn KeywordSnippet(
   keyword: Keyword,
-  #[props(default)]
-  display: KeywordDisplay,
+  #[props(default)] display: KeywordDisplay,
 ) -> Element {
   return match &display {
     KeywordDisplay::Card => rsx! { KeywordCard { keyword } },
     KeywordDisplay::Block => rsx! { KeywordBlock { keyword } },
-  }
+  };
 }
 
 #[component]
-pub(crate) fn KeywordCard(
-  keyword: Keyword
-) -> Element {
+pub(crate) fn KeywordCard(keyword: Keyword) -> Element {
   let title = keyword.title.clone();
   let blocks = keyword.blocks();
   let class = keyword.class_title();
@@ -122,13 +114,11 @@ pub(crate) fn KeywordCard(
         RulesBlockSet { blocks }
       }
     }
-  }
+  };
 }
 
 #[component]
-pub(crate) fn KeywordBlock(
-  keyword: Keyword
-) -> Element {
+pub(crate) fn KeywordBlock(keyword: Keyword) -> Element {
   let title = keyword.title.clone();
   let blocks = keyword.blocks();
   return rsx! {
@@ -137,5 +127,5 @@ pub(crate) fn KeywordBlock(
       class: "uv-full indent",
       RulesBlockSet { blocks }
     }
-  }
+  };
 }
