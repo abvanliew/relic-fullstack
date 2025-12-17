@@ -42,7 +42,6 @@ impl GrowthTrack {
       TrainingClass::Innate => innate_growth_bonuses(),
       TrainingClass::Resonance => resonance_growth_bonuses(),
       TrainingClass::Magic => magic_growth_bonuses(),
-      _ => Vec::new(),
     })
   }
 }

@@ -17,7 +17,6 @@ pub struct ResistanceDetailsProps {
 pub enum ResistanceDisplay {
   #[default]
   Base,
-  OnlyIncluded,
 }
 
 #[component]

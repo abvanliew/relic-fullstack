@@ -5,13 +5,10 @@ mod duration;
 mod filters;
 mod target;
 
-use std::collections::HashMap;
-
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
 use crate::modifiers::prelude::*;
-use crate::path::prelude::*;
 use crate::rules::prelude::*;
 use activation::Action;
 use aspect::*;
@@ -56,7 +53,7 @@ impl Default for Skill {
 pub mod prelude {
   pub use super::activation::Action;
   pub use super::aspect::{Property, RelicOrdering, TrainingCost};
-  pub use super::component::{SkillCardLoader, SkillTermDisplay};
+  pub use super::component::SkillTermDisplay;
   pub use super::duration::Duration;
   pub use super::filters::{keywords_from_skills, partion_skills_by_cost};
   pub use super::target::Target;

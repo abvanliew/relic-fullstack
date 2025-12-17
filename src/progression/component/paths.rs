@@ -23,6 +23,7 @@ pub fn CharacterPaths(
   } else {
     path_max - path_only
   };
+  let possible_features = path_max - path_min;
   let path_options_used = selected_path_count + path_feature_count_signal();
   let path_selection_state = if path_options_used == path_max && selected_path_count >= path_min {
     SelectionState::Finished
@@ -37,7 +38,9 @@ pub fn CharacterPaths(
     SelectionState::Invalid => "errored",
   };
   rsx! {
-    div { "You must select at least one path, then you can choose up to X additional paths or gain additional features in your existing paths" }
+    div { "Each character has one or more paths that they can utilitize. A path grants a character several skills or passive boons for joining, known as the Keystone features. The majority of a path is a collection of Skills and Spells that a character can choose to learn." }
+    div { "While it is encouraged to select multiple different paths to explore the different combinations you can come up with. If you want to travel down a single path (or just not the maximum for your level) you can pick the extra features option to gain more choices from your current path(s)."
+    }
     div {
       class: "path-grid",
       ExtraFeatureSelector { feature_max, path_feature_count_signal, path_selection_state }

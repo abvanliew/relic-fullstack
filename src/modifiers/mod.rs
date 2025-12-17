@@ -1,5 +1,4 @@
 mod aggregators;
-mod dependant;
 mod display;
 mod operator;
 
@@ -69,6 +68,6 @@ pub enum ModifierClass {
 
 pub mod prelude {
   pub use super::aggregators::modifiers_from_skills;
-  pub use super::operator::{opt_max, opt_sum, Modifier, InstanceBonus, StackingBonus};
+  pub use super::operator::{opt_max, opt_sum, Modifier};
   pub use super::{ModifierClass, ModifierSet};
 }
