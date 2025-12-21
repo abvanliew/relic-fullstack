@@ -29,6 +29,7 @@ pub struct Skill {
   pub paths: Option<Vec<PathRef>>,
   pub pick_one_keyword: Option<Vec<ObjectId>>,
   pub modifiers: Option<ModifierSet>,
+  pub stacking: Option<SkillStacking>,
 }
 
 impl Default for Skill {
@@ -46,6 +47,7 @@ impl Default for Skill {
       paths: None,
       pick_one_keyword: Default::default(),
       modifiers: None,
+      stacking: None,
     }
   }
 }
@@ -55,7 +57,7 @@ pub mod prelude {
   pub use super::aspect::{Property, RelicOrdering, TrainingCost};
   pub use super::component::SkillTermDisplay;
   pub use super::duration::Duration;
-  pub use super::filters::{keywords_from_skills, partion_skills_by_cost};
+  pub use super::filters::{keywords_from_skills, partition_skills_by_cost};
   pub use super::target::Target;
   pub use super::Skill;
 }

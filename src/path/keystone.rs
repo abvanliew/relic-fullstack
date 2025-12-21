@@ -20,10 +20,10 @@ pub struct Keystone {
   pub path_half_feature: Option<bool>,
   pub resource_pool: Option<PoolModifier>,
   pub one_of: Option<Vec<Keystone>>,
-  pub spell_slot: Option<Bonus<u32>>,
-  pub cantrip_slot: Option<Bonus<u32>>,
-  pub spell_known: Option<Bonus<u32>>,
-  pub cantrip_known: Option<Bonus<u32>>,
+  pub spell_slot: Option<Bonus<i32>>,
+  pub cantrip_slot: Option<Bonus<i32>>,
+  pub spell_known: Option<Bonus<i32>>,
+  pub cantrip_known: Option<Bonus<i32>>,
 }
 
 #[component]

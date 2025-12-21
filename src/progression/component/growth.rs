@@ -1,17 +1,20 @@
 use std::cmp::min;
+use std::i32;
 
 use dioxus::prelude::*;
 
+use crate::common::*;
+use crate::progression::component::SelectionState;
 use crate::progression::{track::GrowthTrack, training::TrainingClass};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TrainingGrowthSignals {
-  pub expert: Signal<u32>,
-  pub adept: Signal<u32>,
-  pub endurance: Signal<u32>,
-  pub innate: Signal<u32>,
-  pub resonance: Signal<u32>,
-  pub magic: Signal<u32>,
+  pub expert: Signal<i32>,
+  pub adept: Signal<i32>,
+  pub endurance: Signal<i32>,
+  pub innate: Signal<i32>,
+  pub resonance: Signal<i32>,
+  pub magic: Signal<i32>,
 }
 
 impl Default for TrainingGrowthSignals {
@@ -30,22 +33,34 @@ impl Default for TrainingGrowthSignals {
 #[component]
 pub fn CharacterGrowth(
   growth_signals: TrainingGrowthSignals,
-  growth_ranks_remaining: u32,
-  level: u32,
+  growth_ranks_remaining: i32,
+  level: i32,
   #[props(default)] has_innate: bool,
   #[props(default)] has_resonance: bool,
   #[props(default)] has_magic: bool,
 ) -> Element {
   let display_training_signal: Signal<Option<TrainingClass>> = use_signal(|| None);
+  let neg_ranks = growth_ranks_remaining.checked_neg().unwrap_or( i32::MAX );
+  let ranks_state = if growth_ranks_remaining == 0 {
+    SelectionState::Finished
+  } else if growth_ranks_remaining < 0 {
+    SelectionState::Invalid
+  } else {
+    SelectionState::Unfinished
+  };
   rsx! {
     div {
       class: "grid dim-growth",
       div { 
         class: "uv-full",
-        "{growth_ranks_remaining} Remaining Ranks to spend"
+        match ranks_state {
+          SelectionState::Finished | SelectionState::Unfinished => rsx!{ "{growth_ranks_remaining} remaining ranks to spend, each category has a maximum rank of {level}." },
+          SelectionState::Invalid =>  rsx!{ "Overspent by {neg_ranks} ranks, each category has a maximum rank of {level}." }
+        }
       }
       GrowthSelector { 
         training: TrainingClass::Adept, 
+        ranks_state,
         enabled: true,
         level, 
         rank: growth_signals.adept, 
@@ -54,6 +69,7 @@ pub fn CharacterGrowth(
       }
       GrowthSelector { 
         training: TrainingClass::Endurance, 
+        ranks_state,
         enabled: true,
         level, 
         rank: growth_signals.endurance, 
@@ -62,6 +78,7 @@ pub fn CharacterGrowth(
       }
       GrowthSelector { 
         training: TrainingClass::Expert, 
+        ranks_state,
         enabled: true,
         level, 
         rank: growth_signals.expert, 
@@ -70,6 +87,7 @@ pub fn CharacterGrowth(
       }
       GrowthSelector { 
         training: TrainingClass::Innate, 
+        ranks_state,
         enabled: has_innate,
         level, 
         rank: growth_signals.innate, 
@@ -78,6 +96,7 @@ pub fn CharacterGrowth(
       }
       GrowthSelector { 
         training: TrainingClass::Resonance,
+        ranks_state,
         enabled: has_resonance,
         level, 
         rank: growth_signals.resonance, 
@@ -86,6 +105,7 @@ pub fn CharacterGrowth(
       }
       GrowthSelector { 
         training: TrainingClass::Magic,
+        ranks_state,
         enabled: has_magic,
         level,
         rank: growth_signals.magic,
@@ -99,15 +119,20 @@ pub fn CharacterGrowth(
 #[component]
 pub fn GrowthSelector(
   training: TrainingClass,
-  level: u32,
-  rank: Signal<u32>,
-  growth_ranks_remaining: u32,
+  ranks_state: SelectionState,
+  level: i32,
+  rank: Signal<i32>,
+  growth_ranks_remaining: i32,
   display_training_signal: Signal<Option<TrainingClass>>,
   enabled: bool,
 ) -> Element {
-  let max_ranks = 
-  if enabled { 
-    min( level, growth_ranks_remaining + rank() )
+  let conditional_class = match (ranks_state, enabled, rank() > 0 ) {
+    ( SelectionState::Invalid, _, true ) | (_, false, true) => "errored",
+    (_, false, _) | (SelectionState::Finished | SelectionState::Invalid, _, false) => "disabled",
+    _ => "",
+  };
+  let max_rank = if enabled { 
+    min( level, growth_ranks_remaining + rank() ).max(0)
   } else {
     0
   };
@@ -121,37 +146,17 @@ pub fn GrowthSelector(
     },
     None => (false, Some( training.clone() )),
   };
-  let conditional_class = match enabled {
-    true => "",
-    false => "disabled",
-  };
   rsx! {
     div {
-      class: "uv-rank left-cap {conditional_class}",
+      class: "uv-rank growth-selector left-cap {conditional_class}",
       onclick: move |event| {
         display_training_signal.set( new_value );
         event.stop_propagation();
       },
-      input {
-        class: "input",
-        type: "number",
-        value: rank(),
-        min: 0,
-        max: max_ranks,
-        oninput: move |event| {
-          let value = match enabled {
-            true => event.value().parse::<u32>().unwrap_or(0).min(max_ranks),
-            false => 0,
-          };
-          rank.set(value);
-        },
-        onclick: move |event| {
-          event.stop_propagation();
-        }
-      }
+      InputSignal { rank, max_rank, }
     }
     div {
-      class: "uv-title mid-cap highlight {conditional_class}",
+      class: "uv-title growth-selector mid-cap highlight {conditional_class}",
       onclick: move |event| {
         display_training_signal.set( new_value );
         event.stop_propagation();
@@ -159,7 +164,7 @@ pub fn GrowthSelector(
       "{training}"
     }
     div {
-      class: "uv-property right-cap {conditional_class}",
+      class: "uv-property growth-selector right-cap {conditional_class}",
       onclick: move |event| {
         display_training_signal.set( new_value );
         event.stop_propagation();
@@ -168,7 +173,7 @@ pub fn GrowthSelector(
     }
     if display {
       for row_rank in 1..=18 {
-        GrowthRow { training, row_rank, rank, max_ranks }
+        GrowthRow { training, row_rank, rank, max_rank }
       }
     }
   }
@@ -178,12 +183,12 @@ pub fn GrowthSelector(
 #[component]
 pub fn GrowthRow(
   training: TrainingClass,
-  row_rank: u32,
-  rank: Signal<u32>,
-  max_ranks: u32,
+  row_rank: i32,
+  rank: Signal<i32>,
+  max_rank: i32,
 ) -> Element {
   let modifiers = GrowthTrack::class_at( &training, row_rank );
-  let conditional_class = match row_rank > max_ranks {
+  let conditional_class = match row_rank > max_rank {
     true => "disabled",
     false => "",
   };

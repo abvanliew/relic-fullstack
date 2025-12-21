@@ -6,13 +6,14 @@ use super::SelectionState;
 use crate::asset::icon::{IMG_SELECTED, IMG_UNSELECTED};
 use crate::path::components::*;
 use crate::path::Path;
+use crate::common::*;
 
 #[component]
 pub fn CharacterPaths(
-  paths: Vec<Path>,
-  path_min: u32,
-  path_max: u32,
-  path_feature_count_signal: Signal<u32>,
+  path_options: Vec<Path>,
+  path_min: i32,
+  path_max: i32,
+  path_feature_count_signal: Signal<i32>,
   selected_paths: Signal<HashSet<String>>,
 ) -> Element {
   let display_path_signal: Signal<Option<String>> = use_signal(|| None);
@@ -23,7 +24,6 @@ pub fn CharacterPaths(
   } else {
     path_max - path_only
   };
-  let possible_features = path_max - path_min;
   let path_options_used = selected_path_count + path_feature_count_signal();
   let path_selection_state = if path_options_used == path_max && selected_path_count >= path_min {
     SelectionState::Finished
@@ -44,7 +44,7 @@ pub fn CharacterPaths(
     div {
       class: "path-grid",
       ExtraFeatureSelector { feature_max, path_feature_count_signal, path_selection_state }
-      for path in paths {
+      for path in path_options {
         PathSelector { path, selected_paths, path_selection_state, display_path_signal }
       }
       div {
@@ -60,8 +60,8 @@ pub fn CharacterPaths(
 
 #[component]
 pub fn ExtraFeatureSelector(
-  feature_max: u32,
-  path_feature_count_signal: Signal<u32>,
+  feature_max: i32,
+  path_feature_count_signal: Signal<i32>,
   path_selection_state: SelectionState,
 ) -> Element {
   let conditional_class = match (path_selection_state, path_feature_count_signal() > 0) {
@@ -71,19 +71,9 @@ pub fn ExtraFeatureSelector(
   rsx! {
     div {
       class: "path-card row {conditional_class}",
-      input {
-        class: "input",
-        type: "number",
-        value: path_feature_count_signal(),
-        min: 0,
-        max: feature_max,
-        oninput: move |event| {
-          let value = event.value().parse::<u32>().unwrap_or(0).min(feature_max);
-          path_feature_count_signal.set(value);
-        },
-        onclick: move |event| {
-          event.stop_propagation();
-        }
+      InputSignal {
+        rank: path_feature_count_signal,
+        max_rank: feature_max,
       }
       div { class: "italics", "Extra Features" }
     }

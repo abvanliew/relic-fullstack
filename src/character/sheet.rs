@@ -9,7 +9,7 @@ use crate::character::flow::FlowResourcesBlock;
 use crate::equipment::armor::Armor;
 use crate::equipment::weapon::{Weapon, WeaponEntry};
 use crate::keyword::prelude::*;
-use crate::path::Path;
+use crate::path::prelude::*;
 use crate::rules::components::Modifier;
 use crate::skill::component::*;
 use crate::skill::prelude::*;

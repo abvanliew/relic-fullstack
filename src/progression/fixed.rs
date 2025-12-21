@@ -1,2 +1,2 @@
-pub const MIN_LEVEL: u32 = 1;
-pub const MAX_LEVEL: u32 = 6;
+pub const MIN_LEVEL: i32 = 1;
+pub const MAX_LEVEL: i32 = 6;

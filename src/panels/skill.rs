@@ -52,15 +52,12 @@ pub fn SingleSkillPage(id: String) -> Element {
   let keyword_id_objects = skill.get_keyword_ids();
   return rsx! {
     div {
-      class: "group column",
+      class: "column gap-large", 
       SkillCard { skill, display: SkillTermDisplay::Minimal }
       match keyword_status_element {
         Some( element ) => element,
         None => rsx! {
-          div {
-            class: "block-columns",
-            KeywordSnippetsLoader { keyword_id_objects  }
-          }
+          KeywordSnippetsLoader { keyword_id_objects  }
         }
       }
     }

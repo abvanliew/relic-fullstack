@@ -12,6 +12,8 @@ impl Display for ModifierSet {
           let value = bonus.value();
           Some( match class {
             ModifierClass::HP => format!( "+{value} HP" ),
+            ModifierClass::PathFeature => format!( "Learn {value} feature from your paths" ),
+            ModifierClass::PathMinorFeature => format!( "Learn {value} minor feature from your paths" ),
             ModifierClass::CapabilityRank => format!( "+{value} Capability Ranks" ),
             ModifierClass::CapabilityMaxRank => format!( "+{value} Max Capability Ranks" ),
             ModifierClass::DefenseRank => format!( "+{value} Defense Ranks" ),
@@ -44,6 +46,8 @@ impl Display for ModifierSet {
 fn ordered_modifier_class() -> Vec<ModifierClass> {
   return vec![
     ModifierClass::HP,
+    ModifierClass::PathFeature,
+    ModifierClass::PathMinorFeature,
     ModifierClass::CapabilityRank,
     ModifierClass::CapabilityMaxRank,
     ModifierClass::DefenseRank,

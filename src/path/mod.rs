@@ -77,4 +77,6 @@ impl Ord for Path {
   }
 }
 
-pub mod prelude {}
+pub mod prelude {
+  pub use super::Path;
+}

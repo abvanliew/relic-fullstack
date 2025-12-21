@@ -6,7 +6,7 @@ use crate::keyword::prelude::KeywordClassified;
 
 use super::prelude::*;
 
-pub fn partion_skills_by_cost(skills: Vec<Skill>) -> (Vec<Skill>, Vec<Skill>, Vec<Skill>) {
+pub fn partition_skills_by_cost(skills: Vec<Skill>) -> (Vec<Skill>, Vec<Skill>, Vec<Skill>) {
   let mut keystones: Vec<Skill> = Vec::new();
   let mut features: Vec<Skill> = Vec::new();
   let mut minor_features: Vec<Skill> = Vec::new();

@@ -107,7 +107,7 @@ pub(crate) fn KeywordCard(keyword: Keyword) -> Element {
   let class = keyword.class_title();
   return rsx! {
     div {
-      class: "card-thin grid dim-keywords",
+      class: "card thin-border grid dim-keywords",
       div { class: "uv-title-property highlight", "{title}" }
       div { class: "uv-property italics", "{class}" }
       div { class: "uv-full indent",

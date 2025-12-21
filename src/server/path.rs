@@ -18,7 +18,7 @@ pub async fn list_path_skills() -> Result<Vec<Path>, ServerFnError> {
   let path_collection: Collection<Path> = client.database("relic").collection("path_skills");
   let mut results = path_collection.find(doc! {}).await?;
   let mut path_list: Vec<Path> = Vec::new();
-  let mut count: u32 = 0;
+  let mut count: i32 = 0;
   while let Some(result) = results.next().await {
     let Ok(path) = result else {
       tracing::error!("Unable to load path [{}] {:?}", count, result);
@@ -36,7 +36,7 @@ pub async fn get_path_map() -> Result<HashMap<String, Path>, ServerFnError> {
   let path_collection: Collection<Path> = client.database("relic").collection("paths_display");
   let mut results = path_collection.find(doc! {}).await?;
   let mut path_map: HashMap<String, Path> = HashMap::new();
-  let mut count: u32 = 0;
+  let mut count: i32 = 0;
   while let Some(result) = results.next().await {
     let Ok(path) = result else {
       tracing::error!("Unable to load path [{}] {:?}", count, result);

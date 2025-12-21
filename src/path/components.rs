@@ -67,7 +67,7 @@ pub fn PathPanel(path: Path, #[props(default)] hide_description: bool) -> Elemen
   let skill_ids = path.skill_ids.unwrap_or_default();
   let skills = skill_cache.from_object_ids(&skill_ids);
   let keyword_id_objects = keywords_from_skills(&skills);
-  let (keystones, features, minor_features) = partion_skills_by_cost(skills);
+  let (keystones, features, minor_features) = partition_skills_by_cost(skills);
   return rsx! {
     if !hide_description {
       div {

@@ -47,7 +47,7 @@ pub struct PathRef {
 }
 
 impl Skill {
-  pub fn minor_feature_cost(&self) -> u32 {
+  pub fn minor_feature_cost(&self) -> i32 {
     match &self.training_cost {
       TrainingCost::Inherient | TrainingCost::Keystone => 0,
       TrainingCost::Full | TrainingCost::Spell => 2,
@@ -88,4 +88,11 @@ impl Property {
     }
     return ids;
   }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+pub enum SkillStacking {
+  None,
+  Ranked,
+  Path,
 }

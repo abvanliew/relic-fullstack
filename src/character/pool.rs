@@ -93,6 +93,7 @@ pub struct ResourceCost {
   base_cost: Option<i32>,
   charge_cost: Option<i32>,
   optional: Option<bool>,
+  max_charges: Option<i32>,
 }
 
 impl ResourceCost {
@@ -109,6 +110,7 @@ impl ResourceCost {
         self.resource.to_string(),
         drain_option.clone(),
         false,
+        None,
       ));
     }
     if let Some(charge) = self.charge_cost {
@@ -117,6 +119,7 @@ impl ResourceCost {
         self.resource.to_string(),
         drain_option,
         true,
+        self.max_charges,
       ));
     }
     return components.join(" plus ");
@@ -141,17 +144,28 @@ impl fmt::Display for ResourceCost {
   }
 }
 
-fn cost_format(cost: i32, name: String, drain: Option<String>, per_charge: bool) -> String {
+fn cost_format(
+  cost: i32, 
+  name: String, 
+  drain: Option<String>, 
+  per_charge: bool,
+  max_charges: Option<i32>,
+) -> String {
   let drain_details = match &drain {
     Some(text) => format!(" ({}{})", cost, text),
     _ => "".into(),
   };
+  let charge_limit = match max_charges {
+    Some( limit ) => format!( " up to {} charges", limit  ),
+    None => "".into(),
+  };
   format!(
-    "{} {}{}{}",
+    "{} {}{}{}{}",
     cost,
     name,
     drain_details,
-    if per_charge { " per charge" } else { "" }
+    if per_charge { " per charge" } else { "" },
+    charge_limit,
   )
 }
 
@@ -159,6 +173,6 @@ fn cost_format(cost: i32, name: String, drain: Option<String>, per_charge: bool)
 #[serde(rename_all = "camelCase")]
 pub struct PoolModifier {
   pub resource: ResourcePool,
-  pub flow: Bonus<u32>,
-  pub pool: Bonus<u32>,
+  pub flow: Bonus<i32>,
+  pub pool: Bonus<i32>,
 }

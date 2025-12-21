@@ -18,7 +18,7 @@ pub async fn list_skills() -> Result<Vec<Skill>, ServerFnError> {
   let skills_collection: Collection<Skill> = client.database("relic").collection("skills_paths");
   let mut results = skills_collection.find(doc! {}).await?;
   let mut skill_list: Vec<Skill> = Vec::new();
-  let mut count: u32 = 0;
+  let mut count: i32 = 0;
   while let Some(result) = results.next().await {
     let Ok(skill) = result else {
       tracing::error!("Unable to load skill [{}] {:?}", count, result);
@@ -50,7 +50,7 @@ pub async fn get_skill_map() -> Result<HashMap<String, Skill>, ServerFnError> {
   let skills_collection: Collection<Skill> = client.database("relic").collection("skills_display");
   let mut results = skills_collection.find(doc! {}).await?;
   let mut skill_map: HashMap<String, Skill> = HashMap::new();
-  let mut count: u32 = 0;
+  let mut count: i32 = 0;
   let mut previous: Option<String> = None;
   while let Some(result) = results.next().await {
     let Ok(skill) = result else {

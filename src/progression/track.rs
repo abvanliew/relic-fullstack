@@ -4,7 +4,7 @@ use crate::{modifiers::prelude::{ModifierClass, ModifierSet}, progression::train
 pub struct LevelTrack;
 
 impl LevelTrack {
-  pub fn as_of(level: u32) -> ModifierSet {
+  pub fn as_of(level: i32) -> ModifierSet {
     let mut modifiers = ModifierSet::default();
     let max_index = usize::try_from(level).ok().unwrap_or_default();
     for i in 0..max_index {
@@ -20,7 +20,7 @@ impl LevelTrack {
 pub struct GrowthTrack;
 
 impl GrowthTrack {
-  fn as_of(rank: u32, track: ProgressTrack) -> ModifierSet {
+  fn as_of(rank: i32, track: ProgressTrack) -> ModifierSet {
     let mut modifiers = ModifierSet::default();
     let max_index = usize::try_from(rank).ok().unwrap_or_default();
     let track_len = track.len();
@@ -34,7 +34,7 @@ impl GrowthTrack {
     return modifiers;
   }
 
-  pub fn class_at(class: &TrainingClass, rank: u32) -> ModifierSet {
+  pub fn class_at(class: &TrainingClass, rank: i32) -> ModifierSet {
     return GrowthTrack::as_of(rank, match class {
       TrainingClass::Expert => expert_growth_bonuses(),
       TrainingClass::Adept => adept_growth_bonuses(),
@@ -46,7 +46,7 @@ impl GrowthTrack {
   }
 }
 
-type ProgressTrack = Vec<Vec<(ModifierClass, u32)>>;
+type ProgressTrack = Vec<Vec<(ModifierClass, i32)>>;
 
 fn level_bonuses() -> ProgressTrack {
   return vec![
