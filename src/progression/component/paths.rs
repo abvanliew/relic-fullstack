@@ -102,10 +102,13 @@ pub fn PathSelector(
   } else {
     IMG_UNSELECTED
   };
-  let conditional_class = match (path_selection_state, selected) {
-    (_, true) | (SelectionState::Unfinished, _) => "",
-    (SelectionState::Finished | SelectionState::Invalid, false) => "disabled",
-  };
+  let mut conditional_class = match (path_selection_state, selected, display) {
+    (_, true, _) | (SelectionState::Unfinished, _, _ ) => "",
+    (SelectionState::Finished | SelectionState::Invalid, false, _ ) => "disabled",
+  }.into();
+  if display {
+    conditional_class = format!( "{conditional_class} selected medium-border",  );
+  }
   let highlight_class = if display { "path-card-highlight" } else { "" };
   return rsx! {
     div {

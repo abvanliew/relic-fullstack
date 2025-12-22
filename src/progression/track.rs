@@ -52,20 +52,45 @@ fn level_bonuses() -> ProgressTrack {
   return vec![
     // Level 1
     vec![
+      (ModifierClass::HP, 30),
+      (ModifierClass::MinorFeature, 1),
       (ModifierClass::PathMin, 1),
       (ModifierClass::PathMax, 2),
       (ModifierClass::GrowthRanks, 1),
     ],
     // Level 2
-    vec![(ModifierClass::PathMax, 1), (ModifierClass::GrowthRanks, 2)],
+    vec![
+      (ModifierClass::HP, 2),
+      (ModifierClass::Feature, 1),
+      (ModifierClass::PathMax, 1), 
+      (ModifierClass::GrowthRanks, 2)
+    ],
     // Level 3
-    vec![(ModifierClass::PathMax, 1), (ModifierClass::GrowthRanks, 1)],
+    vec![
+      (ModifierClass::HP, 2),
+      (ModifierClass::MinorFeature, 1),
+      (ModifierClass::PathMax, 1), 
+      (ModifierClass::GrowthRanks, 1)
+    ],
     // Level 4
-    vec![(ModifierClass::GrowthRanks, 2)],
+    vec![
+      (ModifierClass::HP, 2),
+      (ModifierClass::Feature, 1),
+      (ModifierClass::GrowthRanks, 2)
+    ],
     // Level 5
-    vec![(ModifierClass::GrowthRanks, 1)],
+    vec![
+      (ModifierClass::HP, 2),
+      (ModifierClass::Feature, 1),
+      (ModifierClass::MinorFeature, 1),
+      (ModifierClass::GrowthRanks, 1)
+    ],
     // Level 6
-    vec![(ModifierClass::GrowthRanks, 2)],
+    vec![
+      (ModifierClass::HP, 2),
+      (ModifierClass::Feature, 1),
+      (ModifierClass::GrowthRanks, 2)
+    ],
   ];
 }
 

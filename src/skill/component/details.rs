@@ -4,7 +4,6 @@ use crate::rules::prelude::*;
 use crate::server::prelude::{KeywordCache, SkillCache};
 use crate::skill::prelude::*;
 use crate::Route;
-use crate::common::*;
 
 use dioxus::prelude::*;
 
@@ -54,7 +53,7 @@ pub fn SkillCard(
   skill: Skill,
   #[props(default)] display: SkillTermDisplay,
   #[props(default)] title_as_link: bool,
-  #[props(default)] ranked_input: Option<(Signal<i32>, i32)>,
+  #[props(default)] input: Option<Element>,
 ) -> Element {
   let id = skill.id.to_string();
   let title = skill.title.clone();
@@ -79,8 +78,8 @@ pub fn SkillCard(
     div {
       class: "card grid dim-keywords",
       div { class: "uv-title-property title nowrap gap",
-        if let Some( ( rank, max_rank ) ) = ranked_input {
-          div { InputSignal { rank, max_rank } }
+        if let Some( input_element ) = input {
+          {input_element}
         }
         div {
           if title_as_link {

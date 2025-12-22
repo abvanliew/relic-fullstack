@@ -70,24 +70,39 @@ pub enum ModifierClass {
   DefenseMaxRank,
   ExpertiseRank,
   ExpertiseMaxRank,
+  Feature,
+  MinorFeature,
   PathMin,
   PathMax,
   PathFeature,
+  PathCoreFeature,
   PathMinorFeature,
+  PathSpell,
+  PathCantrip,
   GrowthRanks,
   InnateFlow,
   InnatePool,
   InnatePoolAll,
+  AnointmentPool,
+  AnimalismPool,
+  SanguinePool,
+  RagePool,
   ResonanceFlow,
   ResonancePool,
   ResonancePoolAll,
+  MasteryPool,
+  ChannelPool,
+  KiPool,
+  VirtuosoPool,
   MagicFlow,
   MagicPool,
   MagicPoolAll,
+  MinorManaPool,
+  ModerateManaPool,
+  MajorManaPool,
 }
 
 pub mod prelude {
-  pub use super::aggregators::modifiers_from_skills;
   pub use super::operator::{opt_max, opt_sum, Modifier};
   pub use super::{ModifierClass, ModifierSet};
 }

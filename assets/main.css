@@ -125,8 +125,8 @@ p {
   padding: 8px;
   overflow: hidden;
   border-radius: 0.6rem;
-  border: 0.08rem solid var(--main-border);
-  padding: 0.4rem 0.6rem 0.6rem;
+  border: 0.1rem solid var( --main-border );
+  padding: 0.55rem 0.7rem 0.7rem;
   display: flex;
   align-items: center;
   margin: 4px 0px;
@@ -152,6 +152,10 @@ p {
 }
 
 .card-selected .card {
+  border-color: var( --selected );
+}
+
+.selected {
   border-color: var( --selected );
 }
 

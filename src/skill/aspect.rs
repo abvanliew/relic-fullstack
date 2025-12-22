@@ -54,6 +54,13 @@ impl Skill {
       TrainingCost::Half | TrainingCost::Cantrip => 1,
     }
   }
+
+  pub fn is_ranked(&self) -> bool {
+    match &self.ranked {
+      Some( true ) => true,
+      _ => false,
+    }
+  }
 }
 
 impl KeywordClassified for Skill {
@@ -90,9 +97,3 @@ impl Property {
   }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
-pub enum SkillStacking {
-  None,
-  Ranked,
-  Path,
-}

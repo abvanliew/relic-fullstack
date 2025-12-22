@@ -29,7 +29,8 @@ pub struct Skill {
   pub paths: Option<Vec<PathRef>>,
   pub pick_one_keyword: Option<Vec<ObjectId>>,
   pub modifiers: Option<ModifierSet>,
-  pub stacking: Option<SkillStacking>,
+  pub ranked: Option<bool>,
+  pub core: Option<bool>,
 }
 
 impl Default for Skill {
@@ -47,7 +48,8 @@ impl Default for Skill {
       paths: None,
       pick_one_keyword: Default::default(),
       modifiers: None,
-      stacking: None,
+      ranked: None,
+      core: None,
     }
   }
 }

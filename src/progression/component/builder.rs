@@ -8,7 +8,6 @@ use super::level::LevelSelector;
 use super::paths::CharacterPaths;
 use super::skills::{CharacterSkills, SkillSelections};
 
-use crate::progression::component::SelectionState;
 use crate::progression::track::LevelTrack;
 
 use crate::modifiers::prelude::*;
@@ -127,6 +126,9 @@ pub fn CharacterProgression() -> Element {
 
 
   rsx! {
+    div { "{level_track_modifiers:?}" }
+    div { "{modifiers:?}" }
+    div { "{path_modifiers:?}" }
     div {
       class: "row",
       LevelSelector { level_signal }
