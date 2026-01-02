@@ -13,7 +13,7 @@ pub fn CharacterPaths(
   path_options: Vec<Path>,
   path_min: i32,
   path_max: i32,
-  path_feature_count_signal: Signal<i32>,
+  extra_features_signal: Signal<i32>,
   selected_paths: Signal<HashSet<String>>,
 ) -> Element {
   let display_path_signal: Signal<Option<String>> = use_signal(|| None);
@@ -24,7 +24,7 @@ pub fn CharacterPaths(
   } else {
     path_max - path_only
   };
-  let path_options_used = selected_path_count + path_feature_count_signal();
+  let path_options_used = selected_path_count + extra_features_signal();
   let path_selection_state = if path_options_used == path_max && selected_path_count >= path_min {
     SelectionState::Finished
   } else if path_options_used > path_max {
@@ -43,7 +43,7 @@ pub fn CharacterPaths(
     }
     div {
       class: "path-grid",
-      ExtraFeatureSelector { feature_max, path_feature_count_signal, path_selection_state }
+      ExtraFeatureSelector { feature_max, extra_features_signal, path_selection_state }
       for path in path_options {
         PathSelector { path, selected_paths, path_selection_state, display_path_signal }
       }
@@ -61,10 +61,10 @@ pub fn CharacterPaths(
 #[component]
 pub fn ExtraFeatureSelector(
   feature_max: i32,
-  path_feature_count_signal: Signal<i32>,
+  extra_features_signal: Signal<i32>,
   path_selection_state: SelectionState,
 ) -> Element {
-  let conditional_class = match (path_selection_state, path_feature_count_signal() > 0) {
+  let conditional_class = match (path_selection_state, extra_features_signal() > 0) {
     (_, true) | (SelectionState::Unfinished, _) => "",
     (SelectionState::Finished | SelectionState::Invalid, false) => "disabled",
   };
@@ -72,7 +72,7 @@ pub fn ExtraFeatureSelector(
     div {
       class: "path-card row {conditional_class}",
       InputSignal {
-        rank: path_feature_count_signal,
+        rank: extra_features_signal,
         max_rank: feature_max,
       }
       div { class: "italics", "Extra Features" }

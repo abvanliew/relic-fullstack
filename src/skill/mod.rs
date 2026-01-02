@@ -5,6 +5,9 @@ mod duration;
 mod filters;
 mod target;
 
+use std::cmp::Ordering;
+use std::collections::HashSet;
+
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
@@ -26,7 +29,7 @@ pub struct Skill {
   pub action: Action,
   pub sub_actions: Option<Vec<Action>>,
   pub order: RelicOrdering,
-  pub paths: Option<Vec<PathRef>>,
+  pub paths: Option<HashSet<ObjectId>>,
   pub pick_one_keyword: Option<Vec<ObjectId>>,
   pub modifiers: Option<ModifierSet>,
   pub ranked: Option<bool>,
@@ -63,6 +66,60 @@ pub mod prelude {
   pub use super::target::Target;
   pub use super::Skill;
 }
+
+impl PartialOrd for Skill {
+  fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+    match self.tier.partial_cmp(&other.tier) {
+      Some(Ordering::Equal) => (),
+      ord => return ord,
+    }
+    match self.order.partial_cmp(&other.order) {
+      Some(Ordering::Equal) => (),
+      ord => return ord,
+    }
+    self.title.partial_cmp(&other.title)
+  }
+
+  fn lt(&self, other: &Self) -> bool {
+    matches!(self.partial_cmp(other), Some(Ordering::Less))
+  }
+
+  fn le(&self, other: &Self) -> bool {
+    matches!(
+      self.partial_cmp(other),
+      Some(Ordering::Less | Ordering::Equal)
+    )
+  }
+
+  fn gt(&self, other: &Self) -> bool {
+    matches!(self.partial_cmp(other), Some(Ordering::Greater))
+  }
+
+  fn ge(&self, other: &Self) -> bool {
+    matches!(
+      self.partial_cmp(other),
+      Some(Ordering::Greater | Ordering::Equal)
+    )
+  }
+}
+
+impl Ord for Skill {
+  fn cmp(&self, other: &Self) -> Ordering {
+    match self.tier.cmp(&other.tier) {
+      Ordering::Equal => (),
+      ord => return ord,
+    }
+    match self.order.cmp(&other.order) {
+      Ordering::Equal => (),
+      ord => return ord,
+    };
+    return self.title.cmp(&other.title);
+  }
+}
+
+
+
+
 
 // impl Ord for Skill {
 //   fn cmp(&self, other: &Self) -> Ordering {

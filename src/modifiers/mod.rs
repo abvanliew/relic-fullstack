@@ -1,5 +1,3 @@
-mod aggregators;
-mod aspect;
 mod display;
 mod operator;
 
@@ -46,18 +44,12 @@ impl ModifierSet {
     return self.0.len();
   }
 
-  pub fn split_path_modifiers(&mut self) -> ModifierSet {
-    let mut path_modifiers = ModifierSet::default();
-    let ModifierSet( ref set ) = self;
-    for (key, value) in set.iter() {
-      if !key.is_keystone_path_specific() { continue; }
-      path_modifiers.add(key, value.clone());
+  pub fn multiple( &self, multiplier: i32 ) -> Self {
+    let mut new_map = self.0.clone();
+    for value in new_map.values_mut() {
+      value.multiplier( multiplier );
     }
-    let ModifierSet( ref mut set ) = self;
-    for (key, _) in path_modifiers.0.iter() {
-      set.remove(key);
-    }
-    return path_modifiers;
+    return Self( new_map );
   }
 }
 
@@ -74,11 +66,6 @@ pub enum ModifierClass {
   MinorFeature,
   PathMin,
   PathMax,
-  PathFeature,
-  PathCoreFeature,
-  PathMinorFeature,
-  PathSpell,
-  PathCantrip,
   GrowthRanks,
   InnateFlow,
   InnatePool,

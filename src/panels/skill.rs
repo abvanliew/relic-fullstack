@@ -50,9 +50,11 @@ pub fn SingleSkillPage(id: String) -> Element {
   let KeywordCache(keyword_cache) = use_context();
   let keyword_status_element = keyword_cache.status_element();
   let keyword_id_objects = skill.get_keyword_ids();
+  let paths = skill.paths.clone();
   return rsx! {
     div {
       class: "column gap-large", 
+      div { "{paths:?}" }
       SkillCard { skill, display: SkillTermDisplay::Minimal }
       match keyword_status_element {
         Some( element ) => element,

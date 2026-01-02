@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::{
   cmp::max,
   fmt,
-  ops::{Add, AddAssign},
+  ops::{Add, AddAssign, Mul},
 };
 
 #[derive(Debug, Clone, PartialEq, Default, Deserialize, Serialize, Eq)]
@@ -16,7 +16,7 @@ where
   pub bonus: StackingBonus<T>,
 }
 
-impl<T: Add<Output = T> + Clone + Ord + Default> Modifier<T> {
+impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default> Modifier<T> {
   pub fn from_bonus(value: T) -> Self {
     Self {
       base: InstanceBonus::default(),
@@ -31,9 +31,16 @@ impl<T: Add<Output = T> + Clone + Ord + Default> Modifier<T> {
   pub fn scalar(&self) -> T {
     return self.bonus.as_opt().unwrap_or_default();
   }
+
+  pub fn multiplier(&mut self, multipler: T) {
+    self.bonus = match &self.bonus.0 {
+      Some( value ) => StackingBonus::from( value.clone() * multipler ),
+      None => StackingBonus( None ),
+    }
+  }
 }
 
-impl<T: Add<Output = T> + Clone + Ord + Default + fmt::Display> fmt::Display for Modifier<T> {
+impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default + fmt::Display> fmt::Display for Modifier<T> {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     let value = self.value();
     let scalar = self.scalar();
