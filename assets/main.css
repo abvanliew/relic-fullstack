@@ -433,9 +433,10 @@ p {
 }
 
 .horizontal-bar {
-  border-bottom: 0.02rem solid var( --main-border );
   width: 100%;
-  margin: 6px 0px 2px;
+  margin: 6px 0px;
+  height: .05rem;
+  background-color: var(--main-border);
 }
 
 .lh {

@@ -57,27 +57,31 @@ impl Default for Skill {
   }
 }
 
-pub mod prelude {
-  pub use super::activation::Action;
-  pub use super::aspect::{Property, RelicOrdering, TrainingCost};
-  pub use super::component::SkillTermDisplay;
-  pub use super::duration::Duration;
-  pub use super::filters::{keywords_from_skills, partition_skills_by_cost};
-  pub use super::target::Target;
-  pub use super::Skill;
-}
-
 impl PartialOrd for Skill {
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-    match self.tier.partial_cmp(&other.tier) {
+    match self.tier.partial_cmp( &other.tier ) {
       Some(Ordering::Equal) => (),
       ord => return ord,
     }
-    match self.order.partial_cmp(&other.order) {
+    match self.is_core().partial_cmp( &other.is_core() ) {
+      Some(Ordering::Equal) => (),
+      Some(ord) => return Some( ord.reverse() ),
+      None => return None,
+    }
+    match self.weight().partial_cmp( &other.weight() ) {
+      Some(Ordering::Equal) => (),
+      Some(ord) => return Some( ord.reverse() ),
+      None => return None,
+    }
+    match self.order.partial_cmp( &other.order ) {
       Some(Ordering::Equal) => (),
       ord => return ord,
     }
-    self.title.partial_cmp(&other.title)
+    match self.resource_cost().partial_cmp(&other.resource_cost()) {
+      Some(Ordering::Equal) => (),
+      ord => return ord,
+    }
+    return self.title.partial_cmp( &other.title );
   }
 
   fn lt(&self, other: &Self) -> bool {
@@ -117,25 +121,12 @@ impl Ord for Skill {
   }
 }
 
-
-
-
-
-// impl Ord for Skill {
-//   fn cmp(&self, other: &Self) -> Ordering {
-//     match self.tier.cmp(&other.tier) {
-//       Ordering::Equal => (),
-//       ord => return ord,
-//     }
-//     match (&self.order, &other.order) {
-//       (None, None) => (),
-//       (Some(_), None) => return Ordering::Less,
-//       (None, Some(_)) => return Ordering::Greater,
-//       (Some(self_order), Some(other_order)) => match self_order.cmp(&other_order) {
-//         Ordering::Equal => (),
-//         ord => return ord,
-//       },
-//     }
-//     return self.title.cmp(&other.title);
-//   }
-// }
+pub mod prelude {
+  pub use super::activation::Action;
+  pub use super::aspect::{Property, RelicOrdering, TrainingCost};
+  pub use super::component::SkillTermDisplay;
+  pub use super::duration::Duration;
+  pub use super::filters::{keywords_from_skills, partition_skills_by_cost};
+  pub use super::target::Target;
+  pub use super::Skill;
+}

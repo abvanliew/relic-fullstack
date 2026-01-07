@@ -59,15 +59,25 @@ pub fn PathPanelList(paths: ReadOnlySignal<Vec<Path>>) -> Element {
 }
 
 #[component]
-pub fn PathPanel(path: Path, #[props(default)] hide_description: bool) -> Element {
+pub fn PathPanel(
+  path: Path,
+  #[props(default)]
+  hide_description: bool
+) -> Element {
   let title = path.title;
   let optional_summary = path.summary;
-
   let SkillCache(skill_cache) = use_context::<SkillCache>();
   let skill_ids = path.skill_ids.unwrap_or_default();
   let skills = skill_cache.from_object_ids(&skill_ids);
   let keyword_id_objects = keywords_from_skills(&skills);
-  let (keystones, features, minor_features) = partition_skills_by_cost(skills);
+  let (
+    mut keystones,
+    mut features,
+    mut minor_features
+  ) = partition_skills_by_cost(skills);
+  keystones.sort();
+  features.sort();
+  minor_features.sort();
   return rsx! {
     if !hide_description {
       div {

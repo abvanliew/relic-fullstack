@@ -12,7 +12,6 @@ use crate::progression::track::LevelTrack;
 
 use crate::modifiers::prelude::*;
 use crate::server::prelude::*;
-// use crate::skill::prelude::*;
 use crate::path::prelude::*;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -20,6 +19,7 @@ pub enum BuilderTab {
   Paths,
   Growth,
   Skills,
+  Ranks,
 }
 
 impl fmt::Display for BuilderTab {
@@ -31,27 +31,9 @@ impl fmt::Display for BuilderTab {
         BuilderTab::Paths => "Paths",
         BuilderTab::Growth => "Growth",
         BuilderTab::Skills => "Skills",
+        BuilderTab::Ranks => "Ranks",
       }
     )
-  }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct Constraint {
-  pub path_filter: PathFilter,
-  pub selection_class: PathSelectionClass,
-  pub required_weight: i32,
-  pub overages: i32,
-}
-
-impl Default for Constraint {
-  fn default() -> Self {
-    Self {
-      path_filter: PathFilter::All,
-      selection_class: PathSelectionClass::MinorFeatures,
-      required_weight: 0,
-      overages: 0
-    }
   }
 }
 
@@ -59,19 +41,21 @@ impl Default for Constraint {
 pub struct ConstraintSet {
   pub required_weight: i32,
   pub selected_weight: i32,
+  pub overage_total: i32,
   pub leeway: i32,
+  pub filters: Vec<SelectionFilter>,
 }
 
 #[component]
 pub fn CharacterProgression() -> Element {
   let current_tab: Signal<BuilderTab> = use_signal( || BuilderTab::Paths );
   
-  let level_signal: Signal<i32> = use_signal( || 6 );
+  let level_signal: Signal<i32> = use_signal( || 1 );
   let level = level_signal();
-  let mut character_modifiers = LevelTrack::as_of(level);
+  let mut character_modifiers = LevelTrack::as_of( level );
   
-  let selected_paths: Signal<HashSet<String>> = use_signal(|| HashSet::new());
-  let extra_features_signal: Signal<i32> = use_signal(|| 0);
+  let selected_paths: Signal<HashSet<String>> = use_signal( || HashSet::new() );
+  let extra_features_signal: Signal<i32> = use_signal( || 0 );
   let path_min = character_modifiers.get( &ModifierClass::PathMin );
   let path_max = character_modifiers.get( &ModifierClass::PathMax );
   
@@ -102,95 +86,120 @@ pub fn CharacterProgression() -> Element {
   
   let mut skill_selection = SkillSelections::default();
   let mut constraints = Vec::<Constraint>::new();
-  let mut maximum_weights = 2 * extra_features_signal();
+  let mut constraint_combos = HashMap::<u64, ConstraintSet>::new();
   let mut skill_constraints = HashMap::<String, u64>::new();
+  let mut weight_budget = 0;
+  let mut selected_weights = 0;
   
   for path_id in all_path_ids {
     let Some( path ) = path_map_cache.from_id( &path_id ) else { continue; };
-    if let Some( path_selections ) = path.selections {
-      for ( class, requirement ) in path_selections {
-        let constraint_requirement = class.weight_multiplier() * requirement;
-        maximum_weights += constraint_requirement;
-        constraints.push( Constraint { 
-          path_filter: PathFilter::Single( path.id.to_string() ), 
-          selection_class: class,
-          required_weight: constraint_requirement,
-          ..Constraint::default()
-        } );
-      }
-    }
+    let ( mut path_constraints, additional_budget ) = path.selection_constraints();
+    weight_budget += additional_budget;
+    constraints.append( &mut path_constraints );
     let Some( path_skill_ids ) = path.skill_ids else { continue; };
     for skill_id in path_skill_ids {
       let Some( skill ) = skill_map_cache.from_object_id( &skill_id ) else { continue; };
       skill_selection.add_skill( &skill );
-      if skill.feature_weight() != 0 { continue; }
+      if skill.weight() != 0 { continue; }
       let Some( ref skill_modifiers ) = skill.modifiers else { continue; };
       character_modifiers.append( skill_modifiers );
     }
   }
-
-  let mut constraint_combos: HashMap<u64, ConstraintSet> = HashMap::new();
-  let mut selected_weights = 0;
-
-  let selected_skills = skill_selection.to_vec();
-
-  for skill in &selected_skills {
-    let mut skill_mask: u64 = 0;
-    let mut total_required_weight = 0;
-    for ( index, constraint ) in constraints.iter().enumerate() {
-      if !skill.is_match( &constraint.path_filter, &constraint.selection_class ) { continue; }
-      skill_mask += 1 << index;
-      total_required_weight += constraint.required_weight;
-    }
-    let ranks = *skill_selection.rank_signal.entry( skill.id.to_string() ).or_insert(use_signal(|| 0));
-    let weight = ranks() * skill.feature_weight();
-    selected_weights += weight;
-    if skill_mask == 0 { continue; }
-    let constraint_set = constraint_combos.entry( skill_mask ).or_default();
-    constraint_set.required_weight = total_required_weight;
-    constraint_set.selected_weight += weight;
-    skill_constraints.insert( skill.id.to_string(), skill_mask );
-    if ranks() == 0 { continue; }
-    let Some( ref skill_modifiers ) = skill.modifiers else { continue; };
-    skill_modifiers.multiple( ranks() );
-    character_modifiers.append( &skill_modifiers );
+  
+  let selectable_skills = skill_selection.to_vec();
+  let rank_map = (skill_selection.rank_signal)();
+  let feature_count = extra_features_signal() + character_modifiers.get( &ModifierClass::Feature );
+  if feature_count > 0 {
+    let feature_weight = 2 * feature_count;
+    constraints.push( Constraint::feature( feature_weight ) );
+    weight_budget += feature_weight;
+  }
+  let minor_feature_weights = character_modifiers.get( &ModifierClass::MinorFeature );
+  if minor_feature_weights > 0 {
+    constraints.push( Constraint::minor_feature( minor_feature_weights ) );
+    weight_budget += minor_feature_weights;
   }
   
-  maximum_weights += 2 * character_modifiers.get( &ModifierClass::Feature );
-  let minor_features_requirements = character_modifiers.get( &ModifierClass::MinorFeature );
-  if minor_features_requirements > 0 {
-    constraints.push( Constraint { required_weight: minor_features_requirements, ..Constraint::default() } );
-    maximum_weights += minor_features_requirements;
+  for ( index, constraint ) in constraints.iter().enumerate() {
+    let mask = 1 << index;
+    constraint_combos.insert(
+      mask,
+      ConstraintSet {
+        required_weight: constraint.required_weight,
+        filters: vec![ constraint.filter.clone() ],
+        ..Default::default()
+      }
+    );
+  }
+
+  for skill in &selectable_skills {
+    let mut skill_mask: u64 = 0;
+    let mut required_weight = 0;
+    let mut filters = Vec::<SelectionFilter>::new();
+    for ( index, constraint ) in constraints.iter().enumerate() {
+      if !skill.is_match( &constraint.filter ) { continue; }
+      skill_mask += 1 << index;
+      required_weight += constraint.required_weight;
+      filters.push( constraint.filter.clone() );
+    }
+    let ranks = *rank_map.get( &skill.id.to_string() ).unwrap_or( &0 );
+    let weight = ranks * skill.weight();
+    selected_weights += weight;
+    if skill_mask != 0 {
+      let constraint_set = constraint_combos.entry( skill_mask ).or_insert(
+        ConstraintSet {
+          required_weight,
+          filters,
+          ..Default::default()
+        }
+      );
+      constraint_set.selected_weight += weight;
+      skill_constraints.insert( skill.id.to_string(), skill_mask );
+    }
+    if ranks > 0 {
+      let Some( ref skill_modifiers ) = skill.modifiers else { continue; };
+      skill_modifiers.multiple( ranks );
+      character_modifiers.append( &skill_modifiers );
+    }
   }
 
   for ( index, constraint ) in constraints.iter_mut().enumerate() {
     let constraint_mask: u64 = 1 << index;
     let mut constrained_weight: i32 = 0;
-    for ( combo_mask, combo_constraint ) in constraint_combos.iter() {
+    for ( combo_mask, combo_constraint ) in constraint_combos.iter_mut() {
       if constraint_mask & combo_mask == 0 { continue; }
-      constrained_weight += ( 
+      let constraint_net = ( 
         combo_constraint.selected_weight 
         - combo_constraint.required_weight 
-        + constraint.required_weight )
-        .max( 0 );
+        + constraint.required_weight
+      )
+      .max( 0 );
+      constrained_weight += constraint_net;
+      combo_constraint.overage_total += constraint_net;
     }
     constraint.overages = constrained_weight;
   }
   
-  let remaining_weight = maximum_weights - selected_weights;
+  let remaining_weight = weight_budget - selected_weights;
   skill_selection.remaining_weight = remaining_weight;
-
+  
   for ( combo_mask, combo_constraint ) in constraint_combos.iter_mut() {
-    let mut total_overages = 0;
+    let mut total_constraint_overages = 0;
     for ( index, constraint ) in constraints.iter().enumerate() {
       let constraint_mask: u64 = 1 << index;
       if constraint_mask & combo_mask == 0 { continue; }
-      total_overages += constraint.overages;
+      total_constraint_overages += constraint.overages;
     }
-    combo_constraint.leeway = ( combo_constraint.required_weight - total_overages - combo_constraint.selected_weight )
+    combo_constraint.leeway = ( 
+      combo_constraint.required_weight 
+      - combo_constraint.selected_weight
+      - total_constraint_overages 
+      + combo_constraint.overage_total
+    )
     .min( remaining_weight );
   }
   
+  // let skill_debug = skill_constraints.clone();
   for ( skill_id, mask ) in skill_constraints {
     let Some( constraint_set ) = constraint_combos.get( &mask ) else { continue; };
     skill_selection.leeway.insert( skill_id, constraint_set.leeway );
@@ -200,22 +209,30 @@ pub fn CharacterProgression() -> Element {
   let has_resonance = character_modifiers.contains_key( &ModifierClass::ResonanceFlow );
   let has_magic = character_modifiers.contains_key( &ModifierClass::MagicFlow );
   
-
-  let (x, y) =  skill_selection.to_split_vec();
-  // let growth_selection_state = match (
-  //   !has_innate && (growth_signals.innate)() > 0,
-  //   !has_resonance && (growth_signals.resonance)() > 0,
-  //   !has_magic && (growth_signals.magic)() > 0,
-  //   growth_ranks_remaining < 0,
-  //   growth_ranks_remaining == 0,
-  // ) {
-  //   ( true, _, _, _, _ ) |
-  //   ( _, true, _, _, _ ) |
-  //   ( _, _, true, _, _ ) |
-  //   ( _, _, _, true, _ ) => SelectionState::Invalid,
-  //   ( _, _, _, _, true ) => SelectionState::Finished,
-  //   _ => SelectionState::Unfinished
-  // };
+  let mut core_constraints: Vec<String> = Vec::new();
+  for ( index, constraint ) in constraints.iter().enumerate() {
+    let mask = 1 << index;
+    let Some( combo_constraint ) = constraint_combos.get( &mask ) else { continue; };
+    let filter = &constraint.filter;
+    let filter_name = match &filter.path_filter {
+      PathFilter::All => "any path".into(),
+      PathFilter::Single( path_id ) => {
+        match path_map_cache.from_id( &path_id ) {
+          Some( path ) => path.title,
+          None => "undefined path".into(),
+        }
+      },
+    };
+    let ranks = combo_constraint.leeway / filter.skill_filter.weight();
+    let skill_name = filter.skill_filter.to_string();
+    core_constraints.push( format!( "At least {} {} from {}",ranks, skill_name, filter_name ) );
+  }
+  
+  // 
+  // for ( index, constraint ) in constraints.iter().enumerate() {
+  //   let mask = 1 << index;
+  //   let Some(x) = constraint_combos.get(&mask)
+  // }
   
   rsx! {
     div {
@@ -224,17 +241,17 @@ pub fn CharacterProgression() -> Element {
       TabSelector { tab: BuilderTab::Paths, current_tab }
       TabSelector { tab: BuilderTab::Growth, current_tab }
       TabSelector { tab: BuilderTab::Skills, current_tab }
+      TabSelector { tab: BuilderTab::Ranks, current_tab }
     }
-    // div { "{selected_skills:?}" }
-    div { "{constraints:?}" }
-    div { "{constraint_combos:?}" }
-    div { "{skill_selection.rank_signal:?}" }
-    for k in x {
-      div { "{k.title:?}" }
-    }
-    for k in y {
-      div { "{k.title:?}" }
-    }
+    // for (id, mask) in skill_debug {
+    //   div { "{id}: {mask}" }
+    // }
+    // for constraint in constraints {
+    //   div { "{constraint:?}" }
+    // }
+    // for constraint in constraint_combos {
+    //   div { "{constraint:?}" }
+    // }
     match current_tab() {
       BuilderTab::Paths =>rsx! {
         CharacterPaths {
@@ -247,7 +264,10 @@ pub fn CharacterProgression() -> Element {
         }
       },
       BuilderTab::Skills =>rsx! {
-        CharacterSkills { skill_selection }
+        CharacterSkills { skill_selection, core_constraints }
+      },
+      BuilderTab::Ranks =>rsx! {
+        
       },
     }
   }

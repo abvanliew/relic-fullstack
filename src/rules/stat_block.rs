@@ -36,7 +36,7 @@ pub fn StatBlockSnippet(stats: StatBlock) -> Element {
   let resistances_opt = stats.resistances;
   return rsx! {
     div {
-      class: "uv-full grid dim-forths gap-2xlarge",
+      class: "uv-full grid dim-forths bumper gap-2xlarge",
       div {
         class: "column",
         div { class: "highlight underline", "Capabilites" }

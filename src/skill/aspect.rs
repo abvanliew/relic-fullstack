@@ -1,6 +1,6 @@
 use super::Skill;
 use crate::keyword::prelude::*;
-use crate::path::prelude::{PathFilter, PathSelectionClass};
+use crate::path::prelude::*;
 use crate::rules::prelude::*;
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
@@ -48,14 +48,18 @@ pub struct PathRef {
 }
 
 impl Skill {
-  pub fn feature_weight(&self) -> i32 {
+  pub fn weight(&self) -> i32 {
     match &self.training_cost {
-      TrainingCost::Inherient | TrainingCost::Keystone => 0,
       TrainingCost::Full | TrainingCost::Spell => 2,
       TrainingCost::Half | TrainingCost::Cantrip => 1,
+      TrainingCost::Inherient | TrainingCost::Keystone => 0,
     }
   }
-
+  
+  pub fn resource_cost(&self) -> i32 {
+    self.action.get_minimum_resource_cost()
+  }
+  
   pub fn is_ranked(&self) -> bool {
     match &self.ranked {
       Some( true ) => true,
@@ -63,14 +67,17 @@ impl Skill {
     }
   }
 
-  pub fn is_match( &self, path_filter: &PathFilter, selection_class: &PathSelectionClass ) -> bool {
-    if !self.is_path_match( path_filter ) { return false }
-    return self.is_selection_match( selection_class );
+  pub fn is_core( &self ) -> bool {
+    return self.core.unwrap_or_default();
   }
-
+  
+  pub fn is_match( &self, filter: &SelectionFilter ) -> bool {
+    return self.is_path_match( &filter.path_filter ) && self.is_skill_match( &filter.skill_filter );
+  }
+  
   pub fn is_path_match( &self, path_filter: &PathFilter ) -> bool {
     return match ( path_filter, &self.paths ) {
-      ( PathFilter::All, _ ) => { true },
+      ( PathFilter::All, _ ) => true,
       ( PathFilter::Single( path_id ), Some( paths) ) => {
         for path in paths.iter() {
           if path.to_string().eq( path_id ) {
@@ -79,38 +86,34 @@ impl Skill {
         }
         false
       },
-      ( PathFilter::Single( _ ), _ ) => { false },
+      ( PathFilter::Single( _ ), _ ) => false,
     }
   }
-
-  pub fn is_selection_match( &self, selection_class: &PathSelectionClass ) -> bool {
-    match ( selection_class, &self.training_cost, &self.core ) {
+  
+  pub fn is_skill_match( &self, skill_filter: &SkillFilter ) -> bool {
+    return match ( skill_filter, &self.training_cost, &self.is_core() ) {
       (
-        PathSelectionClass::Features, 
-        TrainingCost::Full | TrainingCost::Half | TrainingCost::Spell | TrainingCost::Cantrip, 
-        _
+        SkillFilter::Features, 
+        TrainingCost::Full | TrainingCost::Spell | TrainingCost::Half | TrainingCost::Cantrip, 
+        _,
       ) | ( 
-        PathSelectionClass::MinorFeatures, 
+        SkillFilter::MinorFeatures, 
         TrainingCost::Half | TrainingCost::Cantrip,
-        _  
+        _,
       ) | (
-        PathSelectionClass::CoreFeatures, 
-        TrainingCost::Full | TrainingCost::Half | TrainingCost::Spell | TrainingCost::Cantrip, 
-        Some( true ),
+        SkillFilter::CoreFeatures, 
+        TrainingCost::Full | TrainingCost::Spell | TrainingCost::Half | TrainingCost::Cantrip, 
+        true,
       ) | (
-        PathSelectionClass::CoreMinorFeatures, 
+        SkillFilter::CoreMinorFeatures, 
         TrainingCost::Half | TrainingCost::Cantrip, 
-        Some( true ),
+        true,
       ) | (
-        PathSelectionClass::Spells, 
-        TrainingCost::Spell | TrainingCost::Cantrip, 
-        _,
+        SkillFilter::Spells, TrainingCost::Spell, _,
       ) | (
-        PathSelectionClass::Cantrips, 
-        TrainingCost::Cantrip, 
-        _,
-      ) => { return true },
-      _ => { return false },
+        SkillFilter::Cantrips, TrainingCost::Cantrip, _,
+      ) => true,
+      _ => false,
     }
   }
 }

@@ -56,6 +56,7 @@ impl ModifierSet {
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Eq, Hash)]
 pub enum ModifierClass {
   HP,
+  AttributeRank,
   CapabilityRank,
   CapabilityMaxRank,
   DefenseRank,

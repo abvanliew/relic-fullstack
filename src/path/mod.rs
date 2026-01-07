@@ -6,7 +6,7 @@ use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use selection::PathSelectionClass;
+use selection::SkillFilter;
 
 use crate::rules::prelude::*;
 use crate::skill::prelude::*;
@@ -22,7 +22,7 @@ pub struct Path {
   pub skill_ids: Option<Vec<ObjectId>>,
   pub inherient: Option<bool>,
   pub order: Option<RelicOrdering>,
-  pub selections: Option<HashMap<PathSelectionClass, i32>>,
+  pub selections: Option<HashMap<SkillFilter, i32>>,
 }
 
 impl PartialOrd for Path {
@@ -82,5 +82,5 @@ impl Ord for Path {
 
 pub mod prelude {
   pub use super::Path;
-  pub use super::selection::{PathSelectionClass, PathFilter};
+  pub use super::selection::{SkillFilter, PathFilter, SelectionFilter, Constraint};
 }
