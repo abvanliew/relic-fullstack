@@ -7,6 +7,8 @@ use crate::Route;
 
 use dioxus::prelude::*;
 
+const INCREMENT: f64 = 4.0;
+
 #[derive(Debug, Clone, Copy, PartialEq, Default, Eq)]
 pub enum SkillTermDisplay {
   #[default]
@@ -54,6 +56,8 @@ pub fn SkillCard(
   #[props(default)] display: SkillTermDisplay,
   #[props(default)] title_as_link: bool,
   #[props(default)] input: Option<Element>,
+  #[props(default)] on_click: Option<EventHandler<MouseEvent>>,
+  #[props(default)] additional_classes: Option<String>,
 ) -> Element {
   let id = skill.id.to_string();
   let title = skill.title.clone();
@@ -74,9 +78,36 @@ pub fn SkillCard(
       ))
     }
   };
+
+  let mut element_data: Signal<Option<std::rc::Rc<MountedData>>> = use_signal(|| None);
+  let rect_future = use_resource( move || async move {
+    match element_data() {
+      Some( x) => { Some( x.get_client_rect().await ) },
+      None => None,
+    }
+  } );
+  let height = match &*rect_future.read_unchecked() {
+    Some( Some( Ok( x ) ) ) => x.height(),
+    _ => 0.0,
+  };
+  let span_style = if height < INCREMENT {
+    "".into()
+  } else {
+    let spans = ( ( height + 16.0 ) / INCREMENT ).ceil() as i32;
+    format!( "grid-row: span {};", spans )
+  };
+
+  let extra_class = match additional_classes {
+    Some( class ) => class,
+    None => "".into(),
+  };
+
   rsx!(
     div {
-      class: "card grid dim-keywords",
+      class: "card grid dim-keywords {extra_class}",
+      style: span_style,
+      onmounted: move |element| element_data.set( Some( element.data() ) ),
+      onclick: move |e| { if let Some(handler) = on_click.as_ref() { handler.call(e); } },
       div { class: "uv-title-property title nowrap gap",
         if let Some( input_element ) = input {
           {input_element}

@@ -63,11 +63,11 @@ impl PartialOrd for Skill {
       Some(Ordering::Equal) => (),
       ord => return ord,
     }
-    match self.is_core().partial_cmp( &other.is_core() ) {
-      Some(Ordering::Equal) => (),
-      Some(ord) => return Some( ord.reverse() ),
-      None => return None,
-    }
+    // match self.is_core().partial_cmp( &other.is_core() ) {
+    //   Some(Ordering::Equal) => (),
+    //   Some(ord) => return Some( ord.reverse() ),
+    //   None => return None,
+    // }
     match self.weight().partial_cmp( &other.weight() ) {
       Some(Ordering::Equal) => (),
       Some(ord) => return Some( ord.reverse() ),

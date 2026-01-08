@@ -147,24 +147,18 @@ p {
   padding: 0.4rem 0.55rem 0.55rem;
 }
 
-.card-no-border .card {
-  border-width: 0px;
-}
-
-.card-selected .card {
-  border-color: var( --selected );
-}
-
 .selected {
   border-color: var( --selected );
 }
 
 .block-columns {
-  display: block;
+  /* display: block;
   column-fill: balance;
   column-count: auto;
-  column-width: 600px;
+  column-width: 600px; */
   column-gap: 20px;
+  display: grid;
+  grid-template-columns: repeat( auto-fit, 600px);
 }
 
 .block-columns > * {

@@ -50,8 +50,12 @@ pub fn CharacterSkills(
 ) -> Element {
   let skills = skill_selection.to_vec();
   rsx! {
-    for core in core_constraints {
-      div { "{core}" }
+    div { "You can select the following skills. You can pick two minor features in place of a normal feature." }
+    ul {
+      class: "underhang",
+      for core in core_constraints {
+        li { "{core}" }
+      }
     }
     div {
       class: "block-columns",
@@ -85,7 +89,7 @@ pub fn SkillSelector(
     max_rank = max_rank.min(1);
   }
   let conditional_class = match (selected, rank >= max_rank) {
-    ( true, _ ) => "card-selected",
+    ( true, _ ) => "selected",
     ( _, true ) => "disabled",
     _ => "",
   };
@@ -115,29 +119,29 @@ pub fn SkillSelector(
       }
     } ),
   };
+
+  let on_click = move |_: Event<MouseData>| {
+    if ranked { return; }
+      let new_id = toggle_id.clone();
+      let mut new_map = toggle_map.clone();
+      match selected {
+        true => {
+          new_map.insert( new_id, 0 );
+        },
+        false => {
+          if max_rank <= 0 { return; }
+          new_map.insert( new_id, 1 );
+        },
+      };
+      skill_selection.rank_signal.set( new_map );
+    };
   rsx! {
-    div {
-      class: "max-content {conditional_class}",
-      onclick: move |_| {
-        if ranked { return; }
-        let new_id = toggle_id.clone();
-        let mut new_map = toggle_map.clone();
-        match selected {
-          true => {
-            new_map.insert( new_id, 0 );
-          },
-          false => {
-            if max_rank <= 0 { return; }
-            new_map.insert( new_id, 1 );
-          },
-        };
-        skill_selection.rank_signal.set( new_map );
-      },
       SkillCard {
         skill,
         display: SkillTermDisplay::Embeded,
         input: ranked_input,
+        on_click: Some(EventHandler::new(on_click)),
+        additional_classes: conditional_class,
       }
-    }
   }
 }

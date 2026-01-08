@@ -199,7 +199,6 @@ pub fn CharacterProgression() -> Element {
     .min( remaining_weight );
   }
   
-  // let skill_debug = skill_constraints.clone();
   for ( skill_id, mask ) in skill_constraints {
     let Some( constraint_set ) = constraint_combos.get( &mask ) else { continue; };
     skill_selection.leeway.insert( skill_id, constraint_set.leeway );
@@ -215,7 +214,7 @@ pub fn CharacterProgression() -> Element {
     let Some( combo_constraint ) = constraint_combos.get( &mask ) else { continue; };
     let filter = &constraint.filter;
     let filter_name = match &filter.path_filter {
-      PathFilter::All => "any path".into(),
+      PathFilter::All => "any Path".into(),
       PathFilter::Single( path_id ) => {
         match path_map_cache.from_id( &path_id ) {
           Some( path ) => path.title,
@@ -223,16 +222,11 @@ pub fn CharacterProgression() -> Element {
         }
       },
     };
-    let ranks = combo_constraint.leeway / filter.skill_filter.weight();
+    let max_rank = constraint.required_weight / filter.skill_filter.weight();
+    let ranks = max_rank - combo_constraint.leeway / filter.skill_filter.weight();
     let skill_name = filter.skill_filter.to_string();
-    core_constraints.push( format!( "At least {} {} from {}",ranks, skill_name, filter_name ) );
+    core_constraints.push( format!( "{}/{} {} from {}", ranks, max_rank, skill_name, filter_name ) );
   }
-  
-  // 
-  // for ( index, constraint ) in constraints.iter().enumerate() {
-  //   let mask = 1 << index;
-  //   let Some(x) = constraint_combos.get(&mask)
-  // }
   
   rsx! {
     div {
@@ -243,15 +237,6 @@ pub fn CharacterProgression() -> Element {
       TabSelector { tab: BuilderTab::Skills, current_tab }
       TabSelector { tab: BuilderTab::Ranks, current_tab }
     }
-    // for (id, mask) in skill_debug {
-    //   div { "{id}: {mask}" }
-    // }
-    // for constraint in constraints {
-    //   div { "{constraint:?}" }
-    // }
-    // for constraint in constraint_combos {
-    //   div { "{constraint:?}" }
-    // }
     match current_tab() {
       BuilderTab::Paths =>rsx! {
         CharacterPaths {

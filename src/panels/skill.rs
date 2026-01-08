@@ -71,7 +71,8 @@ pub fn SkillsPage() -> Element {
   if let Some(element) = skill_cache.status_element() {
     return element;
   }
-  let skills = skill_cache.into_vec();
+  let mut skills = skill_cache.into_vec();
+  skills.sort();
   return rsx! {
     SkillCardList { skills, title_as_link: true }
   };
