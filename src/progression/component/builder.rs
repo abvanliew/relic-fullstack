@@ -7,8 +7,10 @@ use super::growth::{CharacterGrowth, TrainingGrowthSignals};
 use super::level::LevelSelector;
 use super::paths::CharacterPaths;
 use super::skills::{CharacterSkills, SkillSelections};
+use super::ranks::{CharacterRanks, RankSelections};
 
-use crate::progression::track::LevelTrack;
+use crate::progression::track::{LevelTrack, GrowthTrack};
+use crate::progression::training::TrainingClass;
 
 use crate::modifiers::prelude::*;
 use crate::server::prelude::*;
@@ -17,9 +19,8 @@ use crate::path::prelude::*;
 #[derive(Debug, Clone, PartialEq)]
 pub enum BuilderTab {
   Paths,
-  Growth,
   Skills,
-  Ranks,
+  Attributes,
 }
 
 impl fmt::Display for BuilderTab {
@@ -29,9 +30,8 @@ impl fmt::Display for BuilderTab {
       "{}",
       match self {
         BuilderTab::Paths => "Paths",
-        BuilderTab::Growth => "Growth",
         BuilderTab::Skills => "Skills",
-        BuilderTab::Ranks => "Ranks",
+        BuilderTab::Attributes => "Attributes",
       }
     )
   }
@@ -48,9 +48,9 @@ pub struct ConstraintSet {
 
 #[component]
 pub fn CharacterProgression() -> Element {
-  let current_tab: Signal<BuilderTab> = use_signal( || BuilderTab::Paths );
+  let current_tab: Signal<BuilderTab> = use_signal( || BuilderTab::Attributes );
   
-  let level_signal: Signal<i32> = use_signal( || 1 );
+  let level_signal: Signal<i32> = use_signal( || 6 );
   let level = level_signal();
   let mut character_modifiers = LevelTrack::as_of( level );
   
@@ -73,6 +73,24 @@ pub fn CharacterProgression() -> Element {
     + (growth_signals.resonance)()
     + (growth_signals.magic)();
   let growth_ranks_remaining = growth_ranks_maximum - growth_ranks_selected;
+  character_modifiers.append( &GrowthTrack::class_at(
+    &TrainingClass::Adept, (growth_signals.adept)()
+  ) );
+  character_modifiers.append( &GrowthTrack::class_at(
+    &TrainingClass::Endurance, (growth_signals.endurance)()
+  ) );
+  character_modifiers.append( &GrowthTrack::class_at(
+    &TrainingClass::Expert, (growth_signals.expert)()
+  ) );
+  character_modifiers.append( &GrowthTrack::class_at(
+    &TrainingClass::Innate, (growth_signals.innate)()
+  ) );
+  character_modifiers.append( &GrowthTrack::class_at(
+    &TrainingClass::Resonance, (growth_signals.resonance)()
+  ) );
+  character_modifiers.append( &GrowthTrack::class_at(
+    &TrainingClass::Magic, (growth_signals.magic)()
+  ) );
   
   let mut all_path_ids = path_map_cache.into_vec().iter()
   .filter_map( |path|
@@ -158,8 +176,8 @@ pub fn CharacterProgression() -> Element {
     }
     if ranks > 0 {
       let Some( ref skill_modifiers ) = skill.modifiers else { continue; };
-      skill_modifiers.multiple( ranks );
-      character_modifiers.append( &skill_modifiers );
+      let ranked_modifier = skill_modifiers.multiple( ranks );
+      character_modifiers.append( &ranked_modifier );
     }
   }
 
@@ -227,15 +245,20 @@ pub fn CharacterProgression() -> Element {
     let skill_name = filter.skill_filter.to_string();
     core_constraints.push( format!( "{}/{} {} from {}", ranks, max_rank, skill_name, filter_name ) );
   }
-  
+
+  let rank_selections = RankSelections::default();
+  let min_rank = 0;
+  let max_rank = character_modifiers.get( &ModifierClass::RankMax );
+  let attribute_ranks = character_modifiers.get( &ModifierClass::AttributeRank );
+  let capability_max_ranks = character_modifiers.get( &ModifierClass::CapabilityMaxRank );
+  let defense_max_ranks = character_modifiers.get( &ModifierClass::DefenseMaxRank );
   rsx! {
     div {
       class: "row",
       LevelSelector { level_signal }
       TabSelector { tab: BuilderTab::Paths, current_tab }
-      TabSelector { tab: BuilderTab::Growth, current_tab }
       TabSelector { tab: BuilderTab::Skills, current_tab }
-      TabSelector { tab: BuilderTab::Ranks, current_tab }
+      TabSelector { tab: BuilderTab::Attributes, current_tab }
     }
     match current_tab() {
       BuilderTab::Paths =>rsx! {
@@ -243,16 +266,18 @@ pub fn CharacterProgression() -> Element {
           path_options, path_min, path_max, extra_features_signal, selected_paths
         }
       },
-      BuilderTab::Growth =>rsx! {
-        CharacterGrowth {
-          growth_ranks_remaining, has_innate, has_resonance, has_magic, level, growth_signals
-        }
-      },
       BuilderTab::Skills =>rsx! {
         CharacterSkills { skill_selection, core_constraints }
       },
-      BuilderTab::Ranks =>rsx! {
-        
+      BuilderTab::Attributes =>rsx! {
+        CharacterGrowth {
+          growth_ranks_remaining, has_innate, has_resonance, has_magic, level, growth_signals
+        }
+        CharacterRanks {
+          rank_selections, min_rank, max_rank, attribute_ranks,
+          capability_max_ranks,
+          defense_max_ranks,
+        }
       },
     }
   }

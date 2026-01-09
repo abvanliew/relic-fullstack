@@ -1,7 +1,7 @@
 use crate::common::HorizontalBar;
 use crate::keyword::prelude::*;
 use crate::rules::prelude::*;
-use crate::server::prelude::{KeywordCache, SkillCache};
+use crate::server::prelude::*;
 use crate::skill::prelude::*;
 use crate::Route;
 
@@ -68,14 +68,17 @@ pub fn SkillCard(
   let opt_sub_actions = skill.sub_actions.clone();
   let KeywordCache(keyword_cache) = use_context();
   let selectable_keyword_ids = skill.pick_one_keyword.clone().unwrap_or_default();
-  let selectable_keywords = keyword_cache.from_object_ids(&selectable_keyword_ids);
+  let mut selectable_keywords = keyword_cache.from_object_ids(&selectable_keyword_ids);
+  selectable_keywords.sort();
   let keywords_optional = match &display {
     SkillTermDisplay::Minimal => None,
     SkillTermDisplay::Embeded => {
       let keyword_object_ids = skill.get_keyword_ids();
-      Some(rules_specific(
-        keyword_cache.from_object_ids(&Vec::from_iter(keyword_object_ids)),
-      ))
+      let mut unsorted_keywords = rules_specific(
+        keyword_cache.from_object_ids(&Vec::from_iter(keyword_object_ids))
+      );
+      unsorted_keywords.sort();
+      Some(unsorted_keywords)
     }
   };
 

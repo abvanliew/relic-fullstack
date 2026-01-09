@@ -4,19 +4,21 @@ mod filter;
 mod tense;
 mod term;
 
+use std::cmp::Ordering;
+
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
 use crate::rules::prelude::*;
 use internal::*;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Keyword {
   #[serde(rename = "_id")]
   pub id: ObjectId,
   pub title: String,
-  pub class: Option<KeywordClass>,
+  pub class: KeywordClass,
   pub blurb: Option<String>,
   pub rules: Option<Vec<Snippet>>,
   pub tenses: Option<Tenses>,
@@ -32,6 +34,26 @@ impl Default for Keyword {
       rules: Default::default(),
       tenses: Default::default(),
     }
+  }
+}
+
+impl PartialOrd for Keyword {
+  fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+    match self.class.partial_cmp(&other.class) {
+      Some(core::cmp::Ordering::Equal) => {}
+      ord => return ord,
+    }
+    self.title.partial_cmp(&other.title)
+  }
+}
+
+impl Ord for Keyword {
+  fn cmp(&self, other: &Self) -> Ordering {
+    match self.class.cmp( &other.class ) {
+      Ordering::Equal => {},
+      ord => return ord,
+    }
+    self.title.cmp( &other.title )
   }
 }
 

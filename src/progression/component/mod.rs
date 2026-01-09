@@ -2,7 +2,7 @@ mod builder;
 mod growth;
 mod level;
 mod paths;
-mod ranks;
+pub mod ranks;
 mod skills;
 
 pub use builder::CharacterProgression;

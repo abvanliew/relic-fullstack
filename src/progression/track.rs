@@ -56,6 +56,7 @@ fn level_bonuses() -> ProgressTrack {
       (ModifierClass::MinorFeature, 1),
       (ModifierClass::PathMin, 1),
       (ModifierClass::PathMax, 2),
+      (ModifierClass::RankMax, 5),
       (ModifierClass::AttributeRank, 17),
       (ModifierClass::GrowthRanks, 1),
     ],
@@ -79,6 +80,7 @@ fn level_bonuses() -> ProgressTrack {
     vec![
       (ModifierClass::HP, 2),
       (ModifierClass::Feature, 1),
+      (ModifierClass::RankMax, 1),
       (ModifierClass::AttributeRank, 1),
       (ModifierClass::GrowthRanks, 2)
     ],
@@ -105,7 +107,7 @@ fn adept_growth_bonuses() -> ProgressTrack {
     // Rank 1
     vec![(ModifierClass::HP, 1)],
     // Rank 2
-    vec![(ModifierClass::HP, 1), (ModifierClass::CapabilityRank, 1)],
+    vec![(ModifierClass::HP, 1), (ModifierClass::AttributeRank, 1)],
     // Rank 3
     vec![(ModifierClass::HP, 1), (ModifierClass::CapabilityMaxRank, 1)],
   ];
@@ -116,7 +118,7 @@ fn endurance_growth_bonuses() -> ProgressTrack {
     // Rank 1
     vec![(ModifierClass::HP, 2)],
     // Rank 2
-    vec![(ModifierClass::HP, 2), (ModifierClass::DefenseRank, 1)],
+    vec![(ModifierClass::HP, 2), (ModifierClass::AttributeRank, 1)],
     // Rank 3
     vec![(ModifierClass::HP, 2), (ModifierClass::DefenseMaxRank, 1)],
   ];

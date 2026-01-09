@@ -11,9 +11,6 @@ impl Keyword {
   }
 
   pub fn class_title(&self) -> String {
-    match &self.class {
-      Some(class) => class.to_string(),
-      None => "".into(),
-    }
+    self.class.to_string()
   }
 }

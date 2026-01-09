@@ -38,8 +38,13 @@ pub fn CharacterPaths(
     SelectionState::Invalid => "errored",
   };
   rsx! {
-    div { "Each character has one or more paths that they can utilitize. A path grants a character several skills or passive boons for joining, known as the Keystone features. The majority of a path is a collection of Skills and Spells that a character can choose to learn." }
-    div { "While it is encouraged to select multiple different paths to explore the different combinations you can come up with. If you want to travel down a single path (or just not the maximum for your level) you can pick the extra features option to gain more choices from your current path(s)."
+    div {
+      class: "underhang",
+      "Each character has one or more paths that they can utilitize. A path grants a character several skills or passive boons for joining, known as the Keystone features. The majority of a path is a collection of Skills and Spells that a character can choose to learn."
+    }
+    div {
+      class: "underhang",
+      "While it is encouraged to select multiple different paths to explore the different combinations you can come up with. If you want to travel down a single path (or just not the maximum for your level) you can pick the extra features option to gain more choices from your current path(s)."
     }
     div {
       class: "path-grid",

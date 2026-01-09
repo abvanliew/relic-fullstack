@@ -298,6 +298,10 @@ p {
   grid-template-columns: repeat( 4, 1fr );
 }
 
+.dim-quad {
+  grid-template-columns: repeat( 4, max-content );
+}
+
 .uv-title { 
   grid-column: title;
 }
@@ -307,6 +311,7 @@ p {
 .uv-property { grid-column: property; }
 
 .uv-full { grid-column: 1 / -1; }
+.uv-second { grid-column-start: 2; }
 .uv-after-title { grid-column: title-end / end; }
 .uv-title-property { grid-column: title / property; }
 
@@ -414,6 +419,10 @@ p {
   border-top-left-radius: 0rem;
   border-bottom-left-radius: 0rem;
   border-left: 0px;
+}
+
+.growth-selector.right-cap {
+  width: 600px;
 }
 
 .min-height {

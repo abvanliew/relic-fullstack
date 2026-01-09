@@ -3,13 +3,14 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, PartialOrd, Ord, Eq, Clone, Default)]
 pub enum KeywordClass {
+  CoreRule,
+  Attribute,
+  #[default]
   Classifier,
   Term,
   Condition,
-  Attribute,
-  CoreRule,
 }
 
 impl fmt::Display for KeywordClass {
