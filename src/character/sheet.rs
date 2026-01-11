@@ -205,19 +205,14 @@ pub fn SheetDetails(
   )
 }
 
-#[derive(PartialEq, Props, Clone)]
-pub struct AttributeRowProps {
+#[component]
+pub fn AttributeRow(
   name: String,
-  element: Element,
+  children: Element,
   #[props(default)]
   name_class: Option<String>,
-}
-
-#[component]
-pub fn AttributeRow(props: AttributeRowProps) -> Element {
-  let name = props.name;
-  let element = props.element;
-  let name_class = props.name_class.unwrap_or("highlight".into());
+) -> Element {
+  let name_class = name_class.unwrap_or("highlight".into());
   rsx!(
     div {
       class: "row full",
@@ -227,7 +222,7 @@ pub fn AttributeRow(props: AttributeRowProps) -> Element {
       }
       div {
         class: "align-right",
-        { element }
+        { children }
       }
     }
   )
@@ -266,19 +261,19 @@ pub fn AttributeBlock(attributes: AttributeRanks, dodge: i32) -> Element {
       div { class: "subheading", "Capabilites" }
       AttributeRow {
         name: "Physique",
-        element: rsx!( Modifier { value: attributes.physique } ),
+        Modifier { value: attributes.physique }
       }
       AttributeRow {
         name: "Warfare",
-        element: rsx!( Modifier { value: attributes.warfare } ),
+        Modifier { value: attributes.warfare }
       }
       AttributeRow {
         name: "Spirit",
-        element: rsx!( Modifier { value: attributes.spirit } ),
+        Modifier { value: attributes.spirit }
       }
       AttributeRow {
         name: "Manipulation",
-        element: rsx!( Modifier { value: attributes.manipulation } ),
+        Modifier { value: attributes.manipulation }
       }
     }
     div {
@@ -286,23 +281,23 @@ pub fn AttributeBlock(attributes: AttributeRanks, dodge: i32) -> Element {
       div { class: "subheading", "Defenses" }
       AttributeRow {
         name: "Tenacity",
-        element: rsx!( "{attributes.tenacity + BASE_DEFENSE}" ),
+        "{attributes.tenacity + BASE_DEFENSE}"
       }
       AttributeRow {
         name: "Fortitude",
-        element: rsx!( "{attributes.fortitude + BASE_DEFENSE}" ),
+        "{attributes.fortitude + BASE_DEFENSE}"
       }
       AttributeRow {
         name: "Resolve",
-        element: rsx!( "{attributes.resolve + BASE_DEFENSE}" ),
+        "{attributes.resolve + BASE_DEFENSE}"
       }
       AttributeRow {
         name: "Insight",
-        element: rsx!( "{attributes.insight + BASE_DEFENSE}" ),
+        "{attributes.insight + BASE_DEFENSE}"
       }
       AttributeRow {
         name: "Dodge",
-        element: rsx!( "{dodge + BASE_DEFENSE}" ),
+        "{dodge + BASE_DEFENSE}"
       }
     }
   )

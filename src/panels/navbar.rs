@@ -5,12 +5,11 @@ use dioxus::prelude::*;
 pub fn Navbar() -> Element {
   rsx! {
     div {
-      class: "row underhang no-print",
-      Link { to: Route::Home {}, "Home" }
-      Link { to: Route::MainRules {}, "Rules" }
-      Link { to: Route::CharacterBuilder {}, "Builder" }
+      class: "row gap-xlarge underhang no-print",
+      Link { to: Route::MainRules {}, "Home" }
       Link { to: Route::PathsPage {}, "Paths" }
       Link { to: Route::SkillsPage {}, "Skills" }
+      Link { to: Route::CharacterBuilder {}, "Builder" }
       Link { to: Route::CharacterSheetPage {}, "Sheets" }
     }
     Outlet::<Route> {}

@@ -29,7 +29,6 @@ ul {
 
 a {
   color: var( --main-font );
-  margin-right: 20px;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
@@ -120,6 +119,23 @@ p {
   break-inside: avoid;
 }
 
+.chip-card {
+  width: 600px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  height: min-content;
+  break-inside: avoid;
+  gap: 8px;
+}
+
+.chip {
+  border: .1rem solid var(--main-border);
+  border-radius: .4rem;
+  font-size: .8rem;
+  padding: .2rem .3rem;
+}
+
 .path-card {
   width: 290px;
   padding: 8px;
@@ -151,17 +167,20 @@ p {
   border-color: var( --selected );
 }
 
-.block-columns {
-  /* display: block;
-  column-fill: balance;
-  column-count: auto;
-  column-width: 600px; */
+.staggered-grid {
   column-gap: 20px;
   display: grid;
   grid-template-columns: repeat( auto-fit, 600px);
 }
 
-.block-columns > * {
+.staggered-cell {
+  height: min-content;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.staggered-grid > * {
   margin-bottom: 16px;
 }
 
@@ -438,7 +457,7 @@ p {
 .horizontal-bar {
   width: 100%;
   margin: 6px 0px;
-  height: .05rem;
+  height: 1px;
   background-color: var(--main-border);
 }
 
@@ -529,6 +548,7 @@ p {
 .full { width: 100%; }
 
 .gap { gap: 8px; }
+.gap-medium { gap: 12px; }
 .gap-large { gap: 16px; }
 .gap-xlarge { gap: 24px; }
 .gap-2xlarge { gap: 32px; }

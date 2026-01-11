@@ -31,9 +31,6 @@ pub enum Route {
   #[layout(Navbar)]
 
   #[route("/")]
-  Home {},
-
-  #[route("/rules")]
   MainRules {},
 
   #[route("/builder")]

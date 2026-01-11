@@ -4,7 +4,7 @@ use crate::server::prelude::get_keyword_map;
 use crate::skill::Skill;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use super::path::get_path_map;
 use super::skill::get_skill_map;
@@ -86,6 +86,13 @@ where
       .filter_map(|id| self.from_id(&id.to_string()))
       .collect()
   }
+
+  pub fn from_object_set(&self, object_ids: &HashSet<ObjectId>) -> Vec<T> {
+    object_ids
+      .iter()
+      .filter_map(|id| self.from_id(&id.to_string()))
+      .collect()
+  }
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -133,9 +140,9 @@ impl PathCache {
 }
 
 pub fn status_element_paths_skills_keywords() -> Option<Element> {
-  let PathCache(path_cache) = use_context::<PathCache>();
-  let SkillCache(skill_cache) = use_context::<SkillCache>();
-  let KeywordCache(keyword_cache) = use_context::<KeywordCache>();
+  let PathCache( ref path_cache ) = use_context();
+  let SkillCache( ref skill_cache ) = use_context();
+  let KeywordCache( ref keyword_cache ) = use_context();
   let mut errors: Vec<ServerFnError> = Vec::new();
   let mut loading: bool = false;
   match path_cache.status() {

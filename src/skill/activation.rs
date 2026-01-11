@@ -12,7 +12,6 @@ use crate::skill::prelude::*;
 pub struct Action {
   pub class: Activation,
   pub sub_title: Option<String>,
-  pub keywords: Option<String>,
   pub keyword_ids: Option<Vec<ObjectId>>,
   pub initial: Option<bool>,
 
@@ -22,7 +21,6 @@ pub struct Action {
   pub extended_duration: Option<Duration>,
   pub target: Option<Target>,
   pub refresh: Option<RulesBlocks>,
-  pub properties: Option<Vec<Property>>,
 
   pub rules: Option<RulesStack>,
 }
@@ -32,7 +30,6 @@ impl Default for Action {
     Self {
       class: Activation::Boon,
       sub_title: None,
-      keywords: None,
       keyword_ids: None,
       initial: None,
       condition: None,
@@ -41,7 +38,6 @@ impl Default for Action {
       extended_duration: None,
       target: None,
       refresh: None,
-      properties: None,
       rules: None,
     }
   }
@@ -89,11 +85,6 @@ impl Action {
     if let Some(snippets) = &self.rules {
       for snippet in snippets {
         ids.extend(snippet.get_keyword_ids());
-      }
-    }
-    if let Some(properties) = &self.properties {
-      for property in properties {
-        ids.extend(property.get_keyword_ids());
       }
     }
     return ids;

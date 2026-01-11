@@ -1,7 +1,9 @@
 use super::Skill;
+use dioxus::prelude::*;
 use crate::keyword::prelude::*;
 use crate::path::prelude::*;
 use crate::rules::prelude::*;
+use crate::server::prelude::KeywordCache;
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -135,20 +137,38 @@ impl KeywordClassified for Skill {
 #[serde(rename_all = "camelCase")]
 pub struct Property {
   pub term: Term,
-  pub rules: RulesBlocks,
+  pub rules: Option<RulesBlocks>,
+  pub block: Option<bool>,
 }
 
 impl Property {
   pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
-
     if let Some(id) = self.term.keyword_id {
       ids.insert(id);
     }
-    for rule in &self.rules {
-      ids.extend(rule.get_keyword_ids());
+    if let Some( rules ) = &self.rules {
+      for rule in rules {
+        ids.extend(rule.get_keyword_ids());
+      }
     }
     return ids;
+  }
+
+  pub fn get_title_and_blocks( &self ) -> ( String, RulesBlocks ) {
+    let title = self.term.to_title();
+    let blocks = match ( &self.rules, self.term.keyword_id ) {
+      ( Some( rules ), _ ) => rules.clone(),
+      ( _, Some( keyword_id ) ) => {
+        let KeywordCache( ref keyword_cache ) = use_context();
+        match keyword_cache.from_object_id( &keyword_id ) {
+          Some( keyword ) => keyword.blocks(),
+          None => Vec::new(),
+        }
+      },
+      _ => Vec::new(),
+    };
+    return ( title, blocks )
   }
 }
 

@@ -50,7 +50,10 @@ impl Stack {
 }
 
 #[component]
-pub fn RulesStackDetail(stacks: RulesStack, display: SkillTermDisplay) -> Element {
+pub fn RulesStackDetail(
+  stacks: RulesStack,
+  display: SkillTermDisplay
+) -> Element {
   rsx! {
     for stack in stacks {
       StackDetail { stack, display }
@@ -59,11 +62,20 @@ pub fn RulesStackDetail(stacks: RulesStack, display: SkillTermDisplay) -> Elemen
 }
 
 #[component]
-pub fn StackDetail(stack: Stack, display: SkillTermDisplay) -> Element {
-  if let Some(property) = stack.property {
-    let title = property.term.title.unwrap_or("undefined".into());
-    let details = rsx! {RulesBlockSet { blocks: property.rules }};
-    return rsx! {PropertyDetail { title, details }};
+pub fn StackDetail(
+  stack: Stack,
+  display: SkillTermDisplay
+) -> Element {
+  if let Some( property ) = stack.property {
+    let ( title, blocks ) = property.get_title_and_blocks();
+    let block = property.block.unwrap_or_default();
+    return rsx! {
+      PropertyDetail { 
+        title,
+        block,
+        RulesBlockSet { blocks }
+      }
+    };
   }
   rsx!(
     if let Some( outcomes ) = stack.outcomes {
@@ -85,11 +97,20 @@ pub fn StackDetail(stack: Stack, display: SkillTermDisplay) -> Element {
 }
 
 #[component]
-pub fn PropertyDetail(title: String, details: Element) -> Element {
-  return rsx!(
-    div { class: "uv-title highlight", "{title}" }
-    div { class: "uv-details", { details } }
-  );
+pub fn PropertyDetail(
+  title: String,
+  #[props(default)] block: bool,
+  children: Element,
+) -> Element {
+  return  rsx! {
+    if block {
+      div { class: "uv-full highlight", "{title}" }
+      div { class: "uv-full indent", {children} }
+    } else {
+      div { class: "uv-title highlight", "{title}" }
+      div { class: "uv-details", {children} }
+    }
+  }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]

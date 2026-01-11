@@ -2,8 +2,10 @@ use std::collections::HashMap;
 
 use dioxus::prelude::*;
 
+use crate::common::*;
 use crate::skill::prelude::*;
 use crate::skill::component::*;
+use crate::path::components::*;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SkillSelections {
@@ -50,7 +52,9 @@ pub fn CharacterSkills(
 ) -> Element {
   let skills = skill_selection.to_vec();
   rsx! {
-    div { "You can select the following skills. You can pick two minor features in place of a normal feature." }
+    div {
+      "You can select the following skills. You can pick two minor features in place of a normal feature."
+    }
     ul {
       class: "underhang",
       for core in core_constraints {
@@ -58,11 +62,13 @@ pub fn CharacterSkills(
       }
     }
     div {
-      class: "block-columns",
+      class: "staggered-grid",
       for skill in skills {
-        SkillSelector {
-          skill,
-          skill_selection: skill_selection.clone(),
+        StaggeredCell {
+          SkillSelector {
+            skill: skill.clone(),
+            skill_selection: skill_selection.clone(),
+          }
         }
       }
     }
@@ -76,10 +82,8 @@ pub fn SkillSelector(
 ) -> Element {
   let id = skill.id.to_string();
   let ranked = skill.is_ranked();
-
   let rank_map = skill_selection.rank_signal.cloned();
   let rank = *rank_map.get( &id ).unwrap_or( &0 );
-  
   let selected = rank > 0;
   let leeway = skill_selection.leeway.get( &id ).unwrap_or( &0 );
   let leeway_rank = leeway / skill.weight();
@@ -97,7 +101,7 @@ pub fn SkillSelector(
   let input_map = rank_map.clone();
   let toggle_id = id.clone();
   let toggle_map = rank_map.clone();
-
+  let path_ids = skill.paths.clone().unwrap_or_default();
   let ranked_input = match ranked {
     false => None,
     true => Some( rsx! {
@@ -119,7 +123,6 @@ pub fn SkillSelector(
       }
     } ),
   };
-
   let on_click = move |_: Event<MouseData>| {
     if ranked { return; }
       let new_id = toggle_id.clone();
@@ -136,12 +139,16 @@ pub fn SkillSelector(
       skill_selection.rank_signal.set( new_map );
     };
   rsx! {
-      SkillCard {
-        skill,
-        display: SkillTermDisplay::Embeded,
-        input: ranked_input,
-        on_click: Some(EventHandler::new(on_click)),
-        additional_classes: conditional_class,
-      }
+    SkillCard {
+      skill: skill,
+      display: SkillTermDisplay::Embeded,
+      input: ranked_input,
+      on_click: Some(EventHandler::new(on_click)),
+      additional_classes: conditional_class,
+    }
+    PathChipsLoader {
+      path_ids,
+      additional_classes: Some( conditional_class.into() ),
+    }
   }
 }

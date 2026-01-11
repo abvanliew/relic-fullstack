@@ -63,9 +63,9 @@ pub fn CharacterProgression() -> Element {
   
   let path_cache = use_context::<PathCache>();
   let path_options = path_cache.get_sorted_paths(false);
-  let PathCache(path_map_cache) = path_cache;
-  let SkillCache(skill_map_cache) = use_context::<SkillCache>();
-  let growth_ranks_maximum = character_modifiers.get(&ModifierClass::GrowthRanks);
+  let PathCache( ref path_map_cache ) = path_cache;
+  let SkillCache( ref skill_map_cache ) = use_context::<SkillCache>();
+  let growth_ranks_maximum = character_modifiers.get( &ModifierClass::GrowthRanks );
   let growth_ranks_selected = (growth_signals.adept)()
     + (growth_signals.endurance)()
     + (growth_signals.expert)()

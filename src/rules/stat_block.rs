@@ -43,29 +43,29 @@ pub fn StatBlockSnippet(stats: StatBlock) -> Element {
         if let Some(physique) = attributes.physique {
           AttributeRow {
             name: "Physique",
-            element: rsx!( Modifier { value: physique } ),
-            name_class: Some("".into()),
+            name_class: Some( "".into() ),
+            Modifier { value: physique }
           }
         }
         if let Some(warfare) = attributes.warfare {
           AttributeRow {
             name: "Warfare",
-            element: rsx!( Modifier { value: warfare } ),
-            name_class: Some("".into()),
+            name_class: Some( "".into() ),
+            Modifier { value: warfare }
           }
         }
         if let Some(spirit) = attributes.spirit {
           AttributeRow {
             name: "Spirit",
-            element: rsx!( Modifier { value: spirit } ),
             name_class: Some("".into()),
+            Modifier { value: spirit }
           }
         }
         if let Some(manipulation) = attributes.manipulation {
           AttributeRow {
             name: "Manipulation",
-            element: rsx!( Modifier { value: manipulation } ),
             name_class: Some("".into()),
+            Modifier { value: manipulation }
           }
         }
       }
@@ -75,36 +75,36 @@ pub fn StatBlockSnippet(stats: StatBlock) -> Element {
         if let Some(tenacity) = attributes.tenacity {
           AttributeRow {
             name: "Tenacity",
-            element: rsx!( "{tenacity + BASE_DEFENSE}" ),
             name_class: Some("".into()),
+            "{tenacity + BASE_DEFENSE}"
           }
         }
         if let Some(fortitude) = attributes.fortitude {
           AttributeRow {
             name: "Fortitude",
-            element: rsx!( "{fortitude + BASE_DEFENSE}" ),
             name_class: Some("".into()),
+            "{fortitude + BASE_DEFENSE}"
           }
         }
         if let Some(resolve) = attributes.resolve {
           AttributeRow {
             name: "Resolve",
-            element: rsx!( "{resolve + BASE_DEFENSE}" ),
             name_class: Some("".into()),
+            "{resolve + BASE_DEFENSE}"
           }
         }
         if let Some(insight) = attributes.insight {
           AttributeRow {
             name: "Insight",
-            element: rsx!( "{insight + BASE_DEFENSE}" ),
             name_class: Some("".into()),
+            "{insight + BASE_DEFENSE}"
           }
         }
         if let Some(dodge) = attributes.dodge {
           AttributeRow {
             name: "Dodge",
-            element: rsx!( "{dodge + BASE_DEFENSE}" ),
             name_class: "",
+            "{dodge + BASE_DEFENSE}"
           }
         }
       }
@@ -121,43 +121,43 @@ pub fn StatBlockSnippet(stats: StatBlock) -> Element {
         if let Some(ap) = stats.ap {
           AttributeRow {
             name: "Action Point",
-            element: rsx!( "{ap}" ),
             name_class: "",
+            "{ap}"
           }
         }
         if let Some(hp) = stats.hp {
           AttributeRow {
             name: "HP",
-            element: rsx!( "{hp}" ),
             name_class: "",
+            "{hp}"
           }
         }
         if let Some(hp_pool) = stats.hp_pool {
           AttributeRow {
             name: "HP Pool",
-            element: rsx!( "{hp_pool}" ),
             name_class: "",
+            "{hp_pool}"
           }
         }
         if let Some(con) = stats.con {
           AttributeRow {
             name: "Constitution",
-            element: rsx!( "{con}" ),
             name_class: "",
+            "{con}"
           }
         }
         if let Some(speed) = stats.speed {
           AttributeRow {
             name: "Speed",
-            element: rsx!( "{speed}" ),
             name_class: "",
+            "{speed}"
           }
         }
         if let Some(dash) = stats.dash {
           AttributeRow {
             name: "Dash",
-            element: rsx!( "{dash}" ),
             name_class: "",
+            "{dash}"
           }
         }
       }

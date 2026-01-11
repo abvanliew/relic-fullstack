@@ -62,7 +62,7 @@ pub mod prelude {
   pub(crate) use super::filter::rules_specific;
   pub use super::term::Term;
   pub(crate) use super::term::{
-    KeywordBlock, KeywordDisplay, KeywordSnippets, KeywordSnippetsLoader, TermSnippet,
+    KeywordBlocks, KeywordCard, KeywordCards, TermSnippet,
   };
   pub use super::Keyword;
 }

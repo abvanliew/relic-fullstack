@@ -1,4 +1,8 @@
+mod sized;
+
 use dioxus::prelude::*;
+
+pub use sized::StaggeredCell;
 
 #[component]
 pub fn HorizontalBar() -> Element {

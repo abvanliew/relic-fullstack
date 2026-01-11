@@ -30,7 +30,7 @@ pub fn ResistanceDetails(props: ResistanceDetailsProps) -> Element {
       class: "row full",
       AttributeRow {
         name: "Physical", name_class: "",
-        element: rsx!( "{physical_total}" ),
+         "{physical_total}"
       }
     }
     SubResistance { details: resistances.show_damage( &DamageClass::Bashing ) }
@@ -39,8 +39,9 @@ pub fn ResistanceDetails(props: ResistanceDetailsProps) -> Element {
     div {
       class: "row full",
       AttributeRow {
-        name: "Elemental", name_class: "",
-        element: rsx!( "{elemental_total}" ),
+        name: "Elemental",
+        name_class: "",
+        "{elemental_total}"
       }
     }
     SubResistance { details: resistances.show_damage( &DamageClass::Fire ) }
@@ -52,7 +53,7 @@ pub fn ResistanceDetails(props: ResistanceDetailsProps) -> Element {
       class: "row full",
       AttributeRow {
         name: "Esoteric", name_class: "",
-        element: rsx!( "{esoteric_total}" ),
+         "{esoteric_total}"
       }
     }
     SubResistance { details: resistances.show_damage( &DamageClass::Force ) }
@@ -68,7 +69,7 @@ fn SubResistance(details: (String, i32, bool)) -> Element {
   rsx!(
     div {
       class: if show { "row full" } else { "hidden" },
-      AttributeRow { name: "{name}", name_class: "indent", element: rsx!( "{value}" ) }
+      AttributeRow { name: "{name}", name_class: "indent", "{value}" }
     }
   )
 }

@@ -1,9 +1,9 @@
-use crate::keyword::prelude::KeywordClassified;
-use crate::keyword::prelude::KeywordSnippetsLoader;
+use dioxus::prelude::*;
+use crate::keyword::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::component::*;
 use crate::skill::prelude::*;
-use dioxus::prelude::*;
+use crate::path::components::*;
 
 #[component]
 pub fn SkillList() -> Element {
@@ -36,30 +36,33 @@ pub fn SkillList() -> Element {
 }
 
 #[component]
-pub fn SingleSkillPage(id: String) -> Element {
-  let SkillCache(skill_cache) = use_context();
-  if let Some(element) = skill_cache.status_element() {
+pub fn SingleSkillPage( id: String ) -> Element {
+  let SkillCache( ref skill_cache ) = use_context();
+  if let Some( element ) = skill_cache.status_element() {
     return element;
   }
-  let skill_result = skill_cache.from_id(&id);
-  let Some(skill) = skill_result else {
+  let skill_result = skill_cache.from_id( &id );
+  let Some( skill ) = skill_result else {
     return rsx! {
       div { "Cannot find skill with id: {id}" }
     };
   };
-  let KeywordCache(keyword_cache) = use_context();
+  let KeywordCache( ref keyword_cache ) = use_context();
   let keyword_status_element = keyword_cache.status_element();
-  let keyword_id_objects = skill.get_keyword_ids();
-  // let paths = skill.paths.clone();
+  let keywords_all = keyword_cache.from_object_set( &skill.get_keyword_ids() ) ;
+  let mut keywords = rules_specific( keywords_all );
+  keywords.sort();
+  let path_ids = skill.paths.clone().unwrap_or_default();
   return rsx! {
     div {
-      class: "column gap-large",
+      class: "column gap-medium",
       SkillCard { skill, display: SkillTermDisplay::Minimal }
       match keyword_status_element {
         Some( element ) => element,
-        None => rsx! {
-          KeywordSnippetsLoader { keyword_id_objects  }
-        }
+        None => rsx! { KeywordCards { keywords } }
+      }
+      if path_ids.len() > 0 {
+        PathChipsLoader { path_ids, paths_as_links: true }
       }
     }
   };
@@ -67,8 +70,8 @@ pub fn SingleSkillPage(id: String) -> Element {
 
 #[component]
 pub fn SkillsPage() -> Element {
-  let SkillCache(skill_cache) = use_context();
-  if let Some(element) = skill_cache.status_element() {
+  let SkillCache( ref skill_cache ) = use_context();
+  if let Some( element ) = skill_cache.status_element() {
     return element;
   }
   let mut skills = skill_cache.into_vec();

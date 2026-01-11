@@ -18,11 +18,13 @@ pub fn ExpertiseComponent(entry: ExpertiseEntry) -> Element {
     (_, _, Some(true)) => rsx!(div {
       class: "solid-underline full lh"
     }),
-    (Some(title), Some(rank), _) => rsx!(AttributeRow {
-      name: title,
-      name_class: "highlight",
-      element: rsx!(Modifier { value: rank }),
-    }),
+    (Some(title), Some(rank), _) => rsx! {
+      AttributeRow {
+        name: title,
+        name_class: "highlight",
+        Modifier { value: rank }
+      }
+    },
     _ => rsx!("Undefined"),
   };
 }

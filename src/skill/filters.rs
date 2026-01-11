@@ -17,6 +17,9 @@ pub fn partition_skills_by_cost(skills: Vec<Skill>) -> (Vec<Skill>, Vec<Skill>, 
       TrainingCost::Half | TrainingCost::Cantrip => minor_features.push(skill),
     }
   }
+  keystones.sort();
+  features.sort();
+  minor_features.sort();
   return (keystones, features, minor_features);
 }
 
