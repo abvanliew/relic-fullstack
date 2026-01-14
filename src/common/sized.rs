@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use dioxus::prelude::*;
 
-const DEFAULT_INCREMENT: f64 = 4.0;
+const DEFAULT_INCREMENT: f64 = 8.0;
 const DEFAULT_EXTRA_HEIGHT: f64 = 16.0;
 
 #[component]

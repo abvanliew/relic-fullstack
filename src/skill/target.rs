@@ -41,6 +41,7 @@ pub enum Selection {
   Space,
   Object,
   CreatureObject,
+  CreatureObjectSpace,
 }
 
 impl Target {
@@ -53,6 +54,7 @@ impl Target {
       (Some(Selection::Space), _) => "space".into(),
       (Some(Selection::Object), _) => "object".into(),
       (Some(Selection::CreatureObject), _) => "creature or object".into(),
+      (Some(Selection::CreatureObjectSpace), _) => "creature, object or space".into(),
       _ => "undefined".into(),
     }
   }
@@ -102,11 +104,11 @@ impl fmt::Display for Target {
         self.article(),
         self.singular(),
       ),
-      (TargetClass::SeeOrHear, _, _, Some(limit)) => format!(
-        "{} {} that can see or hear you within {}",
+      (TargetClass::SeeOrHear, Some(range), _, _) => format!(
+        "{} {} that can see or hear you within range {}",
         self.article(),
         self.singular(),
-        limit,
+        range,
       ),
       (TargetClass::SeeOrHear, _, _, _) => format!(
         "{} {} that can see or hear you",
@@ -168,11 +170,11 @@ impl fmt::Display for Target {
         format!("All {} in a Cone size {size}", self.plural(),)
       }
       (TargetClass::RadiusCorner, Some(range), Some(size), _) => format!(
-        "All {} within a radius {size} area centered on a corner within {range} spaces",
+        "All {} within a radius {size} area centered on the corner of a space within range {range}",
         self.plural(),
       ),
       (TargetClass::RadiusSpace, Some(range), Some(size), _) => format!(
-        "All {} within a radius {size} area centered on a space within {range} spaces",
+        "All {} within a radius {size} area centered on a space within range {range}",
         self.plural(),
       ),
       _ => format!("undefined"),

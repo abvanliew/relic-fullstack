@@ -16,13 +16,15 @@ pub struct Duration {
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum DurationClass {
+  Custom,
   NextTurnStart,
   NextTurnEnd,
   WhileReserved,
   Minutes,
   Hours,
   Days,
-  Custom,
+  Weeks,
+  Months,
 }
 
 impl Duration {
