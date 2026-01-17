@@ -45,7 +45,6 @@ p {
 
 .input {
   width: 48px;
-  font-size: 1em;
   text-align: center;
   border-radius: 0.4rem;
   margin-left: 2px;
@@ -181,7 +180,7 @@ p {
 }
 
 .staggered-grid > * {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .next-button {
@@ -420,6 +419,7 @@ p {
   border: .1rem solid var( --main-border );
   margin-top: 12px;
   padding: .6rem .4rem;
+  align-content: center;
 }
 
 .left-cap {

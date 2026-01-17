@@ -1,4 +1,5 @@
-use crate::{path::components::*, server::prelude::PathCache};
+use crate::path::components::*;
+use crate::server::prelude::*;
 use dioxus::prelude::*;
 
 #[component]

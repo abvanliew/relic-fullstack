@@ -2,6 +2,7 @@ use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt;
+use super::Keyword;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, PartialOrd, Ord, Eq, Clone, Default)]
 pub enum KeywordClass {
@@ -31,4 +32,14 @@ impl fmt::Display for KeywordClass {
 
 pub trait KeywordClassified {
   fn get_keyword_ids(&self) -> HashSet<ObjectId>;
+}
+
+pub fn rules_specific(keywords: Vec<Keyword>) -> Vec<Keyword> {
+  keywords
+    .into_iter()
+    .filter(|keyword| match keyword.class {
+      KeywordClass::Classifier | KeywordClass::CoreRule => false,
+      _ => true,
+    })
+    .collect()
 }

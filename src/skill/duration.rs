@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use crate::character::prelude::*;
+use super::cost::ResourceCost;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -48,6 +48,10 @@ impl Duration {
       (DurationClass::Hours, false, _) => format!("1 Hour"),
       (DurationClass::Days, true, _) => format!("{length} Days"),
       (DurationClass::Days, false, _) => format!("1 Day"),
+      (DurationClass::Weeks, true, _) => format!("{length} Weeks"),
+      (DurationClass::Weeks, false, _) => format!("1 Week"),
+      (DurationClass::Months, true, _) => format!("{length} Months"),
+      (DurationClass::Months, false, _) => format!("1 Month"),
       (_, _, _) => format!("Undefined"),
     };
     if self.expendable.is_some() && self.expendable.unwrap() {

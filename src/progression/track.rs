@@ -59,6 +59,8 @@ fn level_bonuses() -> ProgressTrack {
       (ModifierClass::RankMax, 5),
       (ModifierClass::AttributeRank, 17),
       (ModifierClass::GrowthRanks, 1),
+      (ModifierClass::WalkingSpeed, 6),
+      (ModifierClass::DashSpeed, 3),
     ],
     // Level 2
     vec![
@@ -172,11 +174,65 @@ fn resonance_growth_bonuses() -> ProgressTrack {
 fn magic_growth_bonuses() -> ProgressTrack {
   return vec![
     // Rank 1
-    vec![(ModifierClass::MagicFlow, 1), (ModifierClass::MagicPool, 1)],
+    vec![(ModifierClass::MagicFlow, 1), (ModifierClass::ManaPoolMinor, 1)],
     // Rank 2
-    vec![(ModifierClass::MagicFlow, 1), (ModifierClass::MagicPool, 1)],
+    vec![(ModifierClass::MagicFlow, 1), (ModifierClass::ManaPoolMinor, 1)],
     // Rank 3
-    vec![(ModifierClass::MagicFlow, 1), (ModifierClass::MagicPool, 1), (ModifierClass::MagicPoolAll, 1)],
+    vec![(ModifierClass::MagicFlow, 1), (ModifierClass::ManaPoolMinor, 1)],
+    // Rank 4
+    vec![(ModifierClass::MagicFlow, 1), (ModifierClass::ManaPoolMinor, 1)],
+    // Rank 5
+    vec![(ModifierClass::MagicFlow, 1), (ModifierClass::ManaPoolMinor, 1)],
+    // Rank 6
+    vec![(ModifierClass::MagicFlow, 1), (ModifierClass::ManaPoolMinor, 1)],
+    // Rank 7
+    vec![(ModifierClass::ManaPoolMinor, 1), (ModifierClass::ManaPoolModerate, 1)],
+    // Rank 8
+    vec![(ModifierClass::ManaPoolMinor, 1), (ModifierClass::ManaPoolModerate, 1)],
+    // Rank 9
+    vec![(ModifierClass::ManaPoolMinor, 2), (ModifierClass::ManaPoolModerate, 1)],
+    // Rank 10
+    vec![(ModifierClass::ManaPoolMinor, 1), (ModifierClass::ManaPoolModerate, 1)],
+    // Rank 11
+    vec![(ModifierClass::ManaPoolMinor, 1), (ModifierClass::ManaPoolModerate, 1)],
+    // Rank 12
+    vec![(ModifierClass::ManaPoolMinor, 2), (ModifierClass::ManaPoolModerate, 1)],
+    // Rank 13
+    vec![
+      (ModifierClass::ManaPoolMinor, 1),
+      (ModifierClass::ManaPoolModerate, 1),
+      (ModifierClass::ManaPoolMajor, 1)
+    ],
+    // Rank 14
+    vec![
+      (ModifierClass::ManaPoolMinor, 2),
+      (ModifierClass::ManaPoolModerate, 1),
+      (ModifierClass::ManaPoolMajor, 1)
+    ],
+    // Rank 15
+    vec![
+      (ModifierClass::ManaPoolMinor, 1),
+      (ModifierClass::ManaPoolModerate, 2),
+      (ModifierClass::ManaPoolMajor, 1)
+    ],
+    // Rank 16
+    vec![
+      (ModifierClass::ManaPoolMinor, 1),
+      (ModifierClass::ManaPoolModerate, 1),
+      (ModifierClass::ManaPoolMajor, 1)
+    ],
+    // Rank 17
+    vec![
+      (ModifierClass::ManaPoolMinor, 2),
+      (ModifierClass::ManaPoolModerate, 1),
+      (ModifierClass::ManaPoolMajor, 1)
+    ],
+    // Rank 18
+    vec![
+      (ModifierClass::ManaPoolMinor, 1),
+      (ModifierClass::ManaPoolModerate, 2),
+      (ModifierClass::ManaPoolMajor, 1)
+    ],
   ];
 }
 

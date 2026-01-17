@@ -99,7 +99,7 @@ pub fn RollSnippet(roll: Roll) -> Element {
     }
     span { " {roll_class}" }
     match ( &roll.custom_target, &roll.difficulty, &roll.target ) {
-      ( Some(target), _, _ ) => rsx! { span { " against {article} {target}" } },
+      ( Some(target), _, _ ) => rsx! { span { " against {target}" } },
       ( _, Some(difficulty), _ ) => rsx! { span { " difficulty {difficulty}" } },
       ( _, _, Some( Target::Triggering ) ) => rsx! { span { " against {article} triggering target" } },
       ( _, _, Some( Target::None ) ) => rsx! {},

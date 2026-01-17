@@ -198,7 +198,7 @@ pub fn SheetDetails(
         class: "row-wrap",
         SkillCardList {
           skills: selected_skills,
-          display: SkillTermDisplay::Embeded
+          display: TermDisplay::Embeded
         }
       }
     }

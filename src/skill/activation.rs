@@ -1,9 +1,9 @@
-use bson::oid::ObjectId;
-use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt;
 
-use crate::character::prelude::*;
+use bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
+
 use crate::rules::prelude::*;
 use crate::skill::prelude::*;
 

@@ -1,9 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use crate::rules::prelude::*;
-// use super::flow::Flow;
-
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ResourcePool {
   Anointment,
@@ -33,9 +30,9 @@ impl fmt::Display for ResourcePool {
         ResourcePool::Ki => "Ki",
         ResourcePool::Mastery => "Mastery",
         ResourcePool::Virtuoso => "Virtuoso",
-        ResourcePool::MinorMana => "Mana [Minor]",
-        ResourcePool::ModerateMana => "Mana [Moderate]",
-        ResourcePool::MajorMana => "Mana [Major]",
+        ResourcePool::MinorMana => "Mana",
+        ResourcePool::ModerateMana => "Mana",
+        ResourcePool::MajorMana => "Mana",
       }
     )
   }
@@ -45,12 +42,6 @@ impl ResourcePool {
   pub fn with_drain(&self) -> String {
     return format!("{} ({})", self, self.drain());
   }
-
-  // pub fn ordered() -> [ResourcePool; 11] { [
-  //   ResourcePool::Anointment, ResourcePool::Animalism, ResourcePool::Sanguine, ResourcePool::Rage,
-  //   ResourcePool::Mastery, ResourcePool::Channel, ResourcePool::Ki, ResourcePool::Virtuoso,
-  //   ResourcePool::MinorMana, ResourcePool::ModerateMana, ResourcePool::MajorMana,
-  // ] }
 
   pub fn drain(&self) -> String {
     match self {
@@ -68,22 +59,6 @@ impl ResourcePool {
     }
     .into()
   }
-
-  // pub fn flow( &self ) -> Flow {
-  //   match self {
-  //     ResourcePool::Animalism => Flow::Innate,
-  //     ResourcePool::Anointment => Flow::Innate,
-  //     ResourcePool::Rage => Flow::Innate,
-  //     ResourcePool::Sanguine => Flow::Innate,
-  //     ResourcePool::Mastery => Flow::Resonance,
-  //     ResourcePool::Channel => Flow::Resonance,
-  //     ResourcePool::Ki => Flow::Resonance,
-  //     ResourcePool::Virtuoso => Flow::Resonance,
-  //     ResourcePool::MinorMana => Flow::Magic,
-  //     ResourcePool::ModerateMana => Flow::Magic,
-  //     ResourcePool::MajorMana => Flow::Magic,
-  //   }
-  // }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
@@ -122,7 +97,7 @@ impl ResourceCost {
         self.max_charges,
       ));
     }
-    return components.join(" plus ");
+    return components.join(" + ");
   }
 
   pub fn simple(&self) -> String {
@@ -167,12 +142,4 @@ fn cost_format(
     if per_charge { " per charge" } else { "" },
     charge_limit,
   )
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct PoolModifier {
-  pub resource: ResourcePool,
-  pub flow: Bonus<i32>,
-  pub pool: Bonus<i32>,
 }

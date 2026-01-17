@@ -12,6 +12,8 @@ impl Display for ModifierSet {
           let value = bonus.value();
           Some( match class {
             ModifierClass::HP => format!( "+{value} HP" ),
+            ModifierClass::WalkingSpeed => format!( "Speed {value}" ),
+            ModifierClass::DashSpeed => format!( "Dash {value}" ),
             ModifierClass::RankMax => format!( "Maximum Attribute Rank {value}" ),
             ModifierClass::Feature => format!( "Learn {value} features" ),
             ModifierClass::MinorFeature => format!( "Learn {value} minor features" ),
@@ -38,11 +40,9 @@ impl Display for ModifierSet {
             ModifierClass::KiPool => format!( "+{value} to the Ki Resource Pool" ),
             ModifierClass::VirtuosoPool => format!( "+{value} to the Virtuoso Resource Pool" ),
             ModifierClass::MagicFlow => format!( "+{value} Magic Flow" ),
-            ModifierClass::MagicPool => format!( "+{value} to a Mana Pool" ),
-            ModifierClass::MagicPoolAll => format!( "+{value} to all Mana Pools" ),
-            ModifierClass::MinorManaPool => format!( "+{value} to the Minor Mana Pool" ),
-            ModifierClass::ModerateManaPool => format!( "+{value} to the Moderate Mana Pool" ),
-            ModifierClass::MajorManaPool => format!( "+{value} to the Major Mana Pool" ),
+            ModifierClass::ManaPoolMinor => format!( "+{value} Minor Mana Pool" ),
+            ModifierClass::ManaPoolModerate => format!( "+{value} Moderate Mana Pool" ),
+            ModifierClass::ManaPoolMajor => format!( "+{value} Major Mana Pool" ),
           } )
         } else {
           None
@@ -82,11 +82,9 @@ fn ordered_modifier_class() -> Vec<ModifierClass> {
     ModifierClass::ChannelPool,
     ModifierClass::KiPool,
     ModifierClass::VirtuosoPool,
-    ModifierClass::MinorManaPool,
-    ModifierClass::ModerateManaPool,
-    ModifierClass::MajorManaPool,
-    ModifierClass::MagicPool,
-    ModifierClass::MagicPoolAll,
+    ModifierClass::ManaPoolMinor,
+    ModifierClass::ManaPoolModerate,
+    ModifierClass::ManaPoolMajor,
     ModifierClass::MagicFlow,
   ];
 }

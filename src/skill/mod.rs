@@ -1,6 +1,7 @@
 mod activation;
 mod aspect;
 pub mod component;
+mod cost;
 mod duration;
 mod filters;
 mod target;
@@ -61,17 +62,11 @@ impl PartialOrd for Skill {
       Some(Ordering::Equal) => (),
       ord => return ord,
     }
-    // match self.is_core().partial_cmp( &other.is_core() ) {
-    //   Some(Ordering::Equal) => (),
-    //   Some(ord) => return Some( ord.reverse() ),
-    //   None => return None,
-    // }
-    match self.weight().partial_cmp( &other.weight() ) {
-      Some(Ordering::Equal) => (),
-      Some(ord) => return Some( ord.reverse() ),
-      None => return None,
-    }
     match self.order.partial_cmp( &other.order ) {
+      Some(Ordering::Equal) => (),
+      ord => return ord,
+    }
+    match self.training_cost.partial_cmp( &other.training_cost ) {
       Some(Ordering::Equal) => (),
       ord => return ord,
     }
@@ -122,7 +117,7 @@ impl Ord for Skill {
 pub mod prelude {
   pub use super::activation::Action;
   pub use super::aspect::{Property, RelicOrdering, TrainingCost};
-  pub use super::component::SkillTermDisplay;
+  pub use super::cost::{ResourceCost, ResourcePool};
   pub use super::duration::Duration;
   pub use super::filters::{keywords_from_skills, partition_skills_by_cost};
   pub use super::target::Target;

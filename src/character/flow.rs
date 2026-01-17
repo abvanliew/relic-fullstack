@@ -4,7 +4,7 @@ use std::{cmp::min, fmt};
 
 use crate::character::sheet::BoxRow;
 
-use super::ResourcePool;
+use crate::skill::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Flow {
@@ -26,10 +26,6 @@ impl fmt::Display for Flow {
     )
   }
 }
-
-// impl Flow {
-//   pub fn ordered() -> [Flow; 3] { [ Flow::Innate, Flow::Resonance, Flow::Magic, ] }
-// }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct FlowStat {

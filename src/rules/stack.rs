@@ -3,7 +3,7 @@ use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
-use crate::common::HorizontalBar;
+use crate::common::*;
 use crate::rules::internal::*;
 use crate::rules::snippet::Snippet;
 use crate::rules::stat_block::StatBlock;
@@ -50,22 +50,16 @@ impl Stack {
 }
 
 #[component]
-pub fn RulesStackDetail(
-  stacks: RulesStack,
-  display: SkillTermDisplay
-) -> Element {
+pub fn RulesStackDetail( stacks: RulesStack ) -> Element {
   rsx! {
     for stack in stacks {
-      StackDetail { stack, display }
+      StackDetail { stack }
     }
   }
 }
 
 #[component]
-pub fn StackDetail(
-  stack: Stack,
-  display: SkillTermDisplay
-) -> Element {
+pub fn StackDetail( stack: Stack ) -> Element {
   if let Some( property ) = stack.property {
     let ( title, blocks ) = property.get_title_and_blocks();
     let block = property.block.unwrap_or_default();
@@ -101,6 +95,7 @@ pub fn PropertyDetail(
   title: String,
   #[props(default)] block: bool,
   children: Element,
+  title_override: Option<Element>,
 ) -> Element {
   return  rsx! {
     if block {

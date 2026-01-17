@@ -1,5 +1,4 @@
 mod builder;
-mod keyword;
 mod navbar;
 mod rulebook;
 mod sheet;

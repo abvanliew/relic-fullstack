@@ -141,7 +141,7 @@ pub fn SkillSelector(
   rsx! {
     SkillCard {
       skill: skill,
-      display: SkillTermDisplay::Embeded,
+      display: TermDisplay::Embeded,
       input: ranked_input,
       on_click: Some(EventHandler::new(on_click)),
       additional_classes: conditional_class,

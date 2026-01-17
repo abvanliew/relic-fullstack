@@ -2,8 +2,8 @@ use std::rc::Rc;
 
 use dioxus::prelude::*;
 
-const DEFAULT_INCREMENT: f64 = 8.0;
-const DEFAULT_EXTRA_HEIGHT: f64 = 16.0;
+const DEFAULT_INCREMENT: f64 = 12.0;
+const DEFAULT_EXTRA_HEIGHT: f64 = 18.0;
 
 #[component]
 pub fn StaggeredCell(
@@ -27,10 +27,10 @@ pub fn StaggeredCell(
     _ => 0.0,
   };
   let span_style = if height < increment {
-    "".into()
+    format!( "margin-bottom: {}px;", extra_height )
   } else {
     let spans = ( ( height + extra_height ) / increment ).ceil() as i32;
-    format!( "grid-row: span {};", spans )
+    format!( "margin-bottom: {}px; grid-row: span {};", extra_height, spans )
   };
   let extra_class = match additional_classes {
     Some( class ) => class,

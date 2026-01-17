@@ -67,29 +67,29 @@ pub enum ModifierClass {
   PathMin,
   PathMax,
   GrowthRanks,
-  InnateFlow,
-  InnatePool,
-  InnatePoolAll,
+  WalkingSpeed,
+  DashSpeed,
   AnointmentPool,
   AnimalismPool,
   SanguinePool,
   RagePool,
-  ResonanceFlow,
-  ResonancePool,
-  ResonancePoolAll,
+  InnatePool,
+  InnatePoolAll,
+  InnateFlow,
   MasteryPool,
   ChannelPool,
   KiPool,
   VirtuosoPool,
+  ResonancePool,
+  ResonancePoolAll,
+  ResonanceFlow,
+  ManaPoolMinor,
+  ManaPoolModerate,
+  ManaPoolMajor,
   MagicFlow,
-  MagicPool,
-  MagicPoolAll,
-  MinorManaPool,
-  ModerateManaPool,
-  MajorManaPool,
 }
 
 pub mod prelude {
-  pub use super::operator::{opt_max, opt_sum, Modifier};
+  pub use super::operator::Modifier;
   pub use super::{ModifierClass, ModifierSet};
 }

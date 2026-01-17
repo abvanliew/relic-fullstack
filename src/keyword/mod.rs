@@ -1,6 +1,5 @@
 mod aspect;
 mod classifiers;
-mod filter;
 mod tense;
 mod term;
 
@@ -58,8 +57,7 @@ impl Ord for Keyword {
 }
 
 pub mod prelude {
-  pub(crate) use super::classifiers::KeywordClassified;
-  pub(crate) use super::filter::rules_specific;
+  pub(crate) use super::classifiers::{KeywordClassified, rules_specific};
   pub use super::term::Term;
   pub(crate) use super::term::{
     KeywordBlocks, KeywordCard, KeywordCards, TermSnippet,

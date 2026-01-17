@@ -1,4 +1,3 @@
-mod bonus;
 pub mod components;
 mod dice;
 mod roll;
@@ -9,7 +8,6 @@ mod stat_block;
 mod tier;
 
 pub(crate) mod prelude {
-  pub(crate) use super::bonus::Bonus;
   pub(crate) use super::dice::{DiceGroup, DiceGroupEntry};
   pub(crate) use super::rulebook::MainRulesThread;
   pub(crate) use super::snippet::Snippet;

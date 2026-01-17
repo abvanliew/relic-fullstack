@@ -50,7 +50,7 @@ pub fn CharacterGrowth(
   };
   rsx! {
     div {
-      class: "grid dim-growth",
+      class: "grid dim-growth underhang",
       div { 
         class: "uv-full",
         match ranks_state {
@@ -164,7 +164,7 @@ pub fn GrowthSelector(
       "{training}"
     }
     div {
-      class: "uv-property growth-selector right-cap {conditional_class}",
+      class: "uv-property growth-selector right-cap small-text {conditional_class}",
       onclick: move |event| {
         display_training_signal.set( new_value );
         event.stop_propagation();
@@ -194,11 +194,11 @@ pub fn GrowthRow(
   };
   return rsx! {
     div{
-      class: "uv-title spacer {conditional_class}",
+      class: "uv-title spacer small-text {conditional_class}",
       "{training} {row_rank}"
     }
     div{
-      class: "uv-property spacer {conditional_class}",
+      class: "uv-property spacer small-text {conditional_class}",
       "{modifiers}"
     }
   }

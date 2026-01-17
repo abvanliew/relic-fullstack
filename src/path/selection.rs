@@ -18,15 +18,15 @@ pub enum PathFilter {
   Single( String ),
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, PartialOrd, Ord, Eq, Hash)]
 pub enum SkillFilter {
   #[default]
   Features,
   CoreFeatures,
   MinorFeatures,
   CoreMinorFeatures,
-  Spells,
   Cantrips,
+  Spells,
 }
 
 impl Display for SkillFilter {

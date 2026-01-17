@@ -11,23 +11,10 @@ pub struct Term {
   pub keyword_id: Option<ObjectId>,
   pub title: Option<String>,
   pub tense: Option<Tense>,
+  pub italics: Option<bool>,
 }
 
 impl Term {
-  // pub fn title(title: String) -> Self {
-  //   Self {
-  //     title: Some(title),
-  //     ..Default::default()
-  //   }
-  // }
-
-  // pub fn keyword(keyword_id: ObjectId) -> Self {
-  //   Self {
-  //     keyword_id: Some(keyword_id),
-  //     ..Default::default()
-  //   }
-  // }
-
   pub fn to_title(&self) -> String {
     return match (self.keyword_id, &self.title) {
       (Some(keyword_id), _) => {
@@ -47,7 +34,11 @@ impl Term {
 #[component]
 pub(crate) fn TermSnippet(term: Term) -> Element {
   let title = term.to_title();
-  return rsx! { span { class: "highlight", " {title}" } };
+  let conditional_class = match term.italics.unwrap_or_default() {
+    true => "italics",
+    false => "highlight",
+  };
+  return rsx! { span { class: "{conditional_class}", " {title}" } };
 }
 
 #[component]

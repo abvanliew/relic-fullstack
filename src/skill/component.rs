@@ -9,16 +9,16 @@ use crate::common::*;
 use dioxus::prelude::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Default, Eq)]
-pub enum SkillTermDisplay {
+pub enum TermDisplay {
   #[default]
-  Minimal,
+  Standard,
   Embeded,
 }
 
 #[component]
 pub fn SkillCardList(
   skills: Vec<Skill>,
-  #[props(default)] display: SkillTermDisplay,
+  #[props(default)] display: TermDisplay,
   #[props(default)] title_as_link: bool,
 ) -> Element {
   rsx! {
@@ -36,7 +36,7 @@ pub fn SkillCardList(
 #[component]
 pub fn SkillCard(
   skill: Skill,
-  #[props(default)] display: SkillTermDisplay,
+  #[props(default)] display: TermDisplay,
   #[props(default)] title_as_link: bool,
   #[props(default)] input: Option<Element>,
   #[props(default)] on_click: Option<EventHandler<MouseEvent>>,
@@ -50,8 +50,8 @@ pub fn SkillCard(
   let action = skill.action.clone();
   let opt_sub_actions = skill.sub_actions.clone();
   let keywords_optional = match &display {
-    SkillTermDisplay::Minimal => None,
-    SkillTermDisplay::Embeded => {
+    TermDisplay::Standard => None,
+    TermDisplay::Embeded => {
       let KeywordCache( ref keyword_cache ) = use_context();
       let keyword_object_ids = skill.get_keyword_ids();
       let mut unsorted_keywords = rules_specific(
@@ -87,11 +87,11 @@ pub fn SkillCard(
       if let Some( description ) = opt_description {
         div { class: "uv-full", "{description}" }
       }
-      ActionDetails { action, display }
+      ActionDetails { action }
       if let Some( sub_actions ) = opt_sub_actions {
         for action in sub_actions {
           div { class: "spacer" }
-          ActionDetails { action, display }
+          ActionDetails { action }
         }
       }
       if let Some( keywords ) = keywords_optional {
@@ -105,7 +105,7 @@ pub fn SkillCard(
 }
 
 #[component]
-fn ActionDetails(action: Action, display: SkillTermDisplay) -> Element {
+fn ActionDetails( action: Action ) -> Element {
   let activation = action.title();
   let suffix_opt = action.suffix();
   let KeywordCache( ref keyword_cache ) = use_context();
@@ -169,7 +169,7 @@ fn ActionDetails(action: Action, display: SkillTermDisplay) -> Element {
       }
     }
     if let Some( stacks ) = action.rules {
-      RulesStackDetail { stacks, display }
+      RulesStackDetail { stacks }
     }
   }
 }

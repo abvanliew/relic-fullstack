@@ -4,8 +4,8 @@ use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
 use crate::Route;
-use crate::keyword::prelude::*;
 use crate::path::Path;
+use crate::keyword::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::component::*;
 use crate::skill::prelude::*;
@@ -81,7 +81,7 @@ pub fn PathPanel(
         SkillCardList { skills: minor_features, title_as_link: true }
       }
     }
-    if keyword_id_objects.len() > 0 {
+    if keywords.len() > 0 {
       div {
         div { class: "small-text dotted-underline underhang", "Rules Refence" }
         div {
