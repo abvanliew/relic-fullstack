@@ -1,8 +1,8 @@
 use dioxus::prelude::*;
 
 use crate::character::prelude::*;
+use crate::modifiers::ModifierClass;
 use crate::rules::components::Modifier;
-
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct RankSignal {
@@ -33,11 +33,19 @@ pub struct RankSelections {
   pub resolve: RankSignal,
   pub insight: RankSignal,
   pub expertise: Signal<Vec<(String,RankSignal)>>,
+  pub anointment_pool: Signal<i32>,
+  pub animalism_pool: Signal<i32>,
+  pub sanguine_pool: Signal<i32>,
+  pub rage_pool: Signal<i32>,
 }
 
 impl Default for RankSelections {
   fn default() -> Self {
     let expertise = use_signal( || Vec::new() );
+    let anointment_pool = use_signal( || 0 );
+    let animalism_pool = use_signal( || 0 );
+    let sanguine_pool = use_signal( || 0 );
+    let rage_pool = use_signal( || 0 );
     Self {
       physique: Default::default(),
       warfare: Default::default(),
@@ -48,6 +56,10 @@ impl Default for RankSelections {
       resolve: Default::default(),
       insight: Default::default(),
       expertise,
+      anointment_pool,
+      animalism_pool,
+      sanguine_pool,
+      rage_pool,
     }
   }
 }
@@ -88,6 +100,14 @@ impl RankSelections {
   }
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct StaticRanks {
+  pub hp: i32,
+  pub constituion: i32,
+  pub speed: i32,
+  pub dash: i32,
+}
+
 #[component]
 pub fn CharacterRanks(
   rank_selections: RankSelections,
@@ -96,6 +116,11 @@ pub fn CharacterRanks(
   attribute_ranks: i32,
   capability_max_ranks: i32,
   defense_max_ranks: i32,
+  innate_flow: i32,
+  innate_ranks: i32,
+  innate_all_ranks: i32,
+  innate_pools: Vec<(ModifierClass,i32)>,
+  static_ranks: StaticRanks,
 ) -> Element {
   let attributes = CharacterAttribute::ordered();
   let rank_count = use_memo(
@@ -116,27 +141,85 @@ pub fn CharacterRanks(
     )
   );
   let remaining_defense_max = defense_max_ranks - defense_max_count();
+  
+  let mut resource_selectors: Vec<Element> = Vec::new();
+  let innate_current_ranks = (rank_selections.animalism_pool)() + (rank_selections.anointment_pool)()
+  + (rank_selections.sanguine_pool)() + (rank_selections.rage_pool)();
+  let innate_remaining_ranks = innate_ranks - innate_current_ranks;
+  let innate_selector = innate_pools.len() > 1 && innate_ranks > 0;
+  if innate_flow > 0 {
+    resource_selectors.push( rsx! {
+      div { class: "uv-full highlight spacer", "Resources" }
+    } );
+  }
+  if innate_flow > 0 {
+    resource_selectors.push( rsx! {
+      div { class: "uv-first underline", "Innate Flow" }
+      div { "{innate_flow}" }
+    } );
+  }
+  for ( class, pool ) in innate_pools {
+    let ( title, ranks_base ) = match &class {
+      ModifierClass::AnointmentPool => ( "Anointment", Some( rank_selections.anointment_pool ) ),
+      ModifierClass::AnimalismPool => ( "Animalism", Some( rank_selections.animalism_pool ) ),
+      ModifierClass::SanguinePool => ( "Sanguine", Some( rank_selections.sanguine_pool ) ),
+      ModifierClass::RagePool => ( "Rage", Some( rank_selections.rage_pool ) ),
+      _ => ( "other", None ),
+    };
+    let ranks_optional = if innate_selector { ranks_base } else { None };
+    let flat_bonus = pool + innate_all_ranks + if innate_selector { 0 } else { innate_ranks };
+    resource_selectors.push( rsx! {
+      ResourceSelector { title, ranks_optional, min_rank: 0, remaining_ranks: innate_remaining_ranks, flat_bonus }
+    } );
+  }
+  
+  let hp = static_ranks.hp;
+  let constitution = static_ranks.constituion;
+  let speed = static_ranks.speed;
+  let dash = static_ranks.dash;
   return rsx! {
-    div { "Attribute ranks remaining: {remaining_ranks} / {attribute_ranks}" }
-    if capability_max_ranks > 0 {
-      div { "Capacities to Increase Maximum: {remaining_capacity_max} / {capability_max_ranks}" }
-    }
-    if defense_max_ranks > 0 {
-      div { "Defenses to Increase Maximum: {remaining_defense_max} / {defense_max_ranks}" }
+    div {
+      class: "column",
+      div { "Attribute ranks remaining: {remaining_ranks} / {attribute_ranks}" }
+      if capability_max_ranks > 0 {
+        div { "Capacities to Increase Maximum: {remaining_capacity_max} / {capability_max_ranks}" }
+      }
+      if defense_max_ranks > 0 {
+        div { "Defenses to Increase Maximum: {remaining_defense_max} / {defense_max_ranks}" }
+      }
+      if innate_selector {
+        div { "Innate ranks to distribute: {innate_current_ranks} / {innate_ranks}" }
+      }
     }
     div {
-      class: "grid dim-quad",
-      div { class: "uv-second", "Ranks" }
-      div { "Max" }
-      div { "Value" }
-      for attribute in attributes {
-        RankSelector {
-          attribute: attribute.clone(),
-          rank_selections: rank_selections.clone(),
-          min_rank, max_rank,
-          remaining_ranks,
-          remaining_max: if attribute.is_capacity() { remaining_capacity_max } else { remaining_defense_max },
+      class: "row",
+      div {
+        class: "column",
+        div {
+          class: "grid dim-quad",
+          div { class: "uv-second", "Value" }
+          div { "Ranks" }
+          div { "Max" }
+          for attribute in attributes {
+            RankSelector {
+              attribute: attribute.clone(),
+              rank_selections: rank_selections.clone(),
+              min_rank, max_rank,
+              remaining_ranks,
+              remaining_max: if attribute.is_capacity() { remaining_capacity_max } else { remaining_defense_max },
+            }
+          }
+          for resource in resource_selectors {
+            {resource}
+          }
         }
+      }
+      div {
+        class: "column",
+        div { "HP {hp}" }
+        div { "Constitution {constitution}" }
+        div { "Speed {speed}" }
+        div { "Dash {dash}" }
       }
     }
   }
@@ -170,6 +253,10 @@ pub fn RankSelector(
   let disabled = remaining_max <= 0 && !max_increase();
   return rsx! {
     div { "{title}" }
+    match &display {
+      RankDisplay::Bonus => rsx! { div { Modifier { value } } },
+      RankDisplay::Defense => rsx! { div { "{value + BASE_DEFENSE}" } },
+    }
     input {
       class: "input", type: "number",
       value: rank() + max_value, min: min_rank, max: max_rank,
@@ -193,9 +280,42 @@ pub fn RankSelector(
         }
       }
     }
-    match &display {
-      RankDisplay::Bonus => rsx! { div { Modifier { value } } },
-      RankDisplay::Defense => rsx! { div { "{value + BASE_DEFENSE}" } },
+  }
+}
+
+#[component]
+pub fn ResourceSelector(
+  title: String,
+  ranks_optional: Option<Signal<i32>>,
+  min_rank: i32,
+  remaining_ranks: i32,
+  flat_bonus: i32,
+) -> Element {
+  let value = flat_bonus + match ranks_optional {
+    Some( ranks ) => ranks(),
+    _ => 0,
+  };
+  let max_rank = remaining_ranks + match ranks_optional {
+    Some( ranks ) => ranks(),
+    _ => 0
+  };
+  return rsx! {
+    div { class: "uv-first", "{title}" }
+    div { "{value}" }
+    if let Some( mut ranks ) = ranks_optional {
+      input {
+        class: "input", type: "number",
+        value: ranks(), min: min_rank, max: max_rank,
+        oninput: move |event| {
+          let value = event.value().parse::<i32>()
+          .unwrap_or_default()
+          .min(max_rank).max(min_rank);
+          ranks.set(value);
+        },
+        onclick: move |event| {
+          event.stop_propagation();
+        }
+      }
     }
   }
 }

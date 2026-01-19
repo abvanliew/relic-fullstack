@@ -5,28 +5,28 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::modifiers::prelude::Modifier;
+use crate::modifiers::prelude::Bonus;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Eq, Default)]
-pub struct ModifierSet(HashMap<ModifierClass, Modifier<i32>>);
+pub struct ModifierSet(HashMap<ModifierClass, Bonus<i32>>);
 
 impl ModifierSet {
   pub fn get(&self, class: &ModifierClass) -> i32 {
     let ModifierSet(map) = self;
     return map
       .get(class)
-      .unwrap_or(&Modifier::<i32>::default())
+      .unwrap_or(&Bonus::<i32>::default())
       .value();
   }
 
-  pub fn add(&mut self, class: &ModifierClass, value: Modifier<i32>) {
+  pub fn add(&mut self, class: &ModifierClass, value: Bonus<i32>) {
     let ModifierSet(ref mut map) = self;
     let entry = map.entry(class.clone()).or_default();
     *entry = entry.clone() + value;
   }
 
   pub fn add_bonus(&mut self, class: &ModifierClass, value: i32) {
-    self.add(class, Modifier::from_bonus(value));
+    self.add(class, Bonus::from_bonus(value));
   }
 
   pub fn append(&mut self, rhs: &ModifierSet) {
@@ -53,9 +53,10 @@ impl ModifierSet {
   }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum ModifierClass {
   HP,
+  Constituion,
   RankMax,
   AttributeRank,
   CapabilityMaxRank,
@@ -64,8 +65,8 @@ pub enum ModifierClass {
   ExpertiseMaxRank,
   Feature,
   MinorFeature,
-  PathMin,
-  PathMax,
+  InitiatePathMin,
+  InitiatePathMax,
   GrowthRanks,
   WalkingSpeed,
   DashSpeed,
@@ -90,6 +91,6 @@ pub enum ModifierClass {
 }
 
 pub mod prelude {
-  pub use super::operator::Modifier;
+  pub use super::operator::Bonus;
   pub use super::{ModifierClass, ModifierSet};
 }

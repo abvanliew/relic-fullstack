@@ -9,6 +9,7 @@ use super::paths::CharacterPaths;
 use super::skills::{CharacterSkills, SkillSelections};
 use super::ranks::{CharacterRanks, RankSelections};
 
+use crate::progression::component::ranks::StaticRanks;
 use crate::progression::track::{LevelTrack, GrowthTrack};
 use crate::progression::training::TrainingClass;
 
@@ -56,8 +57,8 @@ pub fn CharacterProgression() -> Element {
   
   let selected_paths: Signal<HashSet<String>> = use_signal( || HashSet::new() );
   let extra_features_signal: Signal<i32> = use_signal( || 0 );
-  let path_min = character_modifiers.get( &ModifierClass::PathMin );
-  let path_max = character_modifiers.get( &ModifierClass::PathMax );
+  let path_min = character_modifiers.get( &ModifierClass::InitiatePathMin );
+  let path_max = character_modifiers.get( &ModifierClass::InitiatePathMax );
   
   let growth_signals = TrainingGrowthSignals::default();
   
@@ -222,10 +223,6 @@ pub fn CharacterProgression() -> Element {
     skill_selection.leeway.insert( skill_id, constraint_set.leeway );
   }
   
-  let has_innate = character_modifiers.contains_key( &ModifierClass::InnateFlow );
-  let has_resonance = character_modifiers.contains_key( &ModifierClass::ResonanceFlow );
-  let has_magic = character_modifiers.contains_key( &ModifierClass::MagicFlow );
-  
   let mut core_constraints: Vec<String> = Vec::new();
   for ( index, constraint ) in constraints.iter().enumerate() {
     let mask = 1 << index;
@@ -245,6 +242,11 @@ pub fn CharacterProgression() -> Element {
     let skill_name = filter.skill_filter.to_string();
     core_constraints.push( format!( "{}/{} {} from {}", ranks, max_rank, skill_name, filter_name ) );
   }
+  
+  let innate_flow = character_modifiers.get( &ModifierClass::InnateFlow );
+  let has_innate = innate_flow > 0;
+  let has_resonance = character_modifiers.contains_key( &ModifierClass::ResonanceFlow );
+  let has_magic = character_modifiers.contains_key( &ModifierClass::MagicFlow );
 
   let rank_selections = RankSelections::default();
   let min_rank = 0;
@@ -252,6 +254,26 @@ pub fn CharacterProgression() -> Element {
   let attribute_ranks = character_modifiers.get( &ModifierClass::AttributeRank );
   let capability_max_ranks = character_modifiers.get( &ModifierClass::CapabilityMaxRank );
   let defense_max_ranks = character_modifiers.get( &ModifierClass::DefenseMaxRank );
+  let mut innate_pools: Vec<(ModifierClass,i32)> = Vec::new();
+  for pool_class in vec![
+    &ModifierClass::AnointmentPool,
+    &ModifierClass::AnimalismPool,
+    &ModifierClass::SanguinePool,
+    &ModifierClass::RagePool,
+  ] {
+    let pool = character_modifiers.get( pool_class );
+    if pool > 0 {
+      innate_pools.push( ( pool_class.clone(), pool ) );
+    }
+  }
+  let innate_ranks = character_modifiers.get( &ModifierClass::InnatePool );
+  let innate_all_ranks = character_modifiers.get( &ModifierClass::InnatePoolAll );
+  let static_ranks = StaticRanks {
+    hp: character_modifiers.get( &ModifierClass::HP ),
+    constituion: character_modifiers.get( &ModifierClass::Constituion ),
+    speed: character_modifiers.get( &ModifierClass::WalkingSpeed ),
+    dash: character_modifiers.get( &ModifierClass::DashSpeed ),
+  };
   rsx! {
     div {
       class: "row",
@@ -261,15 +283,15 @@ pub fn CharacterProgression() -> Element {
       TabSelector { tab: BuilderTab::Attributes, current_tab }
     }
     match current_tab() {
-      BuilderTab::Paths =>rsx! {
+      BuilderTab::Paths => rsx! {
         CharacterPaths {
           path_options, path_min, path_max, extra_features_signal, selected_paths
         }
       },
-      BuilderTab::Skills =>rsx! {
+      BuilderTab::Skills => rsx! {
         CharacterSkills { skill_selection, core_constraints }
       },
-      BuilderTab::Attributes =>rsx! {
+      BuilderTab::Attributes => rsx! {
         CharacterGrowth {
           growth_ranks_remaining, has_innate, has_resonance, has_magic, level, growth_signals
         }
@@ -277,6 +299,11 @@ pub fn CharacterProgression() -> Element {
           rank_selections, min_rank, max_rank, attribute_ranks,
           capability_max_ranks,
           defense_max_ranks,
+          innate_flow,
+          innate_ranks,
+          innate_all_ranks,
+          innate_pools,
+          static_ranks,
         }
       },
     }

@@ -6,17 +6,15 @@ use std::{
 };
 
 #[derive(Debug, Clone, PartialEq, Default, Deserialize, Serialize, Eq)]
-pub struct Modifier<T>
+pub struct Bonus<T>
 where
   T: Add + Ord + Clone,
 {
-  #[serde(default)]
-  pub base: InstanceBonus<T>,
-  #[serde(default)]
-  pub bonus: StackingBonus<T>,
+  #[serde(default)] pub base: InstanceBonus<T>,
+  #[serde(default)] pub bonus: StackingBonus<T>,
 }
 
-impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default> Modifier<T> {
+impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default> Bonus<T> {
   pub fn from_bonus(value: T) -> Self {
     Self {
       base: InstanceBonus::default(),
@@ -40,7 +38,7 @@ impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default> Modifier<T> {
   }
 }
 
-impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default + fmt::Display> fmt::Display for Modifier<T> {
+impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default + fmt::Display> fmt::Display for Bonus<T> {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     let value = self.value();
     let scalar = self.scalar();
@@ -53,19 +51,19 @@ impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default + fmt::Display
   }
 }
 
-impl<T: Add<Output = T> + Clone + Ord> Add for Modifier<T> {
-  type Output = Modifier<T>;
+impl<T: Add<Output = T> + Clone + Ord> Add for Bonus<T> {
+  type Output = Bonus<T>;
   fn add(self, rhs: Self) -> Self::Output {
-    Modifier {
+    Bonus {
       bonus: self.bonus + rhs.bonus,
       base: self.base + rhs.base,
     }
   }
 }
 
-impl<T: Add<Output = T> + Clone + Ord> AddAssign for Modifier<T>
+impl<T: Add<Output = T> + Clone + Ord> AddAssign for Bonus<T>
 where
-  for<'a> &'a mut Modifier<T>: std::ops::Add<Modifier<T>, Output = Modifier<T>>,
+  for<'a> &'a mut Bonus<T>: std::ops::Add<Bonus<T>, Output = Bonus<T>>,
 {
   fn add_assign(&mut self, rhs: Self) {
     *self = self.clone() + rhs;

@@ -329,6 +329,7 @@ p {
 .uv-property { grid-column: property; }
 
 .uv-full { grid-column: 1 / -1; }
+.uv-first { grid-column-start: 1; }
 .uv-second { grid-column-start: 2; }
 .uv-after-title { grid-column: title-end / end; }
 .uv-title-property { grid-column: title / property; }
