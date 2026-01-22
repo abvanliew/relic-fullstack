@@ -9,6 +9,7 @@ pub struct Target {
   pub selection: Option<Selection>,
   pub custom_selection: Option<String>,
   pub range: Option<i32>,
+  pub charge_range: Option<i32>,
   pub size: Option<i32>,
   pub limit: Option<i32>,
   pub suffix: Option<String>,
@@ -18,14 +19,11 @@ pub struct Target {
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum TargetClass {
   Custom,
-  Yourself,
   Touch,
   Weapon,
   Range,
   LineOfSight,
   SeeOrHear,
-  Triggering,
-  EachTriggering,
   Cone,
   Burst,
   RadiusCorner,
@@ -102,11 +100,6 @@ impl fmt::Display for Target {
       return write!(f, "{custom}");
     }
     let target = match (&self.class, &self.range, &self.size, &self.limit, &self.placed) {
-      (TargetClass::Yourself, _, _, _, _) => "Yourself".into(),
-      (TargetClass::Triggering, _, _, _, _) => format!("Triggering {}", self.singular()),
-      (TargetClass::EachTriggering, _, _, _, _) => {
-        format!("Each triggering {}", self.singular())
-      }
       (TargetClass::Touch, _, _, None, _) => {
         format!("{} {} within reach", self.article(), self.singular(),)
       }

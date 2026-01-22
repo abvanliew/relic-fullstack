@@ -2,6 +2,7 @@ mod asset;
 mod character;
 mod common;
 mod equipment;
+mod filter;
 mod keyword;
 mod modifiers;
 mod pages;
@@ -30,33 +31,23 @@ fn main() {
 pub enum Route {
   #[layout(Navbar)]
 
-  #[route("/")]
-  MainRules {},
-
-  #[route("/builder")]
-  CharacterBuilder {},
+  #[route("/")] MainRules {},
+  #[route("/builder")] CharacterBuilder {},
+  #[route("/filter")] SkillFilterPage {},
 
   #[nest("/paths")]
-    #[route("/")]
-    PathsPage {},
-
-    #[route("/:id")]
-    SinglePath { id: String },
+    #[route("/")] PathsPage {},
+    #[route("/:id")] SinglePath { id: String },
   #[end_nest]
 
   #[nest("/skills")]
-    #[route("/")]
-    SkillsPage {},
-
-    #[route("/:id")]
-    SingleSkillPage { id: String },
+    #[route("/")] SkillsPage {},
+    #[route("/:id")] SingleSkillPage { id: String },
   #[end_nest]
   
   #[nest("/sheets")]
-    #[route("/")]
-    CharacterSheetPage {},
-    #[route("/:id")]
-    SingleChracterSheet { id: String },
+    #[route("/")] CharacterSheetPage {},
+    #[route("/:id")] SingleChracterSheet { id: String },
 }
 
 #[component]
