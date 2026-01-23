@@ -3,6 +3,7 @@ use dioxus::prelude::*;
 use crate::character::prelude::*;
 use crate::modifiers::ModifierClass;
 use crate::rules::components::Modifier;
+use crate::progression::prelude::*;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct RankSignal {

@@ -44,7 +44,7 @@ impl fmt::Display for DiceSet {
 pub type DiceGroup = Vec<DiceSet>;
 
 #[component]
-pub fn DiceGroupEntry(group: ReadOnlySignal<DiceGroup>) -> Element {
+pub fn DiceGroupEntry(group: ReadSignal<DiceGroup>) -> Element {
   let display = group
     .iter()
     .map(|d| d.to_string())

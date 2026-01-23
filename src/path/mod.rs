@@ -80,6 +80,6 @@ impl Ord for Path {
 }
 
 pub mod prelude {
-  pub use super::Path;
+  // pub use super::Path;
   pub use super::selection::{SkillFilter, PathFilter, SelectionFilter, Constraint};
 }

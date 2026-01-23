@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::{cmp::min, fmt};
 
-use crate::character::sheet::BoxRow;
+use crate::character::components::BoxRow;
 
 use crate::skill::prelude::*;
 
@@ -41,7 +41,7 @@ pub struct ResourceStat {
 }
 
 #[component]
-pub fn FlowResourcesBlock(flows: ReadOnlySignal<Vec<FlowStat>>) -> Element {
+pub fn FlowResourcesBlock(flows: ReadSignal<Vec<FlowStat>>) -> Element {
   rsx!(
     div {
       class: "grid dim-resources",
@@ -53,7 +53,7 @@ pub fn FlowResourcesBlock(flows: ReadOnlySignal<Vec<FlowStat>>) -> Element {
 }
 
 #[component]
-pub fn FlowBlock(flow: ReadOnlySignal<FlowStat>) -> Element {
+pub fn FlowBlock(flow: ReadSignal<FlowStat>) -> Element {
   let read_flow = flow.read().clone();
   let name = read_flow.flow;
   let flow_value = read_flow.base;
@@ -76,7 +76,7 @@ pub fn FlowBlock(flow: ReadOnlySignal<FlowStat>) -> Element {
 }
 
 #[component]
-pub fn ResourcePoolEntry(pool: ReadOnlySignal<ResourceStat>, flow_value: i32) -> Element {
+pub fn ResourcePoolEntry(pool: ReadSignal<ResourceStat>, flow_value: i32) -> Element {
   let read_pool = pool.read().clone();
   let resource = read_pool.resource.with_drain();
   let pool_flow = min(read_pool.base, flow_value);

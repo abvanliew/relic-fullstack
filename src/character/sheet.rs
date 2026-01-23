@@ -22,9 +22,6 @@ use super::flow::FlowStat;
 use super::resistance::ResistanceDetails;
 use super::resistance::Resistances;
 
-const DASH_SPEED: i32 = 3;
-pub const BASE_DEFENSE: i32 = 11;
-
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct CharacterSheet {
@@ -49,7 +46,7 @@ pub fn SheetTable(
   sheets: Vec<CharacterSheet>,
   skills: Vec<Skill>,
   paths: Vec<Path>,
-  keywords: ReadOnlySignal<HashMap<String, Keyword>>,
+  keywords: ReadSignal<HashMap<String, Keyword>>,
   named_url: bool,
 ) -> Element {
   rsx!(for sheet in sheets {
@@ -68,7 +65,7 @@ pub fn SheetDetails(
   sheet: CharacterSheet,
   skills: Vec<Skill>,
   paths: Vec<Path>,
-  keywords: ReadOnlySignal<HashMap<String, Keyword>>,
+  keywords: ReadSignal<HashMap<String, Keyword>>,
   named_url: bool,
 ) -> Element {
   let id = sheet.id.to_string();
@@ -205,28 +202,6 @@ pub fn SheetDetails(
   )
 }
 
-#[component]
-pub fn AttributeRow(
-  name: String,
-  children: Element,
-  #[props(default)]
-  name_class: Option<String>,
-) -> Element {
-  let name_class = name_class.unwrap_or("highlight".into());
-  rsx!(
-    div {
-      class: "row full",
-      div {
-        class: name_class,
-        "{name}"
-      }
-      div {
-        class: "align-right",
-        { children }
-      }
-    }
-  )
-}
 
 fn calc_dodge_speed_resistances(
   tenacity: i32,
@@ -303,22 +278,3 @@ pub fn AttributeBlock(attributes: AttributeRanks, dodge: i32) -> Element {
   )
 }
 
-#[component]
-pub fn ConstitutionRow(constitution: i32) -> Element {
-  rsx!(
-    div { "Constituion {constitution}" }
-    BoxRow { count: constitution }
-  )
-}
-
-#[component]
-pub fn BoxRow(count: i32) -> Element {
-  rsx!(
-    div {
-      class: "box-row",
-      if count > 0 {
-        for _ in 0..count { div { class: "box" } }
-      }
-    }
-  )
-}

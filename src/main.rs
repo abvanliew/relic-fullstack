@@ -43,11 +43,11 @@ pub enum Route {
   #[nest("/skills")]
     #[route("/")] SkillsPage {},
     #[route("/:id")] SingleSkillPage { id: String },
-  #[end_nest]
+  // #[end_nest]
   
-  #[nest("/sheets")]
-    #[route("/")] CharacterSheetPage {},
-    #[route("/:id")] SingleChracterSheet { id: String },
+  // #[nest("/sheets")]
+  //   #[route("/")] CharacterSheetPage {},
+  //   #[route("/:id")] SingleChracterSheet { id: String },
 }
 
 #[component]

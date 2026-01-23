@@ -39,7 +39,7 @@ impl fmt::Display for WeaponClass {
 }
 
 #[component]
-pub fn WeaponEntry(weapon: ReadOnlySignal<Weapon>) -> Element {
+pub fn WeaponEntry(weapon: ReadSignal<Weapon>) -> Element {
   let weapon_signal = weapon.read().clone();
   let title = weapon_signal.title;
   let class = weapon_signal.class;

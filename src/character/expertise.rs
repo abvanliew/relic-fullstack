@@ -2,7 +2,7 @@ use crate::rules::components::Modifier;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use super::sheet::AttributeRow;
+use super::components::AttributeRow;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]

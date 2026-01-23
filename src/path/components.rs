@@ -98,7 +98,7 @@ pub fn PathPanel(
 }
 
 #[component]
-pub fn PathTile(path: ReadOnlySignal<Path>) -> Element {
+pub fn PathTile(path: ReadSignal<Path>) -> Element {
   let title = path().title;
   rsx!(
     div { "{title}" }

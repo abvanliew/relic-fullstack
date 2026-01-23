@@ -1,10 +1,11 @@
 use std::{cmp::max, fmt};
 
-use crate::{character::sheet::AttributeRow, equipment::armor::Armor};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
-const BASE_RESIST: i32 = 0;
+use crate::character::components::AttributeRow;
+use crate::equipment::armor::Armor;
+use crate::progression::prelude::*;
 
 #[derive(PartialEq, Props, Clone)]
 pub struct ResistanceDetailsProps {
