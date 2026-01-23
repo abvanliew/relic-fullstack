@@ -2,8 +2,8 @@ use std::collections::HashSet;
 
 use dioxus::prelude::*;
 
-use crate::server::prelude::*;
 use crate::keyword::prelude::*;
+use crate::server::prelude::*;
 use crate::skill::component::*;
 // use crate::path::components::*;
 
@@ -16,27 +16,27 @@ pub struct SkillFilter {
 
 impl Default for SkillFilter {
   fn default() -> Self {
-    let category = use_signal( || HashSet::new() );
+    let category = use_signal(|| HashSet::new());
     Self { category }
   }
 }
 
 #[component]
 pub fn SkillSearch() -> Element {
-  let SkillCache( ref skill_cache ) = use_context();
-  let KeywordCache( ref keyword_cache ) = use_context();
+  let SkillCache(ref skill_cache) = use_context();
+  let KeywordCache(ref keyword_cache) = use_context();
   let filters = SkillFilter::default();
   let current_classifiers = (filters.category)();
   let classifier_ids = get_common_classifier_ids();
-  let classifiers = classifier_ids.into_iter()
-  .filter_map( |id| {
-    match keyword_cache.from_id( &id ) {
-      Some( keyword ) => {
+  let classifiers = classifier_ids
+    .into_iter()
+    .filter_map(|id| match keyword_cache.from_id(&id) {
+      Some(keyword) => {
         let title = keyword.title;
-        let checked = current_classifiers.contains( &id );
+        let checked = current_classifiers.contains(&id);
         let mut category_copy = filters.category.clone();
         let mut classifier_copy = current_classifiers.clone();
-        Some( rsx! {
+        Some(rsx! {
           div {
             class: "row",
             input {
@@ -52,21 +52,24 @@ pub fn SkillSearch() -> Element {
             }
             div { "{title}" }
           }
-        } )
+        })
       },
-      None => None
-    }
-  } )
-  .collect::<Vec<Element>>();
+      None => None,
+    })
+    .collect::<Vec<Element>>();
   let mut skills = skill_cache.into_vec();
   if current_classifiers.len() > 0 {
-    skills = skills.into_iter().filter( |skill| {
-      let objects = skill.get_keyword_ids();
-      let ids = objects.iter()
-      .map( |object| object.to_string() )
-      .collect::<HashSet<String>>();
-      ids.intersection(&current_classifiers).count() > 0
-    } ).collect()
+    skills = skills
+      .into_iter()
+      .filter(|skill| {
+        let objects = skill.get_keyword_ids();
+        let ids = objects
+          .iter()
+          .map(|object| object.to_string())
+          .collect::<HashSet<String>>();
+        ids.intersection(&current_classifiers).count() > 0
+      })
+      .collect()
   }
   skills.sort();
   return rsx! {
@@ -76,5 +79,5 @@ pub fn SkillSearch() -> Element {
       {classifier}
     }
     SkillCardList { skills, display: TermDisplay::Embeded, title_as_link: true }
-  }
+  };
 }

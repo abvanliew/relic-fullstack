@@ -1,8 +1,8 @@
+use super::Keyword;
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt;
-use super::Keyword;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, PartialOrd, Ord, Eq, Clone, Default)]
 pub enum KeywordClass {

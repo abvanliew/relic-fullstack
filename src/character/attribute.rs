@@ -60,22 +60,30 @@ impl CharacterAttribute {
     ];
   }
 
-  pub fn display_as( &self ) -> RankDisplay {
+  pub fn display_as(&self) -> RankDisplay {
     return match &self {
-      CharacterAttribute::Physique | CharacterAttribute::Warfare |
-      CharacterAttribute::Spirit | CharacterAttribute::Manipulation => RankDisplay::Bonus,
-      CharacterAttribute::Tenacity | CharacterAttribute::Fortitude |
-      CharacterAttribute::Resolve | CharacterAttribute::Insight => RankDisplay::Defense,
-    }
+      CharacterAttribute::Physique
+      | CharacterAttribute::Warfare
+      | CharacterAttribute::Spirit
+      | CharacterAttribute::Manipulation => RankDisplay::Bonus,
+      CharacterAttribute::Tenacity
+      | CharacterAttribute::Fortitude
+      | CharacterAttribute::Resolve
+      | CharacterAttribute::Insight => RankDisplay::Defense,
+    };
   }
 
-  pub fn is_capacity( &self ) -> bool {
+  pub fn is_capacity(&self) -> bool {
     return match &self {
-      CharacterAttribute::Physique | CharacterAttribute::Warfare |
-      CharacterAttribute::Spirit | CharacterAttribute::Manipulation => true,
-      CharacterAttribute::Tenacity | CharacterAttribute::Fortitude |
-      CharacterAttribute::Resolve | CharacterAttribute::Insight => false,
-    }
+      CharacterAttribute::Physique
+      | CharacterAttribute::Warfare
+      | CharacterAttribute::Spirit
+      | CharacterAttribute::Manipulation => true,
+      CharacterAttribute::Tenacity
+      | CharacterAttribute::Fortitude
+      | CharacterAttribute::Resolve
+      | CharacterAttribute::Insight => false,
+    };
   }
 }
 

@@ -2,10 +2,10 @@ pub mod components;
 mod selection;
 
 use bson::oid::ObjectId;
+use selection::SkillFilter;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use selection::SkillFilter;
 
 use crate::rules::prelude::*;
 use crate::skill::prelude::*;
@@ -81,5 +81,5 @@ impl Ord for Path {
 
 pub mod prelude {
   // pub use super::Path;
-  pub use super::selection::{SkillFilter, PathFilter, SelectionFilter, Constraint};
+  pub use super::selection::{Constraint, PathFilter, SelectionFilter, SkillFilter};
 }

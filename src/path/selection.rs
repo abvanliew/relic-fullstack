@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
-use serde::{Deserialize, Serialize};
 use super::Path;
+use serde::{Deserialize, Serialize};
 
 use self::SkillFilter::*;
 
@@ -15,7 +15,7 @@ pub struct SelectionFilter {
 pub enum PathFilter {
   #[default]
   All,
-  Single( String ),
+  Single(String),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, PartialOrd, Ord, Eq, Hash)]
@@ -47,7 +47,7 @@ impl Display for SkillFilter {
 }
 
 impl SkillFilter {
-  pub fn weight( &self ) ->  i32 {
+  pub fn weight(&self) -> i32 {
     match self {
       Features | CoreFeatures | Spells => 2,
       MinorFeatures | CoreMinorFeatures | Cantrips => 1,
@@ -67,13 +67,13 @@ impl Default for Constraint {
     Self {
       filter: SelectionFilter::default(),
       required_weight: 0,
-      overages: 0
+      overages: 0,
     }
   }
 }
 
 impl Constraint {
-  pub fn feature( required_weight: i32 ) -> Self {
+  pub fn feature(required_weight: i32) -> Self {
     Self {
       filter: SelectionFilter {
         skill_filter: SkillFilter::Features,
@@ -83,8 +83,8 @@ impl Constraint {
       ..Default::default()
     }
   }
-  
-  pub fn minor_feature( required_weight: i32 ) -> Self {
+
+  pub fn minor_feature(required_weight: i32) -> Self {
     Self {
       filter: SelectionFilter {
         skill_filter: SkillFilter::MinorFeatures,
@@ -104,14 +104,14 @@ impl Path {
     for (skill_filter, ranks) in selections {
       let required_weight = skill_filter.weight() * ranks;
       constraint_weights += required_weight;
-      constraints.push( Constraint {
+      constraints.push(Constraint {
         filter: SelectionFilter {
-          path_filter: PathFilter::Single( self.id.to_string() ),
+          path_filter: PathFilter::Single(self.id.to_string()),
           skill_filter: skill_filter.clone(),
         },
         required_weight,
         ..Default::default()
-      } );
+      });
     }
     return (constraints, constraint_weights);
   }

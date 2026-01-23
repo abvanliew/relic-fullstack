@@ -145,20 +145,20 @@ impl Resistances {
     return match category {
       DamageCategory::Physical => {
         self.bashing.is_some() || self.slashing.is_some() || self.piercing.is_some()
-      }
+      },
       DamageCategory::Elemental => {
         self.fire.is_some()
           || self.cold.is_some()
           || self.lighting.is_some()
           || self.thunder.is_some()
           || self.acid.is_some()
-      }
+      },
       DamageCategory::Esoteric => {
         self.force.is_some()
           || self.radiant.is_some()
           || self.necrotic.is_some()
           || self.psionic.is_some()
-      }
+      },
     };
   }
 

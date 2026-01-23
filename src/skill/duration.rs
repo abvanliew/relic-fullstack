@@ -36,12 +36,12 @@ impl Duration {
     let mut base: String = match (&self.class, length != 1, &self.upkeep_cost) {
       (DurationClass::Custom, _, _) => {
         format!("{}", self.custom.clone().unwrap_or("".into()))
-      }
+      },
       (DurationClass::NextTurnStart, _, _) => "Until the start of the next round".into(),
       (DurationClass::NextTurnEnd, _, _) => "Until the end of the next round".into(),
       (DurationClass::WhileReserved, _, Some(cost)) => {
         format!("While {} is reserved", cost.simple())
-      }
+      },
       (DurationClass::Minutes, true, _) => format!("{length} Minutes"),
       (DurationClass::Minutes, false, _) => format!("1 Minute"),
       (DurationClass::Hours, true, _) => format!("{length} Hours"),

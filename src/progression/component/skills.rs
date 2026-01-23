@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use dioxus::prelude::*;
 
 use crate::common::*;
-use crate::skill::prelude::*;
-use crate::skill::component::*;
 use crate::path::components::*;
+use crate::skill::component::*;
+use crate::skill::prelude::*;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SkillSelections {
@@ -19,7 +19,7 @@ pub struct SkillSelections {
 impl Default for SkillSelections {
   fn default() -> Self {
     Self {
-      rank_signal: use_signal( || HashMap::new() ),
+      rank_signal: use_signal(|| HashMap::new()),
       keystones: HashMap::new(),
       selectable: HashMap::new(),
       leeway: HashMap::new(),
@@ -29,12 +29,16 @@ impl Default for SkillSelections {
 }
 
 impl SkillSelections {
-  pub fn add_skill( &mut self, skill: &Skill ) {
+  pub fn add_skill(&mut self, skill: &Skill) {
     let id = skill.id.to_string();
     match skill.weight() {
-        0 => { self.keystones.insert(id, skill.clone() ); },
-        1 | 2 =>{ self.selectable.insert(id, skill.clone() ); },
-        _ => (),
+      0 => {
+        self.keystones.insert(id, skill.clone());
+      },
+      1 | 2 => {
+        self.selectable.insert(id, skill.clone());
+      },
+      _ => (),
     };
   }
 
@@ -46,10 +50,7 @@ impl SkillSelections {
 }
 
 #[component]
-pub fn CharacterSkills(
-  skill_selection: SkillSelections,
-  core_constraints: Vec<String>,
-) -> Element {
+pub fn CharacterSkills(skill_selection: SkillSelections, core_constraints: Vec<String>) -> Element {
   let skills = skill_selection.to_vec();
   rsx! {
     div {
@@ -76,16 +77,13 @@ pub fn CharacterSkills(
 }
 
 #[component]
-pub fn SkillSelector(
-  skill: Skill,
-  mut skill_selection: SkillSelections,
-) -> Element {
+pub fn SkillSelector(skill: Skill, mut skill_selection: SkillSelections) -> Element {
   let id = skill.id.to_string();
   let ranked = skill.is_ranked();
   let rank_map = skill_selection.rank_signal.cloned();
-  let rank = *rank_map.get( &id ).unwrap_or( &0 );
+  let rank = *rank_map.get(&id).unwrap_or(&0);
   let selected = rank > 0;
-  let leeway = skill_selection.leeway.get( &id ).unwrap_or( &0 );
+  let leeway = skill_selection.leeway.get(&id).unwrap_or(&0);
   let leeway_rank = leeway / skill.weight();
   let min_rank = 0;
   let mut max_rank = rank + leeway_rank;
@@ -93,8 +91,8 @@ pub fn SkillSelector(
     max_rank = max_rank.min(1);
   }
   let conditional_class = match (selected, rank >= max_rank) {
-    ( true, _ ) => "selected",
-    ( _, true ) => "disabled",
+    (true, _) => "selected",
+    (_, true) => "disabled",
     _ => "",
   };
   let input_id = id.clone();
@@ -104,7 +102,7 @@ pub fn SkillSelector(
   let path_ids = skill.paths.clone().unwrap_or_default();
   let ranked_input = match ranked {
     false => None,
-    true => Some( rsx! {
+    true => Some(rsx! {
       input {
         class: "input", type: "number",
         value: rank, min: min_rank, max: max_rank,
@@ -121,23 +119,27 @@ pub fn SkillSelector(
           event.stop_propagation();
         }
       }
-    } ),
+    }),
   };
   let on_click = move |_: Event<MouseData>| {
-    if ranked { return; }
-      let new_id = toggle_id.clone();
-      let mut new_map = toggle_map.clone();
-      match selected {
-        true => {
-          new_map.insert( new_id, 0 );
-        },
-        false => {
-          if max_rank <= 0 { return; }
-          new_map.insert( new_id, 1 );
-        },
-      };
-      skill_selection.rank_signal.set( new_map );
+    if ranked {
+      return;
+    }
+    let new_id = toggle_id.clone();
+    let mut new_map = toggle_map.clone();
+    match selected {
+      true => {
+        new_map.insert(new_id, 0);
+      },
+      false => {
+        if max_rank <= 0 {
+          return;
+        }
+        new_map.insert(new_id, 1);
+      },
     };
+    skill_selection.rank_signal.set(new_map);
+  };
   rsx! {
     SkillCard {
       skill: skill,

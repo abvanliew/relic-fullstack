@@ -50,7 +50,7 @@ impl Stack {
 }
 
 #[component]
-pub fn RulesStackDetail( stacks: RulesStack ) -> Element {
+pub fn RulesStackDetail(stacks: RulesStack) -> Element {
   rsx! {
     for stack in stacks {
       StackDetail { stack }
@@ -59,12 +59,12 @@ pub fn RulesStackDetail( stacks: RulesStack ) -> Element {
 }
 
 #[component]
-pub fn StackDetail( stack: Stack ) -> Element {
-  if let Some( property ) = stack.property {
-    let ( title, blocks ) = property.get_title_and_blocks();
+pub fn StackDetail(stack: Stack) -> Element {
+  if let Some(property) = stack.property {
+    let (title, blocks) = property.get_title_and_blocks();
     let block = property.block.unwrap_or_default();
     return rsx! {
-      PropertyDetail { 
+      PropertyDetail {
         title,
         block,
         RulesBlockSet { blocks }
@@ -92,12 +92,9 @@ pub fn StackDetail( stack: Stack ) -> Element {
 
 #[component]
 pub fn PropertyDetail(
-  title: String,
-  #[props(default)] block: bool,
-  children: Element,
-  title_override: Option<Element>,
+  title: String, #[props(default)] block: bool, children: Element, title_override: Option<Element>,
 ) -> Element {
-  return  rsx! {
+  return rsx! {
     if block {
       div { class: "uv-full highlight", "{title}" }
       div { class: "uv-full indent", {children} }
@@ -105,7 +102,7 @@ pub fn PropertyDetail(
       div { class: "uv-title highlight", "{title}" }
       div { class: "uv-details", {children} }
     }
-  }
+  };
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]

@@ -32,15 +32,12 @@ impl Default for TrainingGrowthSignals {
 
 #[component]
 pub fn CharacterGrowth(
-  growth_signals: TrainingGrowthSignals,
-  growth_ranks_remaining: i32,
-  level: i32,
-  #[props(default)] has_innate: bool,
-  #[props(default)] has_resonance: bool,
+  growth_signals: TrainingGrowthSignals, growth_ranks_remaining: i32, level: i32,
+  #[props(default)] has_innate: bool, #[props(default)] has_resonance: bool,
   #[props(default)] has_magic: bool,
 ) -> Element {
   let display_training_signal: Signal<Option<TrainingClass>> = use_signal(|| None);
-  let neg_ranks = growth_ranks_remaining.checked_neg().unwrap_or( i32::MAX );
+  let neg_ranks = growth_ranks_remaining.checked_neg().unwrap_or(i32::MAX);
   let ranks_state = if growth_ranks_remaining == 0 {
     SelectionState::Finished
   } else if growth_ranks_remaining < 0 {
@@ -51,59 +48,59 @@ pub fn CharacterGrowth(
   rsx! {
     div {
       class: "grid dim-growth underhang",
-      div { 
+      div {
         class: "uv-full",
         match ranks_state {
           SelectionState::Finished | SelectionState::Unfinished => rsx!{ "{growth_ranks_remaining} remaining ranks to spend, each category has a maximum rank of {level}." },
           SelectionState::Invalid =>  rsx!{ "Overspent by {neg_ranks} ranks, each category has a maximum rank of {level}." }
         }
       }
-      GrowthSelector { 
-        training: TrainingClass::Adept, 
+      GrowthSelector {
+        training: TrainingClass::Adept,
         ranks_state,
         enabled: true,
-        level, 
-        rank: growth_signals.adept, 
+        level,
+        rank: growth_signals.adept,
         growth_ranks_remaining,
         display_training_signal
       }
-      GrowthSelector { 
-        training: TrainingClass::Endurance, 
+      GrowthSelector {
+        training: TrainingClass::Endurance,
         ranks_state,
         enabled: true,
-        level, 
-        rank: growth_signals.endurance, 
+        level,
+        rank: growth_signals.endurance,
         growth_ranks_remaining,
         display_training_signal
       }
-      GrowthSelector { 
-        training: TrainingClass::Expert, 
+      GrowthSelector {
+        training: TrainingClass::Expert,
         ranks_state,
         enabled: true,
-        level, 
-        rank: growth_signals.expert, 
+        level,
+        rank: growth_signals.expert,
         growth_ranks_remaining,
         display_training_signal
       }
-      GrowthSelector { 
-        training: TrainingClass::Innate, 
+      GrowthSelector {
+        training: TrainingClass::Innate,
         ranks_state,
         enabled: has_innate,
-        level, 
-        rank: growth_signals.innate, 
+        level,
+        rank: growth_signals.innate,
         growth_ranks_remaining,
         display_training_signal
       }
-      GrowthSelector { 
+      GrowthSelector {
         training: TrainingClass::Resonance,
         ranks_state,
         enabled: has_resonance,
-        level, 
-        rank: growth_signals.resonance, 
+        level,
+        rank: growth_signals.resonance,
         growth_ranks_remaining,
         display_training_signal
       }
-      GrowthSelector { 
+      GrowthSelector {
         training: TrainingClass::Magic,
         ranks_state,
         enabled: has_magic,
@@ -118,33 +115,27 @@ pub fn CharacterGrowth(
 
 #[component]
 pub fn GrowthSelector(
-  training: TrainingClass,
-  ranks_state: SelectionState,
-  level: i32,
-  rank: Signal<i32>,
-  growth_ranks_remaining: i32,
-  display_training_signal: Signal<Option<TrainingClass>>,
+  training: TrainingClass, ranks_state: SelectionState, level: i32, rank: Signal<i32>,
+  growth_ranks_remaining: i32, display_training_signal: Signal<Option<TrainingClass>>,
   enabled: bool,
 ) -> Element {
-  let conditional_class = match (ranks_state, enabled, rank() > 0 ) {
-    ( SelectionState::Invalid, _, true ) | (_, false, true) => "errored",
+  let conditional_class = match (ranks_state, enabled, rank() > 0) {
+    (SelectionState::Invalid, _, true) | (_, false, true) => "errored",
     (_, false, _) | (SelectionState::Finished | SelectionState::Invalid, _, false) => "disabled",
     _ => "",
   };
-  let max_rank = if enabled { 
-    min( level, growth_ranks_remaining + rank() ).max(0)
+  let max_rank = if enabled {
+    min(level, growth_ranks_remaining + rank()).max(0)
   } else {
     0
   };
-  let modifiers = GrowthTrack::class_at( &training, rank() );
-  let ( display, new_value ) = match display_training_signal() {
-    Some( class ) => {
-      match class.eq(&training) {
-        true => (true, None),
-        false => (false, Some( training.clone() )),
-      }
+  let modifiers = GrowthTrack::class_at(&training, rank());
+  let (display, new_value) = match display_training_signal() {
+    Some(class) => match class.eq(&training) {
+      true => (true, None),
+      false => (false, Some(training.clone())),
     },
-    None => (false, Some( training.clone() )),
+    None => (false, Some(training.clone())),
   };
   rsx! {
     div {
@@ -179,15 +170,11 @@ pub fn GrowthSelector(
   }
 }
 
-
 #[component]
 pub fn GrowthRow(
-  training: TrainingClass,
-  row_rank: i32,
-  rank: Signal<i32>,
-  max_rank: i32,
+  training: TrainingClass, row_rank: i32, rank: Signal<i32>, max_rank: i32,
 ) -> Element {
-  let modifiers = GrowthTrack::class_at( &training, row_rank );
+  let modifiers = GrowthTrack::class_at(&training, row_rank);
   let conditional_class = match row_rank > max_rank {
     true => "disabled",
     false => "",
@@ -201,5 +188,5 @@ pub fn GrowthRow(
       class: "uv-property spacer small-text {conditional_class}",
       "{modifiers}"
     }
-  }
+  };
 }

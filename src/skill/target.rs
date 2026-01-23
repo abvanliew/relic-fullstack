@@ -85,7 +85,7 @@ impl Target {
     match (&self.selection, &self.custom_selection) {
       (Some(Selection::Creature) | Some(Selection::Space) | Some(Selection::CreatureObject), _) => {
         "A"
-      }
+      },
       (Some(Selection::Ally) | Some(Selection::Enemy) | Some(Selection::Object), _) => "An",
       (_, Some(_)) => "",
       _ => "Some",
@@ -99,10 +99,16 @@ impl fmt::Display for Target {
     if let Some(custom) = &self.custom {
       return write!(f, "{custom}");
     }
-    let target = match (&self.class, &self.range, &self.size, &self.limit, &self.placed) {
+    let target = match (
+      &self.class,
+      &self.range,
+      &self.size,
+      &self.limit,
+      &self.placed,
+    ) {
       (TargetClass::Touch, _, _, None, _) => {
         format!("{} {} within reach", self.article(), self.singular(),)
-      }
+      },
       (TargetClass::LineOfSight, _, _, _, _) => format!(
         "{} {} within line of sight",
         self.article(),
@@ -130,7 +136,7 @@ impl fmt::Display for Target {
       ),
       (TargetClass::Weapon, _, _, None, _) => {
         format!("{} {} within weapon reach", self.article(), self.singular(),)
-      }
+      },
       (TargetClass::Weapon, _, _, Some(limit), _) => format!(
         "Up to {} {} within weapon reach",
         limit,
@@ -158,7 +164,7 @@ impl fmt::Display for Target {
       ),
       (TargetClass::Burst, Some(range), _, None, _) => {
         format!("All {} within range {}", self.plural(), range,)
-      }
+      },
       (TargetClass::Burst, Some(range), _, Some(limit), _) => format!(
         "Up to {limit} {} within range {range}",
         if *limit != 0 {
@@ -169,20 +175,20 @@ impl fmt::Display for Target {
       ),
       (TargetClass::Line, _, Some(size), None, _) => {
         format!("All {} in a Line {size} spaces long", self.plural(),)
-      }
+      },
       (TargetClass::Cone, _, Some(size), None, _) => {
         format!("All {} in a Cone size {size}", self.plural(),)
-      }
-      (TargetClass::RadiusCorner, Some(range), Some(size), _, Some(true)) => format!(
-        "Place a radius {size} area centered on the corner of a space within range {range}"
-      ),
+      },
+      (TargetClass::RadiusCorner, Some(range), Some(size), _, Some(true)) => {
+        format!("Place a radius {size} area centered on the corner of a space within range {range}")
+      },
       (TargetClass::RadiusCorner, Some(range), Some(size), _, _) => format!(
         "All {} within a radius {size} area centered on the corner of a space within range {range}",
         self.plural(),
       ),
-      (TargetClass::RadiusSpace, Some(range), Some(size), _, Some(true)) => format!(
-        "Place a radius {size} area centered on a space within range {range}"
-      ),
+      (TargetClass::RadiusSpace, Some(range), Some(size), _, Some(true)) => {
+        format!("Place a radius {size} area centered on a space within range {range}")
+      },
       (TargetClass::RadiusSpace, Some(range), Some(size), _, _) => format!(
         "All {} within a radius {size} area centered on a space within range {range}",
         self.plural(),

@@ -58,15 +58,15 @@ impl Default for Skill {
 
 impl PartialOrd for Skill {
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-    match self.tier.partial_cmp( &other.tier ) {
+    match self.tier.partial_cmp(&other.tier) {
       Some(Ordering::Equal) => (),
       ord => return ord,
     }
-    match self.order.partial_cmp( &other.order ) {
+    match self.order.partial_cmp(&other.order) {
       Some(Ordering::Equal) => (),
       ord => return ord,
     }
-    match self.training_cost.partial_cmp( &other.training_cost ) {
+    match self.training_cost.partial_cmp(&other.training_cost) {
       Some(Ordering::Equal) => (),
       ord => return ord,
     }
@@ -74,7 +74,7 @@ impl PartialOrd for Skill {
       Some(Ordering::Equal) => (),
       ord => return ord,
     }
-    return self.title.partial_cmp( &other.title );
+    return self.title.partial_cmp(&other.title);
   }
 
   fn lt(&self, other: &Self) -> bool {

@@ -3,18 +3,16 @@ use std::collections::HashSet;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
-use crate::Route;
-use crate::path::Path;
+use crate::common::*;
 use crate::keyword::prelude::*;
+use crate::path::Path;
 use crate::server::prelude::*;
 use crate::skill::component::*;
 use crate::skill::prelude::*;
-use crate::common::*;
+use crate::Route;
 
 #[component]
-pub fn PathPanelList(
-  paths: Vec<Path>
-) -> Element {
+pub fn PathPanelList(paths: Vec<Path>) -> Element {
   return rsx! {
     div {
       class: "column gap-large path-skil-wrapper",
@@ -30,26 +28,20 @@ pub fn PathPanelList(
 
 #[component]
 pub fn PathPanel(
-  path: Path,
-  #[props(default)] hide_description: bool,
-  #[props(default)] title_as_link: bool,
+  path: Path, #[props(default)] hide_description: bool, #[props(default)] title_as_link: bool,
 ) -> Element {
   let id = path.id.to_string();
   let title = path.title;
   let optional_summary = path.summary;
-  let SkillCache( ref skill_cache ) = use_context();
+  let SkillCache(ref skill_cache) = use_context();
   let skill_ids = path.skill_ids.unwrap_or_default();
-  let skills = skill_cache.from_object_ids( &skill_ids );
-  let keyword_id_objects = keywords_from_skills( &skills );
-  let KeywordCache( ref keyword_cache ) = use_context();
-  let keywords_all = keyword_cache.from_object_set( &keyword_id_objects );
-  let mut keywords = rules_specific( keywords_all );
+  let skills = skill_cache.from_object_ids(&skill_ids);
+  let keyword_id_objects = keywords_from_skills(&skills);
+  let KeywordCache(ref keyword_cache) = use_context();
+  let keywords_all = keyword_cache.from_object_set(&keyword_id_objects);
+  let mut keywords = rules_specific(keywords_all);
   keywords.sort();
-  let (
-    keystones,
-    features,
-    minor_features,
-  ) = partition_skills_by_cost(skills);
+  let (keystones, features, minor_features) = partition_skills_by_cost(skills);
   return rsx! {
     if !hide_description {
       div {
@@ -94,7 +86,7 @@ pub fn PathPanel(
         }
       }
     }
-  }
+  };
 }
 
 #[component]
@@ -110,37 +102,38 @@ pub fn PathTile(path: ReadSignal<Path>) -> Element {
 
 #[component]
 pub fn PathChipsLoader(
-  path_ids: HashSet<ObjectId>,
-  #[props(default)] paths_as_links: bool,
+  path_ids: HashSet<ObjectId>, #[props(default)] paths_as_links: bool,
   #[props(default)] additional_classes: Option<String>,
 ) -> Element {
-  let PathCache( ref path_cache ) = use_context::<PathCache>();
-  let mut paths = path_cache.from_object_set( &path_ids );
+  let PathCache(ref path_cache) = use_context::<PathCache>();
+  let mut paths = path_cache.from_object_set(&path_ids);
   paths.sort();
-  return rsx! { PathChips { paths, paths_as_links, additional_classes } }
+  return rsx! { PathChips { paths, paths_as_links, additional_classes } };
 }
 
 #[component]
 pub fn PathChips(
-  paths: Vec<Path>,
-  #[props(default)] paths_as_links: bool,
+  paths: Vec<Path>, #[props(default)] paths_as_links: bool,
   #[props(default)] additional_classes: Option<String>,
 ) -> Element {
-  let extra_class = additional_classes.unwrap_or( "".into() );
-  let chip_elements: Vec<Element> = paths.iter().map( |path| {
-    let title = path.title.clone();
-    let id = path.id.to_string();
-    rsx! {
-      div {
-        class: "chip {extra_class}",
-        if paths_as_links {
-          Link { to: Route::SinglePath { id }, "{title}" }
-        } else {
-          div { "{title}" }
+  let extra_class = additional_classes.unwrap_or("".into());
+  let chip_elements: Vec<Element> = paths
+    .iter()
+    .map(|path| {
+      let title = path.title.clone();
+      let id = path.id.to_string();
+      rsx! {
+        div {
+          class: "chip {extra_class}",
+          if paths_as_links {
+            Link { to: Route::SinglePath { id }, "{title}" }
+          } else {
+            div { "{title}" }
+          }
         }
       }
-    }
-  } ).collect();
+    })
+    .collect();
   rsx!(
     div {
       class: "chip-card",
@@ -150,4 +143,3 @@ pub fn PathChips(
     }
   )
 }
-

@@ -11,10 +11,7 @@ pub fn HorizontalBar() -> Element {
 
 #[component]
 pub fn InputSignal(
-  mut rank: Signal<i32>,
-  #[props(default)]
-  min_rank: i32,
-  max_rank: i32,
+  mut rank: Signal<i32>, #[props(default)] min_rank: i32, max_rank: i32,
 ) -> Element {
   rsx! {
     input {

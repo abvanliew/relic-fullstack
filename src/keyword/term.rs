@@ -18,13 +18,13 @@ impl Term {
   pub fn to_title(&self) -> String {
     return match (self.keyword_id, &self.title) {
       (Some(keyword_id), _) => {
-        let KeywordCache( ref keyword_cache ) = use_context();
-        let keyword_result = keyword_cache.from_object_id( &keyword_id );
+        let KeywordCache(ref keyword_cache) = use_context();
+        let keyword_result = keyword_cache.from_object_id(&keyword_id);
         match keyword_result {
           Some(keyword) => keyword.title_as(&self.tense),
           None => "undefined".into(),
         }
-      }
+      },
       (_, Some(title)) => title.clone(),
       _ => "undefined".into(),
     };
@@ -42,9 +42,7 @@ pub(crate) fn TermSnippet(term: Term) -> Element {
 }
 
 #[component]
-pub(crate) fn KeywordCards(
-  keywords: Vec<Keyword>,
-) -> Element {
+pub(crate) fn KeywordCards(keywords: Vec<Keyword>) -> Element {
   return rsx! {
     for keyword in keywords {
       KeywordCard { keyword }
@@ -70,9 +68,7 @@ pub(crate) fn KeywordCard(keyword: Keyword) -> Element {
 }
 
 #[component]
-pub(crate) fn KeywordBlocks(
-  keywords: Vec<Keyword>,
-) -> Element {
+pub(crate) fn KeywordBlocks(keywords: Vec<Keyword>) -> Element {
   return rsx! {
     for keyword in keywords {
       KeywordBlock { keyword }
@@ -85,7 +81,7 @@ pub(crate) fn KeywordBlock(keyword: Keyword) -> Element {
   let title = keyword.title.clone();
   let blocks = keyword.blocks();
   return rsx! {
-    PropertyDetail { 
+    PropertyDetail {
       title,
       block: true,
       RulesBlockSet { blocks }

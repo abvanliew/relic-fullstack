@@ -4,16 +4,13 @@ use std::collections::HashSet;
 
 use super::SelectionState;
 use crate::asset::icon::{IMG_SELECTED, IMG_UNSELECTED};
+use crate::common::*;
 use crate::path::components::*;
 use crate::path::Path;
-use crate::common::*;
 
 #[component]
 pub fn CharacterPaths(
-  path_options: Vec<Path>,
-  path_min: i32,
-  path_max: i32,
-  extra_features_signal: Signal<i32>,
+  path_options: Vec<Path>, path_min: i32, path_max: i32, extra_features_signal: Signal<i32>,
   selected_paths: Signal<HashSet<String>>,
 ) -> Element {
   let display_path_signal: Signal<Option<String>> = use_signal(|| None);
@@ -65,9 +62,7 @@ pub fn CharacterPaths(
 
 #[component]
 pub fn ExtraFeatureSelector(
-  feature_max: i32,
-  extra_features_signal: Signal<i32>,
-  path_selection_state: SelectionState,
+  feature_max: i32, extra_features_signal: Signal<i32>, path_selection_state: SelectionState,
 ) -> Element {
   let conditional_class = match (path_selection_state, extra_features_signal() > 0) {
     (_, true) | (SelectionState::Unfinished, _) => "",
@@ -87,9 +82,7 @@ pub fn ExtraFeatureSelector(
 
 #[component]
 pub fn PathSelector(
-  path: Path,
-  selected_paths: Signal<HashSet<String>>,
-  display_path_signal: Signal<Option<String>>,
+  path: Path, selected_paths: Signal<HashSet<String>>, display_path_signal: Signal<Option<String>>,
   path_selection_state: SelectionState,
 ) -> Element {
   let title = path.title.clone();
@@ -108,11 +101,12 @@ pub fn PathSelector(
     IMG_UNSELECTED
   };
   let mut conditional_class = match (path_selection_state, selected, display) {
-    (_, true, _) | (SelectionState::Unfinished, _, _ ) => "",
-    (SelectionState::Finished | SelectionState::Invalid, false, _ ) => "disabled",
-  }.into();
+    (_, true, _) | (SelectionState::Unfinished, _, _) => "",
+    (SelectionState::Finished | SelectionState::Invalid, false, _) => "disabled",
+  }
+  .into();
   if display {
-    conditional_class = format!( "{conditional_class} selected medium-border",  );
+    conditional_class = format!("{conditional_class} selected medium-border",);
   }
   let highlight_class = if display { "path-card-highlight" } else { "" };
   return rsx! {

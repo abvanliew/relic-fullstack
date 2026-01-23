@@ -10,8 +10,10 @@ pub struct Bonus<T>
 where
   T: Add + Ord + Clone,
 {
-  #[serde(default)] pub base: InstanceBonus<T>,
-  #[serde(default)] pub bonus: StackingBonus<T>,
+  #[serde(default)]
+  pub base: InstanceBonus<T>,
+  #[serde(default)]
+  pub bonus: StackingBonus<T>,
 }
 
 impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default> Bonus<T> {
@@ -32,13 +34,15 @@ impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default> Bonus<T> {
 
   pub fn multiplier(&mut self, multipler: T) {
     self.bonus = match &self.bonus.0 {
-      Some( value ) => StackingBonus::from( value.clone() * multipler ),
-      None => StackingBonus( None ),
+      Some(value) => StackingBonus::from(value.clone() * multipler),
+      None => StackingBonus(None),
     }
   }
 }
 
-impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default + fmt::Display> fmt::Display for Bonus<T> {
+impl<T: Add<Output = T> + Mul<Output = T> + Clone + Ord + Default + fmt::Display> fmt::Display
+  for Bonus<T>
+{
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     let value = self.value();
     let scalar = self.scalar();

@@ -13,10 +13,7 @@ pub struct ModifierSet(HashMap<ModifierClass, Bonus<i32>>);
 impl ModifierSet {
   pub fn get(&self, class: &ModifierClass) -> i32 {
     let ModifierSet(map) = self;
-    return map
-      .get(class)
-      .unwrap_or(&Bonus::<i32>::default())
-      .value();
+    return map.get(class).unwrap_or(&Bonus::<i32>::default()).value();
   }
 
   pub fn add(&mut self, class: &ModifierClass, value: Bonus<i32>) {
@@ -44,12 +41,12 @@ impl ModifierSet {
     return self.0.len();
   }
 
-  pub fn multiple( &self, multiplier: i32 ) -> Self {
+  pub fn multiple(&self, multiplier: i32) -> Self {
     let mut new_map = self.0.clone();
     for value in new_map.values_mut() {
-      value.multiplier( multiplier );
+      value.multiplier(multiplier);
     }
-    return Self( new_map );
+    return Self(new_map);
   }
 }
 

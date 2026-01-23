@@ -2,10 +2,7 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn AttributeRow(
-  name: String,
-  children: Element,
-  #[props(default)]
-  name_class: Option<String>,
+  name: String, children: Element, #[props(default)] name_class: Option<String>,
 ) -> Element {
   let name_class = name_class.unwrap_or("highlight".into());
   rsx!(

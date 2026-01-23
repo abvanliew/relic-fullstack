@@ -1,2 +1,4 @@
 tab_spaces = 2
 max_width = 100
+fn_params_layout = "Compressed"
+match_block_trailing_comma = true

@@ -2,8 +2,8 @@ use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::character::prelude::*;
-use crate::rules::components::Modifier;
 use crate::progression::prelude::*;
+use crate::rules::components::Modifier;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]

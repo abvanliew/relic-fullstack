@@ -1,10 +1,10 @@
 use super::Skill;
-use dioxus::prelude::*;
 use crate::keyword::prelude::*;
 use crate::path::prelude::*;
 use crate::rules::prelude::*;
 use crate::server::prelude::KeywordCache;
 use bson::oid::ObjectId;
+use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt;
@@ -57,66 +57,59 @@ impl Skill {
       TrainingCost::Inherient | TrainingCost::Keystone => 0,
     }
   }
-  
+
   pub fn resource_cost(&self) -> i32 {
     self.action.get_minimum_resource_cost()
   }
-  
+
   pub fn is_ranked(&self) -> bool {
     match &self.ranked {
-      Some( true ) => true,
+      Some(true) => true,
       _ => false,
     }
   }
 
-  pub fn is_core( &self ) -> bool {
+  pub fn is_core(&self) -> bool {
     return self.core.unwrap_or_default();
   }
-  
-  pub fn is_match( &self, filter: &SelectionFilter ) -> bool {
-    return self.is_path_match( &filter.path_filter ) && self.is_skill_match( &filter.skill_filter );
+
+  pub fn is_match(&self, filter: &SelectionFilter) -> bool {
+    return self.is_path_match(&filter.path_filter) && self.is_skill_match(&filter.skill_filter);
   }
-  
-  pub fn is_path_match( &self, path_filter: &PathFilter ) -> bool {
-    return match ( path_filter, &self.paths ) {
-      ( PathFilter::All, _ ) => true,
-      ( PathFilter::Single( path_id ), Some( paths) ) => {
+
+  pub fn is_path_match(&self, path_filter: &PathFilter) -> bool {
+    return match (path_filter, &self.paths) {
+      (PathFilter::All, _) => true,
+      (PathFilter::Single(path_id), Some(paths)) => {
         for path in paths.iter() {
-          if path.to_string().eq( path_id ) {
-            return true
+          if path.to_string().eq(path_id) {
+            return true;
           }
         }
         false
       },
-      ( PathFilter::Single( _ ), _ ) => false,
-    }
+      (PathFilter::Single(_), _) => false,
+    };
   }
-  
-  pub fn is_skill_match( &self, skill_filter: &SkillFilter ) -> bool {
-    return match ( skill_filter, &self.training_cost, &self.is_core() ) {
+
+  pub fn is_skill_match(&self, skill_filter: &SkillFilter) -> bool {
+    return match (skill_filter, &self.training_cost, &self.is_core()) {
       (
-        SkillFilter::Features, 
-        TrainingCost::Full | TrainingCost::Spell | TrainingCost::Half | TrainingCost::Cantrip, 
+        SkillFilter::Features,
+        TrainingCost::Full | TrainingCost::Spell | TrainingCost::Half | TrainingCost::Cantrip,
         _,
-      ) | ( 
-        SkillFilter::MinorFeatures, 
-        TrainingCost::Half | TrainingCost::Cantrip,
-        _,
-      ) | (
-        SkillFilter::CoreFeatures, 
-        TrainingCost::Full | TrainingCost::Spell | TrainingCost::Half | TrainingCost::Cantrip, 
+      )
+      | (SkillFilter::MinorFeatures, TrainingCost::Half | TrainingCost::Cantrip, _)
+      | (
+        SkillFilter::CoreFeatures,
+        TrainingCost::Full | TrainingCost::Spell | TrainingCost::Half | TrainingCost::Cantrip,
         true,
-      ) | (
-        SkillFilter::CoreMinorFeatures, 
-        TrainingCost::Half | TrainingCost::Cantrip, 
-        true,
-      ) | (
-        SkillFilter::Spells, TrainingCost::Spell, _,
-      ) | (
-        SkillFilter::Cantrips, TrainingCost::Cantrip, _,
-      ) => true,
+      )
+      | (SkillFilter::CoreMinorFeatures, TrainingCost::Half | TrainingCost::Cantrip, true)
+      | (SkillFilter::Spells, TrainingCost::Spell, _)
+      | (SkillFilter::Cantrips, TrainingCost::Cantrip, _) => true,
       _ => false,
-    }
+    };
   }
 }
 
@@ -147,7 +140,7 @@ impl Property {
     if let Some(id) = self.term.keyword_id {
       ids.insert(id);
     }
-    if let Some( rules ) = &self.rules {
+    if let Some(rules) = &self.rules {
       for rule in rules {
         ids.extend(rule.get_keyword_ids());
       }
@@ -155,20 +148,19 @@ impl Property {
     return ids;
   }
 
-  pub fn get_title_and_blocks( &self ) -> ( String, RulesBlocks ) {
+  pub fn get_title_and_blocks(&self) -> (String, RulesBlocks) {
     let title = self.term.to_title();
-    let blocks = match ( &self.rules, self.term.keyword_id ) {
-      ( Some( rules ), _ ) => rules.clone(),
-      ( _, Some( keyword_id ) ) => {
-        let KeywordCache( ref keyword_cache ) = use_context();
-        match keyword_cache.from_object_id( &keyword_id ) {
-          Some( keyword ) => keyword.blocks(),
+    let blocks = match (&self.rules, self.term.keyword_id) {
+      (Some(rules), _) => rules.clone(),
+      (_, Some(keyword_id)) => {
+        let KeywordCache(ref keyword_cache) = use_context();
+        match keyword_cache.from_object_id(&keyword_id) {
+          Some(keyword) => keyword.blocks(),
           None => Vec::new(),
         }
       },
       _ => Vec::new(),
     };
-    return ( title, blocks )
+    return (title, blocks);
   }
 }
-

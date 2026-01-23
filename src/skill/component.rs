@@ -1,11 +1,11 @@
 use crate::common::HorizontalBar;
+use crate::common::*;
 use crate::keyword::prelude::*;
 use crate::rules::prelude::*;
 use crate::server::prelude::*;
-use crate::skill::prelude::*;
 use crate::skill::prelude::Action;
+use crate::skill::prelude::*;
 use crate::Route;
-use crate::common::*;
 
 use dioxus::prelude::*;
 
@@ -18,9 +18,7 @@ pub enum TermDisplay {
 
 #[component]
 pub fn SkillCardList(
-  skills: Vec<Skill>,
-  #[props(default)] display: TermDisplay,
-  #[props(default)] title_as_link: bool,
+  skills: Vec<Skill>, #[props(default)] display: TermDisplay, #[props(default)] title_as_link: bool,
 ) -> Element {
   rsx! {
     div {
@@ -36,9 +34,7 @@ pub fn SkillCardList(
 
 #[component]
 pub fn SkillCard(
-  skill: Skill,
-  #[props(default)] display: TermDisplay,
-  #[props(default)] title_as_link: bool,
+  skill: Skill, #[props(default)] display: TermDisplay, #[props(default)] title_as_link: bool,
   #[props(default)] input: Option<Element>,
   #[props(default)] on_click: Option<EventHandler<MouseEvent>>,
   #[props(default)] additional_classes: Option<String>,
@@ -53,17 +49,16 @@ pub fn SkillCard(
   let keywords_optional = match &display {
     TermDisplay::Standard => None,
     TermDisplay::Embeded => {
-      let KeywordCache( ref keyword_cache ) = use_context();
+      let KeywordCache(ref keyword_cache) = use_context();
       let keyword_object_ids = skill.get_keyword_ids();
-      let mut unsorted_keywords = rules_specific(
-        keyword_cache.from_object_ids(&Vec::from_iter(keyword_object_ids))
-      );
+      let mut unsorted_keywords =
+        rules_specific(keyword_cache.from_object_ids(&Vec::from_iter(keyword_object_ids)));
       unsorted_keywords.sort();
       Some(unsorted_keywords)
-    }
+    },
   };
   let extra_class = match additional_classes {
-    Some( class ) => class,
+    Some(class) => class,
     None => "".into(),
   };
   rsx!(
@@ -106,13 +101,14 @@ pub fn SkillCard(
 }
 
 #[component]
-fn ActionDetails( action: Action ) -> Element {
+fn ActionDetails(action: Action) -> Element {
   let activation = action.title();
   let suffix_opt = action.suffix();
-  let KeywordCache( ref keyword_cache ) = use_context();
+  let KeywordCache(ref keyword_cache) = use_context();
   let keyword_ids = action.keyword_ids.unwrap_or_default();
   let keywords = keyword_cache
-    .from_object_ids(&keyword_ids).iter()
+    .from_object_ids(&keyword_ids)
+    .iter()
     .map(|keyword| keyword.title.clone())
     .collect::<Vec<String>>();
   let keyword_display = keywords.join(", ");

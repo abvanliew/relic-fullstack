@@ -120,18 +120,14 @@ impl fmt::Display for ResourceCost {
 }
 
 fn cost_format(
-  cost: i32, 
-  name: String, 
-  drain: Option<String>, 
-  per_charge: bool,
-  max_charges: Option<i32>,
+  cost: i32, name: String, drain: Option<String>, per_charge: bool, max_charges: Option<i32>,
 ) -> String {
   let drain_details = match &drain {
     Some(text) => format!(" ({}{})", cost, text),
     _ => "".into(),
   };
   let charge_limit = match max_charges {
-    Some( limit ) => format!( " up to {} charges", limit  ),
+    Some(limit) => format!(" up to {} charges", limit),
     None => "".into(),
   };
   format!(

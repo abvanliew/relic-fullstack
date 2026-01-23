@@ -140,36 +140,36 @@ impl PathCache {
 }
 
 pub fn status_element_paths_skills_keywords() -> Option<Element> {
-  let PathCache( ref path_cache ) = use_context();
-  let SkillCache( ref skill_cache ) = use_context();
-  let KeywordCache( ref keyword_cache ) = use_context();
+  let PathCache(ref path_cache) = use_context();
+  let SkillCache(ref skill_cache) = use_context();
+  let KeywordCache(ref keyword_cache) = use_context();
   let mut errors: Vec<ServerFnError> = Vec::new();
   let mut loading: bool = false;
   match path_cache.status() {
     ResourceStatus::Errored(error) => {
       errors.push(error);
-    }
+    },
     ResourceStatus::Loading => {
       loading = true;
-    }
+    },
     _ => (),
   }
   match skill_cache.status() {
     ResourceStatus::Errored(error) => {
       errors.push(error);
-    }
+    },
     ResourceStatus::Loading => {
       loading = true;
-    }
+    },
     _ => (),
   }
   match keyword_cache.status() {
     ResourceStatus::Errored(error) => {
       errors.push(error);
-    }
+    },
     ResourceStatus::Loading => {
       loading = true;
-    }
+    },
     _ => (),
   }
   return match (errors.len() > 0, loading) {
