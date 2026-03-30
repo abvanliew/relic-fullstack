@@ -17,3 +17,10 @@ To run for a different platform, use the `--platform platform` flag. E.g.
 dx serve --platform desktop
 ```
 
+
+# Builds
+
+`podman build . -t rust-server`  
+
+`podman kube play --replace kube/deploy.yaml`  
+`podman exec relic-db mongorestore --nsInclude "relic.*" /data/backup`  

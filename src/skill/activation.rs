@@ -44,13 +44,13 @@ impl Default for Action {
 }
 
 impl Action {
-  pub fn activation(&self) -> String {
-    return format!(
-      "{} {}",
-      self.title(),
-      self.suffix().unwrap_or("".to_string())
-    );
-  }
+  // pub fn activation(&self) -> String {
+  //   return format!(
+  //     "{} {}",
+  //     self.title(),
+  //     self.suffix().unwrap_or("".to_string())
+  //   );
+  // }
 
   pub fn title(&self) -> String {
     return match self.initial {

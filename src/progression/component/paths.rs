@@ -133,7 +133,7 @@ pub fn PathSelector(
     }
     if display {
       div {
-        class: "uv-full column gap-large path-skil-wrapper {conditional_class}",
+        class: "uv-full column gap-large path-skill-wrapper {conditional_class}",
         PathPanel { path, hide_description: true }
       }
     }

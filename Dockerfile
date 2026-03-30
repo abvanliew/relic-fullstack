@@ -13,19 +13,42 @@ COPY . .
 
 # Install `dx`
 RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-# RUN cargo binstall dioxus-cli@0.6.1 --root /.cargo -y --force
-# ENV PATH="/.cargo/bin:$PATH"
+RUN cargo binstall dioxus-cli --root /.cargo -y --force
+ENV PATH="/.cargo/bin:$PATH"
 
-# # Create the final bundle folder. Bundle always executes in release mode with optimizations enabled
-# RUN dx bundle --platform web
+# Create the final bundle folder. Bundle with release build profile to enable optimizations.
+RUN dx bundle --web --release --debug-symbols=false
+
+
+RUN ldd /app/target/dx/relic-fullstack/release/web/relic-fullstack | \
+    grep -o '/[^"]*' | \
+    cut -d ' ' -f1 | \
+    xargs -I {} sh -c \
+      "mkdir -p /transfer{} && rmdir /transfer{} && cp {} /transfer{}" && \
+    mkdir -p /transfer/app && \
+    cp -r /app/target/dx/relic-fullstack/release/web/* /transfer/app
+
 
 # FROM chef AS runtime
-# COPY --from=builder /app/target/dx/hot_dog/release/web/ /usr/local/app
+# COPY --from=builder /app/target/dx/relic-fullstack/release/web/ /usr/local/app
 
 # # set our port and make sure to listen for all connections
 # ENV PORT=8080
 # ENV IP=0.0.0.0
 
+# # expose the port 8080
+# EXPOSE 8080
+
 # WORKDIR /usr/local/app
-# ENTRYPOINT [ "/usr/local/app/server" ]
+# ENTRYPOINT [ "/usr/local/app/relic-fullstack" ]
+
+
+### == runtime == ###
+FROM scratch AS runtime
+COPY --from=builder /transfer /
+ENV PORT=8080
+ENV IP=0.0.0.0
+WORKDIR /app
+ENTRYPOINT [ "/app/relic-fullstack" ]
+
 

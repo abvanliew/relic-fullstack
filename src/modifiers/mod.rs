@@ -37,10 +37,6 @@ impl ModifierSet {
     return self.0.contains_key(class);
   }
 
-  pub fn len(&self) -> usize {
-    return self.0.len();
-  }
-
   pub fn multiple(&self, multiplier: i32) -> Self {
     let mut new_map = self.0.clone();
     for value in new_map.values_mut() {

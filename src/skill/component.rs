@@ -1,6 +1,9 @@
+use std::collections::HashSet;
+
 use crate::common::HorizontalBar;
 use crate::common::*;
 use crate::keyword::prelude::*;
+use crate::path::components::PathChipsLoader;
 use crate::rules::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::prelude::Action;
@@ -18,14 +21,17 @@ pub enum TermDisplay {
 
 #[component]
 pub fn SkillCardList(
-  skills: Vec<Skill>, #[props(default)] display: TermDisplay, #[props(default)] title_as_link: bool,
+  skills: Vec<Skill>, 
+  #[props(default)] display: TermDisplay, 
+  #[props(default)] title_as_link: bool,
+  #[props(default)] include_path_chips: bool,
 ) -> Element {
   rsx! {
     div {
       class: "staggered-grid",
       for skill in skills {
         StaggeredCell {
-          SkillCard { skill, display, title_as_link }
+          SkillCard { skill, display, title_as_link, include_path_chips }
         }
       }
     }
@@ -34,10 +40,14 @@ pub fn SkillCardList(
 
 #[component]
 pub fn SkillCard(
-  skill: Skill, #[props(default)] display: TermDisplay, #[props(default)] title_as_link: bool,
+  skill: Skill, 
+  #[props(default)] display: TermDisplay, 
+  #[props(default)] include_keyword_description: bool, 
+  #[props(default)] title_as_link: bool,
   #[props(default)] input: Option<Element>,
   #[props(default)] on_click: Option<EventHandler<MouseEvent>>,
   #[props(default)] additional_classes: Option<String>,
+  #[props(default)] include_path_chips: bool,
 ) -> Element {
   let id = skill.id.to_string();
   let title = skill.title.clone();
@@ -46,13 +56,17 @@ pub fn SkillCard(
   let opt_description = skill.description.clone();
   let action = skill.action.clone();
   let opt_sub_actions = skill.sub_actions.clone();
-  let keywords_optional = match &display {
-    TermDisplay::Standard => None,
-    TermDisplay::Embeded => {
+  let path_ids = match include_path_chips {
+    true => skill.paths.clone().unwrap_or_default(),
+    false => HashSet::new(),
+  };
+  let keywords_optional = match include_keyword_description {
+    false => None,
+    true => {
       let KeywordCache(ref keyword_cache) = use_context();
       let keyword_object_ids = skill.get_keyword_ids();
       let mut unsorted_keywords =
-        rules_specific(keyword_cache.from_object_ids(&Vec::from_iter(keyword_object_ids)));
+        terms_and_conditions(keyword_cache.from_object_ids(&Vec::from_iter(keyword_object_ids)));
       unsorted_keywords.sort();
       Some(unsorted_keywords)
     },
@@ -95,6 +109,12 @@ pub fn SkillCard(
           HorizontalBar {}
           KeywordBlocks { keywords }
         }
+      }
+    }
+    if path_ids.len() > 0 {
+      PathChipsLoader {
+        path_ids,
+        additional_classes: Some( extra_class.clone() ),
       }
     }
   )

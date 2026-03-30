@@ -15,7 +15,7 @@ use crate::Route;
 pub fn PathPanelList(paths: Vec<Path>) -> Element {
   return rsx! {
     div {
-      class: "column gap-large path-skil-wrapper",
+      class: "column gap-large path-skill-wrapper",
       for path in paths {
         PathPanel {
           path,
@@ -39,12 +39,13 @@ pub fn PathPanel(
   let keyword_id_objects = keywords_from_skills(&skills);
   let KeywordCache(ref keyword_cache) = use_context();
   let keywords_all = keyword_cache.from_object_set(&keyword_id_objects);
-  let mut keywords = rules_specific(keywords_all);
+  let mut keywords = terms_and_conditions(keywords_all);
   keywords.sort();
   let (keystones, features, minor_features) = partition_skills_by_cost(skills);
   return rsx! {
     if !hide_description {
       div {
+        class: "break-before",
         if title_as_link {
           div { class: "title", Link { to: Route::SinglePath { id }, "{title}" } }
         } else {
@@ -102,7 +103,8 @@ pub fn PathTile(path: ReadSignal<Path>) -> Element {
 
 #[component]
 pub fn PathChipsLoader(
-  path_ids: HashSet<ObjectId>, #[props(default)] paths_as_links: bool,
+  path_ids: HashSet<ObjectId>, 
+  #[props(default)] paths_as_links: bool,
   #[props(default)] additional_classes: Option<String>,
 ) -> Element {
   let PathCache(ref path_cache) = use_context::<PathCache>();
@@ -113,7 +115,8 @@ pub fn PathChipsLoader(
 
 #[component]
 pub fn PathChips(
-  paths: Vec<Path>, #[props(default)] paths_as_links: bool,
+  paths: Vec<Path>, 
+  #[props(default)] paths_as_links: bool,
   #[props(default)] additional_classes: Option<String>,
 ) -> Element {
   let extra_class = additional_classes.unwrap_or("".into());

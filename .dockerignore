@@ -4,3 +4,8 @@ LICENSES
 LICENSE
 temp
 README.md
+.dockerignore
+.gitignore
+Cargo.lock
+.DS_Store
+.git/

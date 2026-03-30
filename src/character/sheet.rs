@@ -277,4 +277,3 @@ pub fn AttributeBlock(attributes: AttributeRanks, dodge: i32) -> Element {
     }
   )
 }
-

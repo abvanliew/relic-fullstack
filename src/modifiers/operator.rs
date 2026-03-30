@@ -113,10 +113,6 @@ where
   T: Ord + Clone;
 
 impl<T: Ord + Clone> InstanceBonus<T> {
-  pub fn base(value: T) -> Self {
-    InstanceBonus(Some(value))
-  }
-
   pub fn as_opt(&self) -> Option<T> {
     self.0.clone()
   }

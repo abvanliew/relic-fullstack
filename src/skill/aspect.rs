@@ -42,13 +42,6 @@ pub struct RelicOrdering {
   category: i32,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Eq)]
-#[serde(rename_all = "camelCase")]
-pub struct PathRef {
-  id: ObjectId,
-  title: String,
-}
-
 impl Skill {
   pub fn weight(&self) -> i32 {
     match &self.training_cost {

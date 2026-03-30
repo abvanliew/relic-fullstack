@@ -49,9 +49,9 @@ pub struct ConstraintSet {
 
 #[component]
 pub fn CharacterProgression() -> Element {
-  let current_tab: Signal<BuilderTab> = use_signal(|| BuilderTab::Attributes);
+  let current_tab: Signal<BuilderTab> = use_signal(|| BuilderTab::Paths);
 
-  let level_signal: Signal<i32> = use_signal(|| 6);
+  let level_signal: Signal<i32> = use_signal(|| 1);
   let level = level_signal();
   let mut character_modifiers = LevelTrack::as_of(level);
 
@@ -300,6 +300,7 @@ pub fn CharacterProgression() -> Element {
     speed: character_modifiers.get(&ModifierClass::WalkingSpeed),
     dash: character_modifiers.get(&ModifierClass::DashSpeed),
   };
+  
   rsx! {
     div {
       class: "row",

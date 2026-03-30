@@ -3,17 +3,17 @@ use std::fmt;
 
 use crate::progression::prelude::*;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default)]
-pub struct AttributeRanks {
-  pub physique: i32,
-  pub warfare: i32,
-  pub spirit: i32,
-  pub manipulation: i32,
-  pub tenacity: i32,
-  pub fortitude: i32,
-  pub resolve: i32,
-  pub insight: i32,
-}
+// #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default)]
+// pub struct AttributeRanks {
+//   pub physique: i32,
+//   pub warfare: i32,
+//   pub spirit: i32,
+//   pub manipulation: i32,
+//   pub tenacity: i32,
+//   pub fortitude: i32,
+//   pub resolve: i32,
+//   pub insight: i32,
+// }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum CharacterAttribute {

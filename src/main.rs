@@ -34,6 +34,7 @@ pub enum Route {
   #[route("/")] MainRules {},
   #[route("/builder")] CharacterBuilder {},
   #[route("/filter")] SkillFilterPage {},
+  #[route("/keywords")] KeywordsPage {},
 
   #[nest("/paths")]
     #[route("/")] PathsPage {},

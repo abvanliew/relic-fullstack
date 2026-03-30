@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::{cmp::min, fmt};
+use std::cmp::min;
+use std::fmt;
 
 use crate::character::components::BoxRow;
 

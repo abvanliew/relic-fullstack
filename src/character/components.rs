@@ -19,6 +19,7 @@ pub fn AttributeRow(
     }
   )
 }
+
 #[component]
 pub fn ConstitutionRow(constitution: i32) -> Element {
   rsx!(

@@ -34,12 +34,14 @@ pub trait KeywordClassified {
   fn get_keyword_ids(&self) -> HashSet<ObjectId>;
 }
 
-pub fn rules_specific(keywords: Vec<Keyword>) -> Vec<Keyword> {
-  keywords
+pub fn terms_and_conditions(keywords: Vec<Keyword>) -> Vec<Keyword> {
+  let mut filtered_keywords: Vec<Keyword> = keywords
     .into_iter()
     .filter(|keyword| match keyword.class {
-      KeywordClass::Classifier | KeywordClass::CoreRule => false,
-      _ => true,
+      KeywordClass::Term | KeywordClass::Condition => true,
+      _ => false,
     })
-    .collect()
+    .collect();
+  filtered_keywords.sort();
+  return filtered_keywords
 }

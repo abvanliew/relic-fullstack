@@ -115,7 +115,6 @@ p {
   border-radius: 0.6rem;
   padding: 0.45rem 0.6rem 0.6rem;
   height: min-content;
-  break-inside: avoid;
 }
 
 .chip-card {
@@ -124,7 +123,6 @@ p {
   flex-direction: row;
   flex-wrap: wrap;
   height: min-content;
-  break-inside: avoid;
   gap: 8px;
 }
 
@@ -167,7 +165,7 @@ p {
 }
 
 .staggered-grid {
-  column-gap: 20px;
+  column-gap: 40px;
   display: grid;
   grid-template-columns: repeat( auto-fit, 600px);
 }
@@ -177,6 +175,7 @@ p {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  break-inside: avoid-page;
 }
 
 .staggered-grid > * {
@@ -215,21 +214,21 @@ p {
   flex-shrink: 0;
 }
 
-.path-skil-wrapper {
+.path-skill-wrapper {
   padding: 8px 0px;
 }
 
 @media print {
-  .print-block .card, .card-small {
-    break-inside: avoid;
-  }
-
-  .title .subtitle .underline {
-    break-after: avoid;
+  .print-block .card, .card-small, .staggered-cell, .staggered-cell * {
+    break-inside: avoid-page !important;
   }
 
   .no-print, .no-print * {
     display: none !important;
+  }
+
+  .title .subtitle .underline {
+    break-after: avoid;
   }
 
   .print-break {
@@ -239,7 +238,7 @@ p {
   .break-before {
     break-before: always;
   }
-
+ 
   :root {
     --main-border: #000000;
   }
@@ -458,8 +457,7 @@ p {
 .horizontal-bar {
   width: 100%;
   margin: 6px 0px;
-  height: 1px;
-  background-color: var(--main-border);
+  border-top: 1px solid var(--main-border);
 }
 
 .lh {

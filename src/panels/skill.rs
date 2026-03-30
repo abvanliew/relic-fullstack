@@ -19,19 +19,18 @@ pub fn SingleSkillPage(id: String) -> Element {
   let KeywordCache(ref keyword_cache) = use_context();
   let keyword_status_element = keyword_cache.status_element();
   let keywords_all = keyword_cache.from_object_set(&skill.get_keyword_ids());
-  let mut keywords = rules_specific(keywords_all);
-  keywords.sort();
+  let keywords = terms_and_conditions(keywords_all);
   let path_ids = skill.paths.clone().unwrap_or_default();
   return rsx! {
     div {
       class: "column gap-medium",
-      SkillCard { skill, display: TermDisplay::Standard }
+      SkillCard { skill }
+      if path_ids.len() > 0 {
+        PathChipsLoader { path_ids, paths_as_links: true }
+      }
       match keyword_status_element {
         Some( element ) => element,
         None => rsx! { KeywordCards { keywords } }
-      }
-      if path_ids.len() > 0 {
-        PathChipsLoader { path_ids, paths_as_links: true }
       }
     }
   };
@@ -46,6 +45,6 @@ pub fn SkillsPage() -> Element {
   let mut skills = skill_cache.into_vec();
   skills.sort();
   return rsx! {
-    SkillCardList { skills, display: TermDisplay::Embeded, title_as_link: true }
+    SkillCardList { skills, display: TermDisplay::Embeded, title_as_link: false, include_path_chips: true }
   };
 }

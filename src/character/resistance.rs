@@ -1,10 +1,11 @@
-use std::{cmp::max, fmt};
+// use std::cmp::max;
+use std::fmt;
 
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::character::components::AttributeRow;
-use crate::equipment::armor::Armor;
+// use crate::equipment::armor::Armor;
 use crate::progression::prelude::*;
 
 #[derive(PartialEq, Props, Clone)]
@@ -97,20 +98,20 @@ pub struct Resistances {
 }
 
 impl Resistances {
-  pub fn with_armor(&self, armor: &Option<Armor>) -> Self {
-    return Self {
-      physical: match (self.physical, armor) {
-        (Some(resist_value), Some(worn_armor)) => Some(max(
-          resist_value,
-          worn_armor.physical_resistance + BASE_RESIST,
-        )),
-        (Some(resist_value), None) => Some(resist_value),
-        (None, Some(worn_armor)) => Some(worn_armor.physical_resistance + BASE_RESIST),
-        (None, None) => None,
-      },
-      ..self.clone()
-    };
-  }
+  // pub fn with_armor(&self, armor: &Option<Armor>) -> Self {
+  //   return Self {
+  //     physical: match (self.physical, armor) {
+  //       (Some(resist_value), Some(worn_armor)) => Some(max(
+  //         resist_value,
+  //         worn_armor.physical_resistance + BASE_RESIST,
+  //       )),
+  //       (Some(resist_value), None) => Some(resist_value),
+  //       (None, Some(worn_armor)) => Some(worn_armor.physical_resistance + BASE_RESIST),
+  //       (None, None) => None,
+  //     },
+  //     ..self.clone()
+  //   };
+  // }
 
   fn category_ref(&self, category: &DamageCategory) -> &Option<i32> {
     match category {
@@ -141,26 +142,26 @@ impl Resistances {
     return self.category_ref(category).unwrap_or(BASE_RESIST);
   }
 
-  pub fn category_has_child_value(&self, category: &DamageCategory) -> bool {
-    return match category {
-      DamageCategory::Physical => {
-        self.bashing.is_some() || self.slashing.is_some() || self.piercing.is_some()
-      },
-      DamageCategory::Elemental => {
-        self.fire.is_some()
-          || self.cold.is_some()
-          || self.lighting.is_some()
-          || self.thunder.is_some()
-          || self.acid.is_some()
-      },
-      DamageCategory::Esoteric => {
-        self.force.is_some()
-          || self.radiant.is_some()
-          || self.necrotic.is_some()
-          || self.psionic.is_some()
-      },
-    };
-  }
+  // pub fn category_has_child_value(&self, category: &DamageCategory) -> bool {
+  //   return match category {
+  //     DamageCategory::Physical => {
+  //       self.bashing.is_some() || self.slashing.is_some() || self.piercing.is_some()
+  //     },
+  //     DamageCategory::Elemental => {
+  //       self.fire.is_some()
+  //         || self.cold.is_some()
+  //         || self.lighting.is_some()
+  //         || self.thunder.is_some()
+  //         || self.acid.is_some()
+  //     },
+  //     DamageCategory::Esoteric => {
+  //       self.force.is_some()
+  //         || self.radiant.is_some()
+  //         || self.necrotic.is_some()
+  //         || self.psionic.is_some()
+  //     },
+  //   };
+  // }
 
   pub fn show_damage(&self, damage: &DamageClass) -> (String, i32, bool) {
     return match self.damage_ref(damage) {

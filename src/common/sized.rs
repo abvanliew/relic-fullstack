@@ -7,7 +7,8 @@ const DEFAULT_EXTRA_HEIGHT: f64 = 18.0;
 
 #[component]
 pub fn StaggeredCell(
-  children: Element, #[props(default)] additional_classes: Option<String>,
+  children: Element, 
+  #[props(default)] additional_classes: Option<String>,
   #[props(default)] increment_override: Option<f64>,
   #[props(default)] extra_height_override: Option<f64>,
 ) -> Element {
@@ -30,8 +31,9 @@ pub fn StaggeredCell(
   } else {
     let spans = ((height + extra_height) / increment).ceil() as i32;
     format!(
-      "margin-bottom: {}px; grid-row: span {};",
-      extra_height, spans
+      "margin-bottom: {}px; grid-row: span {}; _debug: height {}, extra_height: {}, increment: {};",
+      extra_height, spans,
+      height, extra_height, increment,
     )
   };
   let extra_class = match additional_classes {

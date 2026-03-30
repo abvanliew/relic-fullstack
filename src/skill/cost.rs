@@ -39,9 +39,9 @@ impl fmt::Display for ResourcePool {
 }
 
 impl ResourcePool {
-  pub fn with_drain(&self) -> String {
-    return format!("{} ({})", self, self.drain());
-  }
+  // pub fn with_drain(&self) -> String {
+  //   return format!("{} ({})", self, self.drain());
+  // }
 
   pub fn drain(&self) -> String {
     match self {
