@@ -53,7 +53,7 @@ pub(crate) fn KeywordCards(keywords: Vec<Keyword>) -> Element {
 #[component]
 pub(crate) fn KeywordCard(keyword: Keyword) -> Element {
   let title = keyword.title.clone();
-  let blocks = keyword.blocks();
+  let sections = keyword.sections();
   let class = keyword.class_title();
   return rsx! {
     div {
@@ -61,7 +61,7 @@ pub(crate) fn KeywordCard(keyword: Keyword) -> Element {
       div { class: "uv-title-property highlight", "{title}" }
       div { class: "uv-property italics", "{class}" }
       div { class: "uv-full indent",
-        RulesBlockSet { blocks }
+        RulesSectionSet { sections }
       }
     }
   };
@@ -79,12 +79,12 @@ pub(crate) fn KeywordBlocks(keywords: Vec<Keyword>) -> Element {
 #[component]
 pub(crate) fn KeywordBlock(keyword: Keyword) -> Element {
   let title = keyword.title.clone();
-  let blocks = keyword.blocks();
+  let sections = keyword.sections();
   return rsx! {
     PropertyDetail {
       title,
       block: true,
-      RulesBlockSet { blocks }
+      RulesSectionSet { sections }
     }
   };
 }

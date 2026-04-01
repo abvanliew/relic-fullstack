@@ -15,14 +15,14 @@ pub struct Action {
   pub keyword_ids: Option<Vec<ObjectId>>,
   pub initial: Option<bool>,
 
-  pub condition: Option<RulesBlocks>,
+  pub condition: Option<RuleSections>,
   pub cost: Option<ResourceCost>,
   pub duration: Option<Duration>,
   pub extended_duration: Option<Duration>,
   pub target: Option<Target>,
-  pub refresh: Option<RulesBlocks>,
+  pub refresh: Option<RuleSections>,
 
-  pub rules: Option<RulesStack>,
+  pub rules: Option<RuleStacks>,
 }
 
 impl Default for Action {
@@ -101,7 +101,6 @@ impl Action {
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub enum Activation {
   Boon,
-  Ranked,
   Action,
   Interaction,
   Reaction,
@@ -119,7 +118,6 @@ impl fmt::Display for Activation {
       "{}",
       match self {
         Activation::Boon => "Boon",
-        Activation::Ranked => "Ranked Boon",
         Activation::Action => "Action",
         Activation::Interaction => "Interaction",
         Activation::Reaction => "Reaction",

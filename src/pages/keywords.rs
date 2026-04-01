@@ -19,3 +19,20 @@ pub fn KeywordsPage() -> Element {
     }
   }
 }
+
+#[component]
+pub fn ConditionsPage() -> Element {
+  let KeywordCache( ref keyword_cache) = use_context();
+  let keywords_all = keyword_cache.into_result_vec().unwrap_or_default();
+  let keywords = conditions(keywords_all);
+  return rsx! {
+    div {
+      class: "staggered-grid",
+      for keyword in keywords {
+        StaggeredCell {
+          KeywordCard { keyword }
+        }
+      }
+    }
+  }
+}

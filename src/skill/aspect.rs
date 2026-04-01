@@ -43,6 +43,16 @@ pub struct RelicOrdering {
 }
 
 impl Skill {
+  pub fn training_requirements(&self) -> String {
+    let mut parts: Vec<String> = Vec::new();
+    parts.push(self.tier.to_string());
+    if self.is_ranked() {
+      parts.push("Ranked".into());
+    }
+    parts.push(self.training_cost.to_string());
+    return parts.join(" ")
+  }
+
   pub fn weight(&self) -> i32 {
     match &self.training_cost {
       TrainingCost::Full | TrainingCost::Spell => 2,
@@ -123,7 +133,7 @@ impl KeywordClassified for Skill {
 #[serde(rename_all = "camelCase")]
 pub struct Property {
   pub term: Term,
-  pub rules: Option<RulesBlocks>,
+  pub rules: Option<RuleSections>,
   pub block: Option<bool>,
 }
 
@@ -141,14 +151,14 @@ impl Property {
     return ids;
   }
 
-  pub fn get_title_and_blocks(&self) -> (String, RulesBlocks) {
+  pub fn get_title_and_sections(&self) -> (String, RuleSections) {
     let title = self.term.to_title();
     let blocks = match (&self.rules, self.term.keyword_id) {
       (Some(rules), _) => rules.clone(),
       (_, Some(keyword_id)) => {
         let KeywordCache(ref keyword_cache) = use_context();
         match keyword_cache.from_object_id(&keyword_id) {
-          Some(keyword) => keyword.blocks(),
+          Some(keyword) => keyword.sections(),
           None => Vec::new(),
         }
       },

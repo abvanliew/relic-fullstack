@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Target {
   pub class: TargetClass,
@@ -16,11 +16,12 @@ pub struct Target {
   pub placed: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq)]
 pub enum TargetClass {
   Custom,
   Touch,
   Weapon,
+  #[default]
   Range,
   LineOfSight,
   SeeOrHear,
@@ -83,11 +84,17 @@ impl Target {
 
   pub fn article(&self) -> String {
     match (&self.selection, &self.custom_selection) {
-      (Some(Selection::Creature) | Some(Selection::Space) | Some(Selection::CreatureObject), _) => {
-        "A"
-      },
-      (Some(Selection::Ally) | Some(Selection::Enemy) | Some(Selection::Object), _) => "An",
       (_, Some(_)) => "",
+      (
+        Some(Selection::Creature) | Some(Selection::Space) | Some(Selection::CreatureObject) 
+        | Some(Selection::CreatureObjectSpace), 
+        _
+      ) => "A",
+      (
+        Some(Selection::Ally) | Some(Selection::Enemy) | Some(Selection::Object) 
+        | Some(Selection::ObjectSpace), 
+        _
+      ) => "An",
       _ => "Some",
     }
     .into()

@@ -21,6 +21,7 @@ pub enum Tense {
   Future,
   Singular,
   Plural,
+  Adjective,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
@@ -31,6 +32,7 @@ pub struct Tenses {
   pub future: Option<String>,
   pub singular: Option<String>,
   pub plural: Option<String>,
+  pub adjective: Option<String>,
 }
 
 impl Tenses {
@@ -41,6 +43,7 @@ impl Tenses {
       Tense::Future => self.future.clone(),
       Tense::Singular => self.singular.clone(),
       Tense::Plural => self.plural.clone(),
+      Tense::Adjective => self.adjective.clone(),
     }
   }
 }

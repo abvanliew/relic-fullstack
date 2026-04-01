@@ -19,7 +19,8 @@ pub fn PathPanelList(paths: Vec<Path>) -> Element {
       for path in paths {
         PathPanel {
           path,
-          title_as_link: true
+          title_as_link: true,
+          expandable: true,
         }
       }
     }
@@ -28,8 +29,12 @@ pub fn PathPanelList(paths: Vec<Path>) -> Element {
 
 #[component]
 pub fn PathPanel(
-  path: Path, #[props(default)] hide_description: bool, #[props(default)] title_as_link: bool,
+  path: Path, 
+  #[props(default)] hide_description: bool, 
+  #[props(default)] title_as_link: bool,
+  #[props(default)] expandable: bool,
 ) -> Element {
+  let mut panel_display = use_signal(|| true);
   let id = path.id.to_string();
   let title = path.title;
   let optional_summary = path.summary;
@@ -45,7 +50,11 @@ pub fn PathPanel(
   return rsx! {
     if !hide_description {
       div {
-        class: "break-before",
+        class: "thin-border break-before",
+        onclick: move |_| {
+          if !expandable { return }
+          panel_display.set( !panel_display() )
+        },
         if title_as_link {
           div { class: "title", Link { to: Route::SinglePath { id }, "{title}" } }
         } else {
@@ -56,29 +65,50 @@ pub fn PathPanel(
         }
       }
     }
-    if keystones.len() > 0 {
+    if !expandable || panel_display() {
       div {
-        div { class: "small-text dotted-underline underhang", "Keystones" }
-        SkillCardList { skills: keystones, title_as_link: true }
-      }
-    }
-    if features.len() > 0 {
-      div {
-        div { class: "small-text dotted-underline underhang", "Features" }
-        SkillCardList { skills: features, title_as_link: true }
-      }
-    }
-    if minor_features.len() > 0 {
-      div {
-        div { class: "small-text dotted-underline underhang", "Minor Features" }
-        SkillCardList { skills: minor_features, title_as_link: true }
-      }
-    }
-    if keywords.len() > 0 {
-      div {
-        div { class: "small-text dotted-underline underhang", "Rules Refence" }
-        div {
-          class: "staggered-grid",
+        class: "staggered-grid",
+        if keystones.len() > 0 {
+          // div {
+          //   class: "uv-full underhang keep-after",
+          //   div { class: "small-text dotted-underline", "Keystones" }
+          // }
+          for skill in keystones {
+            StaggeredCell {
+              SkillCard { skill, title_as_link: true }
+            }
+          }
+        }
+        if features.len() > 0 {
+          // div {
+          //   class: "uv-full underhang keep-after",
+          //   div { class: "small-text dotted-underline", "Features" }
+          // }
+          for skill in features {
+            StaggeredCell {
+              SkillCard { skill, title_as_link: true }
+            }
+          }
+        }
+        if minor_features.len() > 0 {
+          // div {
+          //   class: "uv-full underhang keep-after",
+          //   div { class: "small-text dotted-underline", "Minor Features" }
+          // }
+          for skill in minor_features {
+            StaggeredCell {
+              SkillCard { skill, title_as_link: true }
+            }
+          }
+        }
+        if keywords.len() > 0 {
+          // div {
+          //   class: "uv-full keep-after",
+          //   div {
+          //     class: "underhang",
+          //     div { class: "small-text dotted-underline", "Rules Refence" }
+          //   }
+          // }
           for keyword in keywords {
             StaggeredCell {
               KeywordCard { keyword }

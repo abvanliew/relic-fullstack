@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, Hash)]
 pub enum ResourcePool {
   Anointment,
   Animalism,
@@ -11,6 +11,7 @@ pub enum ResourcePool {
   Ki,
   Mastery,
   Virtuoso,
+  #[default]
   MinorMana,
   ModerateMana,
   MajorMana,
@@ -61,7 +62,7 @@ impl ResourcePool {
   }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct ResourceCost {
   resource: ResourcePool,
@@ -72,6 +73,12 @@ pub struct ResourceCost {
 }
 
 impl ResourceCost {
+  pub fn from_mana(cost: i32) -> Self {
+    Self {
+      base_cost: Some(cost),
+      ..Default::default()
+    }
+  }
   pub fn format(&self, drain: bool) -> String {
     let mut components: Vec<String> = Vec::new();
     let drain_option = if drain {

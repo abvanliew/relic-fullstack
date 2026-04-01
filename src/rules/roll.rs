@@ -118,7 +118,7 @@ pub fn RollSnippet(roll: Roll) -> Element {
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct Outcome {
   pub result: RollResult,
-  pub rules: RulesBlocks,
+  pub rules: RuleSections,
 }
 
 impl Outcome {
@@ -170,7 +170,7 @@ pub fn OutcomeDetail(outcomes: Vec<Outcome>) -> Element {
       }
       div {
         class: "uv-details",
-        RulesBlockSet { blocks: outcome.rules }
+        RulesSectionSet { sections: outcome.rules }
       }
     }
   )

@@ -3,7 +3,7 @@ use std::fmt;
 
 use super::cost::ResourceCost;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Duration {
   pub class: DurationClass,
@@ -14,9 +14,10 @@ pub struct Duration {
   pub custom: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq)]
 pub enum DurationClass {
   Custom,
+  #[default]
   NextTurnStart,
   NextTurnEnd,
   WhileReserved,
@@ -28,6 +29,14 @@ pub enum DurationClass {
 }
 
 impl Duration {
+  pub fn five_min() -> Self {
+    Self {
+      length: Some(5),
+      class: DurationClass::Minutes,
+      ..Default::default()
+    }
+  }
+
   pub fn base(&self) -> String {
     let length = match self.length {
       Some(amount) => amount,

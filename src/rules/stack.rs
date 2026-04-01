@@ -5,24 +5,31 @@ use std::collections::HashSet;
 
 use crate::common::*;
 use crate::rules::internal::*;
-use crate::rules::snippet::Snippet;
+use crate::rules::section::{RuleSections, RulesSectionSet, Section, SectionDetail};
+use crate::rules::snippet::rules_block_from_blurb;
 use crate::rules::stat_block::StatBlock;
 use crate::skill::prelude::*;
 
-pub type RulesStack = Vec<Stack>;
-pub type RulesBlocks = Vec<Block>;
+pub type RuleStacks = Vec<Stack>;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
 pub struct Stack {
   pub property: Option<Property>,
   pub outcomes: Option<Vec<Outcome>>,
-  pub items: Option<Vec<RulesBlocks>>,
-  pub block: Option<RulesSnippets>,
   pub stats: Option<StatBlock>,
   pub hr: Option<bool>,
+  pub items: Option<Vec<RuleSections>>,
+  pub block: Option<RulesBlock>,
 }
 
 impl Stack {
+  pub fn from_blurb( blurb: String ) -> Self {
+    Self {
+      block: rules_block_from_blurb( blurb ),
+      ..Default::default()
+    }
+  }
+
   pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
     if let Some(property) = &self.property {
@@ -49,8 +56,14 @@ impl Stack {
   }
 }
 
+pub(crate) fn rules_stack_from_blurb(blurb: String) -> Option<RuleStacks> {
+  Some(vec![
+    Stack::from_blurb(blurb)
+  ])
+}
+
 #[component]
-pub fn RulesStackDetail(stacks: RulesStack) -> Element {
+pub fn RulesStackDetail(stacks: RuleStacks) -> Element {
   rsx! {
     for stack in stacks {
       StackDetail { stack }
@@ -61,13 +74,13 @@ pub fn RulesStackDetail(stacks: RulesStack) -> Element {
 #[component]
 pub fn StackDetail(stack: Stack) -> Element {
   if let Some(property) = stack.property {
-    let (title, blocks) = property.get_title_and_blocks();
+    let (title, sections) = property.get_title_and_sections();
     let block = property.block.unwrap_or_default();
     return rsx! {
       PropertyDetail {
         title,
         block,
-        RulesBlockSet { blocks }
+        RulesSectionSet { sections }
       }
     };
   }
@@ -81,7 +94,7 @@ pub fn StackDetail(stack: Stack) -> Element {
     if stack.block.is_some() || stack.items.is_some() {
       div {
         class: "uv-full",
-        BlockDetail { block: Block{ items: stack.items, block: stack.block } }
+        SectionDetail { section: Section{ items: stack.items, block: stack.block } }
       }
     }
     if stack.hr.unwrap_or(false) {
@@ -103,77 +116,4 @@ pub fn PropertyDetail(
       div { class: "uv-details", {children} }
     }
   };
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
-pub struct Block {
-  pub items: Option<Vec<RulesBlocks>>,
-  pub block: Option<RulesSnippets>,
-}
-
-impl Block {
-  pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
-    let mut ids: HashSet<ObjectId> = HashSet::new();
-    if let Some(items) = &self.items {
-      for item in items {
-        for rule in item {
-          ids.extend(rule.get_keyword_ids());
-        }
-      }
-    }
-    if let Some(rules) = &self.block {
-      for rule in rules {
-        ids.extend(rule.get_keyword_ids());
-      }
-    }
-    return ids;
-  }
-}
-
-pub(crate) fn blurb_to_rules_blocks(blurb: String) -> RulesBlocks {
-  snippets_to_rules_blocks(blurb_to_snippets(blurb))
-}
-
-pub(crate) fn snippets_to_rules_blocks(snippets: Vec<Snippet>) -> RulesBlocks {
-  vec![Block {
-    block: Some(snippets),
-    ..Default::default()
-  }]
-}
-
-pub(crate) fn blurb_to_snippets(blurb: String) -> Vec<Snippet> {
-  vec![Snippet {
-    text: Some(blurb),
-    ..Default::default()
-  }]
-}
-
-#[component]
-pub fn RulesBlockSet(blocks: RulesBlocks) -> Element {
-  return rsx!(for block in blocks {
-    BlockDetail { block }
-  });
-}
-
-#[component]
-pub fn BlockDetail(block: Block) -> Element {
-  return rsx!(
-    if let Some( items ) = block.items {
-      ListSnippet { items }
-    }
-    if let Some( snippets ) = block.block {
-      RulesSpippetDetail { snippets }
-    }
-  );
-}
-
-#[component]
-pub fn ListSnippet(items: Vec<RulesBlocks>) -> Element {
-  rsx!(
-    ul {
-      for blocks in items {
-        li { RulesBlockSet { blocks } }
-      }
-    }
-  )
 }

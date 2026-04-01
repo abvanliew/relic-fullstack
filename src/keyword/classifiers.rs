@@ -45,3 +45,15 @@ pub fn terms_and_conditions(keywords: Vec<Keyword>) -> Vec<Keyword> {
   filtered_keywords.sort();
   return filtered_keywords
 }
+
+pub fn conditions(keywords: Vec<Keyword>) -> Vec<Keyword> {
+  let mut filtered_keywords: Vec<Keyword> = keywords
+    .into_iter()
+    .filter(|keyword| match keyword.class {
+      KeywordClass::Condition => true,
+      _ => false,
+    })
+    .collect();
+  filtered_keywords.sort();
+  return filtered_keywords
+}

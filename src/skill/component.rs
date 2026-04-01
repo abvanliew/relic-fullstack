@@ -51,8 +51,7 @@ pub fn SkillCard(
 ) -> Element {
   let id = skill.id.to_string();
   let title = skill.title.clone();
-  let tier = skill.tier.clone();
-  let training_cost = skill.training_cost.clone();
+  let training_requirements = skill.training_requirements();
   let opt_description = skill.description.clone();
   let action = skill.action.clone();
   let opt_sub_actions = skill.sub_actions.clone();
@@ -92,7 +91,7 @@ pub fn SkillCard(
         }
       }
       div { class: "uv-property",
-        div { class: "nowrap italics", "{tier} {training_cost}" }
+        div { class: "nowrap italics", "{training_requirements}" }
       }
       if let Some( description ) = opt_description {
         div { class: "uv-full", "{description}" }
@@ -149,10 +148,10 @@ fn ActionDetails(action: Action) -> Element {
         span {class: "italics", " - {keyword_display}"}
       }
     }
-    if let Some( blocks ) = action.condition {
+    if let Some( sections ) = action.condition {
       PropertyDetail {
         title: "Condition".to_string(),
-        RulesBlockSet { blocks }
+        RulesSectionSet { sections }
       }
     }
     if let Some( cost ) = action.cost {
@@ -179,10 +178,10 @@ fn ActionDetails(action: Action) -> Element {
         "{target}"
       }
     }
-    if let Some( blocks ) = action.refresh {
+    if let Some( sections ) = action.refresh {
       PropertyDetail {
         title: "Refresh".to_string(),
-        RulesBlockSet { blocks }
+        RulesSectionSet { sections }
       }
     }
     if let Some( stacks ) = action.rules {

@@ -35,7 +35,10 @@ pub enum Route {
   #[route("/builder")] CharacterBuilder {},
   #[route("/filter")] SkillFilterPage {},
   #[route("/keywords")] KeywordsPage {},
+  #[route("/conditions")] ConditionsPage {},
 
+
+  
   #[nest("/paths")]
     #[route("/")] PathsPage {},
     #[route("/:id")] SinglePath { id: String },

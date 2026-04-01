@@ -2,10 +2,10 @@ use super::internal::*;
 use crate::rules::prelude::*;
 
 impl Keyword {
-  pub fn blocks(&self) -> RulesBlocks {
+  pub fn sections(&self) -> RuleSections {
     match (&self.rules, &self.blurb) {
-      (Some(blocks), _) => snippets_to_rules_blocks(blocks.clone()),
-      (_, Some(blurb)) => blurb_to_rules_blocks(blurb.clone()),
+      (Some(blocks), _) => rule_sections_from_block(blocks.clone()),
+      (_, Some(blurb)) => rule_sections_from_blurb_certain(blurb.clone()),
       _ => Vec::new(),
     }
   }

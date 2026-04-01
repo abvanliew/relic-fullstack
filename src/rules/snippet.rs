@@ -6,7 +6,7 @@ use bson::oid::ObjectId;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
-pub type RulesSnippets = Vec<Snippet>;
+pub type RulesBlock = Vec<Snippet>;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, Eq)]
 pub struct Snippet {
@@ -16,6 +16,13 @@ pub struct Snippet {
 }
 
 impl Snippet {
+  pub fn from_blurb(blurb:String)->Self {
+    Self {
+      text: Some(blurb),
+      ..Default::default()
+    }
+  }
+
   pub fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
     if let Some(term) = &self.term {
@@ -27,8 +34,12 @@ impl Snippet {
   }
 }
 
+pub(crate) fn rules_block_from_blurb(blurb: String) -> Option<RulesBlock> {
+  Some(vec![Snippet::from_blurb(blurb)])
+}
+
 #[component]
-pub fn RulesSpippetDetail(snippets: RulesSnippets) -> Element {
+pub fn RulesSpippetDetail(snippets: RulesBlock) -> Element {
   rsx!(
     div {
       class: "inline",
