@@ -1,19 +1,11 @@
-// use std::cmp::max;
+use std::cmp::max;
 use std::fmt;
 
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::character::components::AttributeRow;
-// use crate::equipment::armor::Armor;
 use crate::progression::prelude::*;
-
-#[derive(PartialEq, Props, Clone)]
-pub struct ResistanceDetailsProps {
-  resistances: Resistances,
-  #[props(default)]
-  display: ResistanceDisplay,
-}
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum ResistanceDisplay {
@@ -22,8 +14,10 @@ pub enum ResistanceDisplay {
 }
 
 #[component]
-pub fn ResistanceDetails(props: ResistanceDetailsProps) -> Element {
-  let resistances = props.resistances;
+pub fn ResistanceDetails(
+  resistances: Resistances,
+  #[props(default)] display: ResistanceDisplay,
+) -> Element {
   let physical_total = resistances.get_category(&DamageCategory::Physical);
   let elemental_total = resistances.get_category(&DamageCategory::Elemental);
   let esoteric_total = resistances.get_category(&DamageCategory::Esoteric);
@@ -98,21 +92,6 @@ pub struct Resistances {
 }
 
 impl Resistances {
-  // pub fn with_armor(&self, armor: &Option<Armor>) -> Self {
-  //   return Self {
-  //     physical: match (self.physical, armor) {
-  //       (Some(resist_value), Some(worn_armor)) => Some(max(
-  //         resist_value,
-  //         worn_armor.physical_resistance + BASE_RESIST,
-  //       )),
-  //       (Some(resist_value), None) => Some(resist_value),
-  //       (None, Some(worn_armor)) => Some(worn_armor.physical_resistance + BASE_RESIST),
-  //       (None, None) => None,
-  //     },
-  //     ..self.clone()
-  //   };
-  // }
-
   fn category_ref(&self, category: &DamageCategory) -> &Option<i32> {
     match category {
       DamageCategory::Physical => &self.physical,
@@ -135,6 +114,13 @@ impl Resistances {
       DamageClass::Radiant => &self.radiant,
       DamageClass::Necrotic => &self.necrotic,
       DamageClass::Psionic => &self.psionic,
+    }
+  }
+
+  pub fn update_physical_resistance(&mut self, value: i32) {
+    self.physical = match self.physical {
+      Some( current_value ) => Some(max(current_value, value )),
+      None => Some(value),
     }
   }
 

@@ -1,3 +1,4 @@
+use crate::common::StaggeredGrid;
 use crate::keyword::prelude::*;
 use crate::path::components::*;
 use crate::server::prelude::*;
@@ -26,7 +27,9 @@ pub fn SingleSkillPage(id: String) -> Element {
       class: "column gap-medium",
       SkillCard { skill }
       if path_ids.len() > 0 {
-        PathChipsLoader { path_ids, paths_as_links: true }
+        PathChipsCard {
+          PathChipsLoader { path_ids, paths_as_links: true }
+        }
       }
       match keyword_status_element {
         Some( element ) => element,
@@ -45,6 +48,8 @@ pub fn SkillsPage() -> Element {
   let mut skills = skill_cache.into_vec();
   skills.sort();
   return rsx! {
-    SkillCardList { skills, display: TermDisplay::Embeded, title_as_link: false, include_path_chips: true }
+    StaggeredGrid {
+      SkillCardElements { skills, display: TermDisplay::Embeded, title_as_link: false, include_path_chips: true }
+    }
   };
 }

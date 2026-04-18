@@ -1,13 +1,17 @@
-use crate::keyword::prelude::*;
-use crate::path::Path;
-use crate::server::prelude::get_keyword_map;
-use crate::skill::Skill;
-use bson::oid::ObjectId;
-use dioxus::prelude::*;
 use std::collections::{HashMap, HashSet};
 
+use bson::oid::ObjectId;
+use dioxus::prelude::*;
+
+use crate::keyword::prelude::*;
+use crate::path::prelude::*;
+use crate::skill::prelude::*;
+use crate::character::prelude::*;
+
+use super::keyword::get_keyword_map;
 use super::path::get_path_map;
 use super::skill::get_skill_map;
+use super::sheet::get_character_sheet_map;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum ResourceStatus {
@@ -112,6 +116,16 @@ impl SkillCache {
   pub fn use_context_provider() -> Self {
     let resource = use_resource(move || get_skill_map());
     use_context_provider(|| SkillCache(MapCache { resource }))
+  }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct CharacterSheetCache(pub MapCache<CharacterSheet>);
+
+impl CharacterSheetCache {
+  pub fn use_context_provider() -> Self {
+    let resource = use_resource(move || get_character_sheet_map());
+    use_context_provider(|| CharacterSheetCache(MapCache { resource }))
   }
 }
 

@@ -50,5 +50,5 @@ pub fn DiceGroupEntry(group: ReadSignal<DiceGroup>) -> Element {
     .map(|d| d.to_string())
     .collect::<Vec<String>>()
     .join(" + ");
-  return rsx!( span { "{display}" } );
+  return rsx!( "{display}" );
 }

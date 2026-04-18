@@ -40,10 +40,6 @@ impl fmt::Display for ResourcePool {
 }
 
 impl ResourcePool {
-  // pub fn with_drain(&self) -> String {
-  //   return format!("{} ({})", self, self.drain());
-  // }
-
   pub fn drain(&self) -> String {
     match self {
       ResourcePool::Anointment => "d6",
@@ -59,6 +55,10 @@ impl ResourcePool {
       ResourcePool::MajorMana => "d10 **1-4",
     }
     .into()
+  }
+
+  pub fn with_drain(&self) -> String {
+    return format!("{} ({})", self, self.drain());
   }
 }
 

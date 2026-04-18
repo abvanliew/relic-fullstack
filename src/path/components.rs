@@ -5,11 +5,29 @@ use dioxus::prelude::*;
 
 use crate::common::*;
 use crate::keyword::prelude::*;
-use crate::path::Path;
+use crate::path::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::component::*;
 use crate::skill::prelude::*;
 use crate::Route;
+
+impl Path {
+  pub fn as_chip( &self, paths_as_links: bool, additional_classes: Option<String> ) -> Element {
+    let title = &self.title;
+    let id = self.id.to_string();
+    let addition = additional_classes.unwrap_or("".into());
+    rsx! {
+      div {
+        class: "chip {addition}",
+        if paths_as_links {
+          Link { to: Route::SinglePath { id }, "{title}" }
+        } else {
+          div { "{title}" }
+        }
+      }
+    }
+  }
+}
 
 #[component]
 pub fn PathPanelList(paths: Vec<Path>) -> Element {
@@ -66,8 +84,7 @@ pub fn PathPanel(
       }
     }
     if !expandable || panel_display() {
-      div {
-        class: "staggered-grid",
+      StaggeredGrid {
         if keystones.len() > 0 {
           // div {
           //   class: "uv-full underhang keep-after",
@@ -132,13 +149,18 @@ pub fn PathTile(path: ReadSignal<Path>) -> Element {
 }
 
 #[component]
+pub fn PathChipsCard(children: Element) -> Element {
+  rsx!( div { class: "chip-card", {children} } )
+}
+
+#[component]
 pub fn PathChipsLoader(
   path_ids: HashSet<ObjectId>, 
   #[props(default)] paths_as_links: bool,
   #[props(default)] additional_classes: Option<String>,
 ) -> Element {
-  let PathCache(ref path_cache) = use_context::<PathCache>();
-  let mut paths = path_cache.from_object_set(&path_ids);
+  let PathCache( path_map ) = use_context::<PathCache>();
+  let mut paths = path_map.from_object_set( &path_ids );
   paths.sort();
   return rsx! { PathChips { paths, paths_as_links, additional_classes } };
 }
@@ -149,30 +171,11 @@ pub fn PathChips(
   #[props(default)] paths_as_links: bool,
   #[props(default)] additional_classes: Option<String>,
 ) -> Element {
-  let extra_class = additional_classes.unwrap_or("".into());
   let chip_elements: Vec<Element> = paths
     .iter()
-    .map(|path| {
-      let title = path.title.clone();
-      let id = path.id.to_string();
-      rsx! {
-        div {
-          class: "chip {extra_class}",
-          if paths_as_links {
-            Link { to: Route::SinglePath { id }, "{title}" }
-          } else {
-            div { "{title}" }
-          }
-        }
-      }
-    })
+    .map(|path| path.as_chip( paths_as_links, additional_classes.clone() ))
     .collect();
   rsx!(
-    div {
-      class: "chip-card",
-      for chip in chip_elements {
-        {chip}
-      }
-    }
+    for chip in chip_elements { {chip} }
   )
 }

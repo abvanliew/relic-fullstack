@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::character::prelude::*;
 use crate::keyword::prelude::*;
-use crate::path::Path;
+use crate::path::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::prelude::*;
 use dioxus::prelude::*;

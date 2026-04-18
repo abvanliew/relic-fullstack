@@ -1,4 +1,4 @@
-use crate::common::StaggeredCell;
+use crate::common::{StaggeredCell, StaggeredGrid};
 use crate::keyword::prelude::*;
 use crate::server::prelude::*;
 use dioxus::prelude::*;
@@ -9,8 +9,7 @@ pub fn KeywordsPage() -> Element {
   let keywords_all = keyword_cache.into_result_vec().unwrap_or_default();
   let keywords = terms_and_conditions(keywords_all);
   return rsx! {
-    div {
-      class: "staggered-grid",
+    StaggeredGrid {
       for keyword in keywords {
         StaggeredCell {
           KeywordCard { keyword }
@@ -26,8 +25,7 @@ pub fn ConditionsPage() -> Element {
   let keywords_all = keyword_cache.into_result_vec().unwrap_or_default();
   let keywords = conditions(keywords_all);
   return rsx! {
-    div {
-      class: "staggered-grid",
+    StaggeredGrid {
       for keyword in keywords {
         StaggeredCell {
           KeywordCard { keyword }

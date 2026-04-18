@@ -62,8 +62,7 @@ pub fn CharacterSkills(skill_selection: SkillSelections, core_constraints: Vec<S
         li { "{core}" }
       }
     }
-    div {
-      class: "staggered-grid",
+    StaggeredGrid {
       for skill in skills {
         StaggeredCell {
           SkillSelector {
@@ -148,9 +147,11 @@ pub fn SkillSelector(skill: Skill, mut skill_selection: SkillSelections) -> Elem
       on_click: Some(EventHandler::new(on_click)),
       additional_classes: conditional_class,
     }
-    PathChipsLoader {
-      path_ids,
-      additional_classes: Some( conditional_class.into() ),
+    PathChipsCard {
+      PathChipsLoader {
+        path_ids,
+        additional_classes: Some( conditional_class.into() ),
+      }
     }
   }
 }

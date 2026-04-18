@@ -39,35 +39,36 @@ impl fmt::Display for WeaponClass {
 }
 
 #[component]
-pub fn WeaponEntry(weapon: ReadSignal<Weapon>) -> Element {
-  let weapon_signal = weapon.read().clone();
-  let title = weapon_signal.title;
-  let class = weapon_signal.class;
-  let opt_keywords = weapon_signal.keywords;
-  let damage_dice = weapon_signal.damage_dice;
-  let damage_class = weapon_signal.damage_class;
+pub fn WeaponEntry(
+  weapon: ReadSignal<Weapon>,
+) -> Element {
+  let weapon_signal = &weapon.read();
+  let title = &weapon_signal.title;
+  let weapon_class = &weapon_signal.class;
+  let opt_keywords = &weapon_signal.keywords;
+  let damage_dice = weapon_signal.damage_dice.clone();
+  let damage_class = &weapon_signal.damage_class;
   let opt_range = weapon_signal.range;
   let opt_block = weapon_signal.block;
   rsx!(
     div {
-      class: "column no-gap",
+      class: "column",
       div {
         class: "row",
         span { class: "highlight", "{title}" }
-        span { " {class}" }
-      }
-      div {
-        DiceGroupEntry { group: damage_dice }
-        span { " {damage_class}" }
+        div {
+          DiceGroupEntry { group: damage_dice }
+          " {damage_class}"
+        }
+        if let Some( block ) = opt_block {
+          div { "Block {block} Physical" }
+        }
       }
       if let Some( range ) = opt_range {
         div { "Range {range}" }
       }
-      if let Some( block ) = opt_block {
-        div { "Block {block} Physical" }
-      }
       if let Some( keywords ) = opt_keywords {
-        div { class: "italics", "{keywords}" }
+        div { class: "italics", "{weapon_class}, {keywords}" }
       }
     }
   )

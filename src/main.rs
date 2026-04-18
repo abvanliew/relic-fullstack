@@ -36,8 +36,7 @@ pub enum Route {
   #[route("/filter")] SkillFilterPage {},
   #[route("/keywords")] KeywordsPage {},
   #[route("/conditions")] ConditionsPage {},
-
-
+  #[route("/blank-sheet")] BlankSheetPage {},
   
   #[nest("/paths")]
     #[route("/")] PathsPage {},
@@ -47,11 +46,11 @@ pub enum Route {
   #[nest("/skills")]
     #[route("/")] SkillsPage {},
     #[route("/:id")] SingleSkillPage { id: String },
-  // #[end_nest]
+  #[end_nest]
   
-  // #[nest("/sheets")]
-  //   #[route("/")] CharacterSheetPage {},
-  //   #[route("/:id")] SingleChracterSheet { id: String },
+  #[nest("/sheets")]
+    #[route("/")] CharacterSheetsPage {},
+    #[route("/:id")] SingleCharacterSheetPage { id: String },
 }
 
 #[component]

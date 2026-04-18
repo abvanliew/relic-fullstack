@@ -49,3 +49,11 @@ pub fn StaggeredCell(
     }
   )
 }
+
+#[component]
+pub fn StaggeredGrid( children: Element ) -> Element {
+  return rsx! {
+    div { class: "staggered-grid", {children} }
+  }
+}
+

@@ -117,7 +117,7 @@ impl Ord for Skill {
 pub mod prelude {
   pub use super::activation::{Action, Activation};
   pub use super::aspect::{Property, RelicOrdering, TrainingCost};
-  pub use super::cost::ResourceCost;
+  pub use super::cost::{ResourceCost, ResourcePool};
   pub use super::duration::Duration;
   pub use super::filters::{keywords_from_skills, partition_skills_by_cost};
   pub use super::target::{Target,TargetClass,Selection};

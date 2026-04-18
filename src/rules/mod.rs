@@ -15,6 +15,7 @@ pub(crate) mod prelude {
   pub(crate) use super::snippet::{RulesBlock};
   pub(crate) use super::stack::{Stack, PropertyDetail, RuleStacks, RulesStackDetail,rules_stack_from_blurb};
   pub(crate) use super::tier::Tier;
+  pub(crate) use super::stat_block::{AttributeRanks, CapabilityBlock, DefenseBlock};
 }
 
 mod internal {

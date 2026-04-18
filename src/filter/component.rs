@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use dioxus::prelude::*;
 
-use crate::common::StaggeredCell;
+use crate::common::{StaggeredCell, StaggeredGrid};
 use crate::keyword::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::component::*;
@@ -147,8 +147,7 @@ pub fn SkillSearch() -> Element {
     if display_titles {
       div { class: "title underhang", "{joined_titles}" }
     }
-    div {
-      class: "staggered-grid",
+    StaggeredGrid {
       for skill_element in skill_elements {
         {skill_element}
       }

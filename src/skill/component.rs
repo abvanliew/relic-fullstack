@@ -1,15 +1,15 @@
 use std::collections::HashSet;
 
-use crate::common::HorizontalBar;
 use crate::common::*;
 use crate::keyword::prelude::*;
-use crate::path::components::PathChipsLoader;
+use crate::path::components::{PathChipsCard, PathChipsLoader};
 use crate::rules::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::prelude::Action;
 use crate::skill::prelude::*;
 use crate::Route;
 
+use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Default, Eq)]
@@ -20,19 +20,30 @@ pub enum TermDisplay {
 }
 
 #[component]
-pub fn SkillCardList(
+pub fn SkillCardElementsLoader(
+  skill_ids: Vec<ObjectId>, 
+  #[props(default)] display: TermDisplay, 
+  #[props(default)] title_as_link: bool,
+  #[props(default)] include_path_chips: bool,
+) -> Element {
+  let SkillCache( ref skill_map ) = use_context();
+  let skills = skill_map.from_object_ids(&skill_ids);
+  rsx! {
+    SkillCardElements { skills, display, title_as_link, include_path_chips }
+  }
+}
+
+#[component]
+pub fn SkillCardElements(
   skills: Vec<Skill>, 
   #[props(default)] display: TermDisplay, 
   #[props(default)] title_as_link: bool,
   #[props(default)] include_path_chips: bool,
 ) -> Element {
   rsx! {
-    div {
-      class: "staggered-grid",
-      for skill in skills {
-        StaggeredCell {
-          SkillCard { skill, display, title_as_link, include_path_chips }
-        }
+    for skill in skills {
+      StaggeredCell {
+        SkillCard { skill, display, title_as_link, include_path_chips }
       }
     }
   }
@@ -111,9 +122,11 @@ pub fn SkillCard(
       }
     }
     if path_ids.len() > 0 {
-      PathChipsLoader {
-        path_ids,
-        additional_classes: Some( extra_class.clone() ),
+      PathChipsCard {
+        PathChipsLoader {
+          path_ids,
+          additional_classes: Some( extra_class.clone() ),
+        }
       }
     }
   )

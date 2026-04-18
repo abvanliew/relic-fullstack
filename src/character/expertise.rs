@@ -16,7 +16,7 @@ pub struct ExpertiseEntry {
 pub fn ExpertiseComponent(entry: ExpertiseEntry) -> Element {
   return match (entry.title, entry.ranks, entry.empty) {
     (_, _, Some(true)) => rsx!(div {
-      class: "solid-underline full lh"
+      class: "underline-border full lh"
     }),
     (Some(title), Some(rank), _) => rsx! {
       AttributeRow {

@@ -2,7 +2,7 @@ mod sized;
 
 use dioxus::prelude::*;
 
-pub use sized::StaggeredCell;
+pub use sized::{StaggeredCell, StaggeredGrid};
 
 #[component]
 pub fn HorizontalBar() -> Element {

@@ -23,8 +23,12 @@ pub fn AttributeRow(
 #[component]
 pub fn ConstitutionRow(constitution: i32) -> Element {
   rsx!(
-    div { "Constituion {constitution}" }
-    BoxRow { count: constitution }
+    div { 
+      class: "row", 
+      div { "Constituion" }
+      BoxRow { count: constitution }
+    }
+    
   )
 }
 

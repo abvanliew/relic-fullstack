@@ -45,7 +45,7 @@ pub struct ResourceStat {
 pub fn FlowResourcesBlock(flows: ReadSignal<Vec<FlowStat>>) -> Element {
   rsx!(
     div {
-      class: "grid dim-resources",
+      class: "grid dim-flow-tracker",
       for flow in flows.read().iter() {
         FlowBlock { flow: flow.clone() }
       }
@@ -55,10 +55,10 @@ pub fn FlowResourcesBlock(flows: ReadSignal<Vec<FlowStat>>) -> Element {
 
 #[component]
 pub fn FlowBlock(flow: ReadSignal<FlowStat>) -> Element {
-  let read_flow = flow.read().clone();
-  let name = read_flow.flow;
+  let read_flow = &flow.read();
+  let name = &read_flow.flow;
   let flow_value = read_flow.base;
-  let pools = read_flow.pools;
+  let pools = &read_flow.pools;
   let span = pools.len() + 2;
   return rsx!(
     div { class: "uv-title-flow highlight", "{name} {flow_value}" }
@@ -68,11 +68,9 @@ pub fn FlowBlock(flow: ReadSignal<FlowStat>) -> Element {
     }
     div { class: "uv-reserves italics", "Reserves" }
     for pool in pools {
-      ResourcePoolEntry { pool, flow_value }
+      ResourcePoolEntry { pool: pool.clone(), flow_value }
     }
-    div {
-      class: "min-height"
-    }
+    div { class: "compact" }
   );
 }
 

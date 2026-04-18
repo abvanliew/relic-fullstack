@@ -6,7 +6,7 @@ use super::SelectionState;
 use crate::asset::icon::{IMG_SELECTED, IMG_UNSELECTED};
 use crate::common::*;
 use crate::path::components::*;
-use crate::path::Path;
+use crate::path::prelude::*;
 
 #[component]
 pub fn CharacterPaths(
