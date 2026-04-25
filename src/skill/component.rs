@@ -75,9 +75,8 @@ pub fn SkillCard(
     true => {
       let KeywordCache(ref keyword_cache) = use_context();
       let keyword_object_ids = skill.get_keyword_ids();
-      let mut unsorted_keywords =
+      let unsorted_keywords =
         terms_and_conditions(keyword_cache.from_object_ids(&Vec::from_iter(keyword_object_ids)));
-      unsorted_keywords.sort();
       Some(unsorted_keywords)
     },
   };

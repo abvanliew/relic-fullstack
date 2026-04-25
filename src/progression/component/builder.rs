@@ -278,8 +278,8 @@ pub fn CharacterProgression() -> Element {
   let min_rank = 0;
   let max_rank = character_modifiers.get(&ModifierClass::RankMax);
   let attribute_ranks = character_modifiers.get(&ModifierClass::AttributeRank);
-  let capability_max_ranks = character_modifiers.get(&ModifierClass::CapabilityMaxRank);
-  let defense_max_ranks = character_modifiers.get(&ModifierClass::DefenseMaxRank);
+  let capability_max_ranks = character_modifiers.get(&ModifierClass::CapabilitySpecialization);
+  let defense_max_ranks = character_modifiers.get(&ModifierClass::DefenseSpecialization);
   let mut innate_pools: Vec<(ModifierClass, i32)> = Vec::new();
   for pool_class in vec![
     &ModifierClass::AnointmentPool,

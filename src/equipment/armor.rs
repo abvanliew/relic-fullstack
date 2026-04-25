@@ -21,21 +21,14 @@ pub fn ArmorEntry(
   let speed_penalty = armor.speed_penalty;
   rsx! {
     div {
-      class: "column",
-      div {
-        class: "row",
-        span { class: "underline highlight", "{title}" }
-        span { class: "slightlight", " Armor" }
-        " {physical_resistance}, " 
-        if let Some( tenacity_requirement ) = tenacity_requirement {
-          span { class: "italics", " Bulk {tenacity_requirement}" }
-        }
+      class: "card-snug column",
+      div { class: "underline highlight", "{title}" }
+      div { "Armor {physical_resistance}" }
+      if let Some( tenacity_requirement ) = tenacity_requirement {
+        div { "Bulk {tenacity_requirement}" }
       }
-      div {
-        class: "row",
-        if let Some( speed_penalty ) = speed_penalty {
-          span { class: "italics", " Speed Penalty {speed_penalty}" }
-        }
+      if let Some( speed_penalty ) = speed_penalty {
+        div { "Drag {speed_penalty}" }
       }
     }
   }

@@ -1,5 +1,6 @@
 use super::internal::*;
-use crate::rules::prelude::*;
+use crate::common::{StaggeredCell, StaggeredGrid};
+use crate::{keyword::prelude::partitioned_terms_and_conditions, rules::prelude::*};
 use crate::server::prelude::*;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
@@ -87,4 +88,27 @@ pub(crate) fn KeywordBlock(keyword: Keyword) -> Element {
       RulesSectionSet { sections }
     }
   };
+}
+
+#[component]
+pub(crate) fn TermsConditions() -> Element {
+  let KeywordCache( ref keyword_cache) = use_context();
+  let keywords = keyword_cache.into_result_vec().unwrap_or_default();
+  let (terms, conditions) = partitioned_terms_and_conditions(&keywords);
+  return rsx! {
+    StaggeredGrid {
+      div { class: "uv-full subheading underhang", "Terms" }
+      for keyword in terms {
+        StaggeredCell {
+          KeywordCard { keyword }
+        }
+      }
+      div { class: "uv-full subheading underhang", "Conditions" }
+      for keyword in conditions {
+        StaggeredCell {
+          KeywordCard { keyword }
+        }
+      }
+    }
+  }
 }

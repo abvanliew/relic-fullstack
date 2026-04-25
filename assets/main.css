@@ -102,10 +102,20 @@ p {
   transition: opacity 500ms ease-in-out;
 }
 
+
 .staggered-grid {
   column-gap: 40px;
   display: grid;
   grid-template-columns: repeat( auto-fit, 600px);
+  grid-auto-rows: 12px;
+  /* grid-template-columns: repeat(auto-fit, minmax(0, max-content));  */
+}
+
+.staggered-grid-small {
+  column-gap: 16px;
+  display: grid;
+  grid-template-columns: repeat( auto-fit, 220px);
+  /* grid-template-columns: repeat(auto-fit, minmax(0, max-content));  */
 }
 
 .staggered-cell {
@@ -115,10 +125,6 @@ p {
   gap: 12px;
   break-inside: avoid;
 }
-
-/* .staggered-grid > * {
-  margin-bottom: 12px;
-} */
 
 .path-grid {
   grid-template-columns: repeat(auto-fit, 300px);
@@ -222,6 +228,9 @@ p {
 .uv-expertise { grid-column: expertise; }
 .uv-other { grid-column: defenses / end; }
 .uv-mid { grid-column: defenses / resources; }
+.uv-until-resources {
+  grid-column: capabilites / resources;
+}
 .uv-left-half { grid-column: capabilites / resistances; }
 .uv-right-half { grid-column: resistances / end; }
 .uv-rank { grid-column: rank; }
@@ -373,6 +382,11 @@ p {
   height: min-content;
 }
 
+.card-snug {
+  width: 220px;
+  height: min-content;
+}
+
 .chip-card {
   width: 600px;
   display: flex;
@@ -410,7 +424,7 @@ p {
   padding: 0.2rem 0.3rem;
 }
 
-.path-card, .thin-border {
+.path-card, .card-snug, .thin-border {
   border: 0.1rem solid var( --main-border );
   border-radius: 0.6rem;
   padding: 0.55rem 0.7rem 0.7rem;
@@ -785,6 +799,9 @@ p {
   align-self: end;
 }
 
+.selector-gap {
+  gap: 2px 12px;
+}
 
 @media print {
   .print-block, .card, .card-small, .staggered-cell, .staggered-cell * {
@@ -832,6 +849,7 @@ p {
 .wide { margin: 0px 8px; }
 .thick { margin: 8px 0px; }
 .indent { margin-left: 12px; }
+.indent-small { margin-left: 4px; }
 .bumper { margin-right: 8px; }
 .bumper-xlarge { margin-right: 24px; }
 .buffer {
@@ -851,6 +869,10 @@ p {
 .hidden {
   opacity: 0;
   display: none;
+}
+
+.clear-both {
+  clear: both;
 }
 
 .disabled {

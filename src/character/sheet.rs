@@ -9,9 +9,10 @@ use crate::character::components::ConstitutionRow;
 use crate::character::expertise::ExpertiseComponent;
 use crate::character::flow::FlowResourcesBlock;
 // use crate::character::prelude::AttributeRow;
-use crate::common::{HorizontalBar, StaggeredGrid};
+use crate::common::{HorizontalBar, StaggeredCell, StaggeredGrid};
 use crate::equipment::armor::{Armor, ArmorEntry};
 use crate::equipment::weapon::{Weapon, WeaponEntry};
+use crate::keyword::prelude::{KeywordCard, terms_and_conditions};
 use crate::path::components::{PathChipsLoader};
 // use crate::keyword::prelude::*;
 // use crate::path::prelude::*;
@@ -20,7 +21,9 @@ use crate::path::components::{PathChipsLoader};
 // use crate::skill::prelude::*;
 use crate::Route;
 use crate::rules::prelude::*;
-use crate::skill::component::SkillCardElementsLoader;
+use crate::server::prelude::{KeywordCache, SkillCache};
+use crate::skill::component::SkillCardElements;
+use crate::skill::prelude::keywords_from_skills;
 
 use super::aspects::{BodyStats, TrainingRanks};
 // use super::attribute::*;
@@ -109,12 +112,19 @@ pub fn SheetDetails(
   let hp = body.hp;
   let path_ids = sheet.paths;
   let skill_ids = sheet.skills;
+  let SkillCache( ref skill_map ) = use_context();
+  let skills = skill_map.from_object_ids(&skill_ids);
+  let keyword_id_objects = keywords_from_skills(&skills);
+  let KeywordCache(ref keyword_cache) = use_context();
+  let keywords_all = keyword_cache.from_object_set(&keyword_id_objects);
+  let keywords = terms_and_conditions(keywords_all);
+
   let opt_weapons = sheet.weapons;
   let opt_flows = sheet.flows;
   let training = sheet.training;
   rsx! {
     div {
-      class: "sheet grid dim-attributes",
+      class: "sheet grid dim-attributes underhang",
       if named_url {
         Link { to: Route::SingleCharacterSheetPage { id }, class: "uv-left-half heavier", "{name}" }
       } else {
@@ -122,9 +132,10 @@ pub fn SheetDetails(
       }
       div {
         class: "row uv-right-half content-right row-wrap align-center",
-        "Level {sheet.level}"
+        span { class: "highlight indent-small", " Level {sheet.level}" }
         PathChipsLoader { path_ids }
-        " Training: {training}"
+        span { class: "highlight", " Training" }
+        " {training}"
       }
       HorizontalBar {}
       div {
@@ -160,21 +171,23 @@ pub fn SheetDetails(
       div {
         class: "uv-resources column underhang",
         div { class: "subheading", "Body" }
-        div { "Speed {speed} ( Dash {dash} )" }
+        div { "Speed {speed} :: Dash {dash}" }
         div { "Health {hp}" }
         div { class: "hp-box" }
         ConstitutionRow { constitution: 4 }
       }
       div {
-        class: "uv-mid column underhang",
-        div { class: "subheading", "Equipment" }
-        if let Some( weapons ) = opt_weapons {
-          for weapon in weapons {
-            WeaponEntry { weapon }
+        class: "uv-until-resources column underhang",
+        div { class: "subheading underhang", "Equipment" }
+          div { class: "staggered-grid-small", 
+          if let Some( weapons ) = opt_weapons {
+            for weapon in weapons {
+              StaggeredCell { WeaponEntry { weapon } }
+            }
           }
-        }
-        if let Some( armor ) = armor_opt {
-          ArmorEntry { armor }
+          if let Some( armor ) = armor_opt {
+            StaggeredCell { ArmorEntry { armor } }
+          }
         }
       }
       if let Some( flows ) = opt_flows {
@@ -186,8 +199,14 @@ pub fn SheetDetails(
       }
     }
     StaggeredGrid {
-      SkillCardElementsLoader { skill_ids }
+      SkillCardElements { skills }
+      for keyword in keywords {
+        StaggeredCell {
+          KeywordCard { keyword }
+        }
+      }
     }
+    div { class: "print-break" }
   }
 }
 

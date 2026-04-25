@@ -8,10 +8,10 @@ use std::fmt;
 pub enum KeywordClass {
   CoreRule,
   Attribute,
-  #[default]
-  Classifier,
   Term,
   Condition,
+  #[default]
+  Classifier,
 }
 
 impl fmt::Display for KeywordClass {
@@ -46,14 +46,19 @@ pub fn terms_and_conditions(keywords: Vec<Keyword>) -> Vec<Keyword> {
   return filtered_keywords
 }
 
-pub fn conditions(keywords: Vec<Keyword>) -> Vec<Keyword> {
-  let mut filtered_keywords: Vec<Keyword> = keywords
-    .into_iter()
-    .filter(|keyword| match keyword.class {
-      KeywordClass::Condition => true,
-      _ => false,
-    })
-    .collect();
-  filtered_keywords.sort();
-  return filtered_keywords
+pub fn partitioned_terms_and_conditions(
+  keywords: &Vec<Keyword>
+) -> (Vec<Keyword>, Vec<Keyword>) {
+  let mut terms = Vec::new();
+  let mut conditions = Vec::new();
+  for keyword in keywords {
+    match &keyword.class {
+      KeywordClass::Term => terms.push(keyword.clone()),
+      KeywordClass::Condition => conditions.push(keyword.clone()),
+      _ => (),
+    }
+  }
+  terms.sort();
+  conditions.sort();
+  return (terms, conditions);
 }

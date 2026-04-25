@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, PartialOrd, Eq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Ord, PartialOrd, Eq)]
 pub enum TrainingCost {
   Inherient,
   Keystone,

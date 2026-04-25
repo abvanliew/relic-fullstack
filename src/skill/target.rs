@@ -87,7 +87,7 @@ impl Target {
       (_, Some(_)) => "",
       (
         Some(Selection::Creature) | Some(Selection::Space) | Some(Selection::CreatureObject) 
-        | Some(Selection::CreatureObjectSpace), 
+        | Some(Selection::CreatureSpace) | Some(Selection::CreatureObjectSpace), 
         _
       ) => "A",
       (

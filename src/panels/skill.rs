@@ -49,7 +49,7 @@ pub fn SkillsPage() -> Element {
   skills.sort();
   return rsx! {
     StaggeredGrid {
-      SkillCardElements { skills, display: TermDisplay::Embeded, title_as_link: false, include_path_chips: true }
+      SkillCardElements { skills, display: TermDisplay::Embeded, title_as_link: true, include_path_chips: true }
     }
-  };
+  }
 }

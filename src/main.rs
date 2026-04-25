@@ -35,7 +35,6 @@ pub enum Route {
   #[route("/builder")] CharacterBuilder {},
   #[route("/filter")] SkillFilterPage {},
   #[route("/keywords")] KeywordsPage {},
-  #[route("/conditions")] ConditionsPage {},
   #[route("/blank-sheet")] BlankSheetPage {},
   
   #[nest("/paths")]

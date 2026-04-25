@@ -57,9 +57,9 @@ impl Ord for Keyword {
 }
 
 pub mod prelude {
-  pub(crate) use super::classifiers::{terms_and_conditions, conditions, KeywordClassified};
+  pub(crate) use super::classifiers::{terms_and_conditions, partitioned_terms_and_conditions, KeywordClassified};
   pub use super::term::Term;
-  pub(crate) use super::term::{KeywordBlocks, KeywordCard, KeywordCards, TermSnippet};
+  pub(crate) use super::term::{KeywordBlocks, KeywordCard, KeywordCards, TermSnippet, TermsConditions};
   pub use super::Keyword;
 }
 

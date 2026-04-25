@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq, Clone)]
 pub struct TrainingRanks {
   pub expert: Option<i32>,
   pub adept: Option<i32>,

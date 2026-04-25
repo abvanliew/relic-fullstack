@@ -1,24 +1,47 @@
 use dioxus::prelude::*;
 
+use crate::character::sheet::CharacterSheet;
 use crate::common::HorizontalBar;
 use crate::progression::prelude::BASE_DEFENSE;
 
-
 #[component]
-pub fn BlankSheet() -> Element {
+pub fn FillableSheet(
+  #[props(default)] character_sheet: Option<CharacterSheet>,
+) -> Element {
+  let level = character_sheet.as_ref()
+  .map(|c| c.level.clone() );
+  let character_name = character_sheet.as_ref()
+  .map(|c| c.name.clone() );
+
+  // capabilities
+  let physique = character_sheet.as_ref()
+  .and_then(|c| c.attributes.physique.clone() );
+  let warfare = character_sheet.as_ref()
+  .and_then(|c| c.attributes.warfare.clone() );
+  let spirit = character_sheet.as_ref()
+  .and_then(|c| c.attributes.spirit.clone() );
+  let manipulation = character_sheet.as_ref()
+  .and_then(|c| c.attributes.manipulation.clone() );
+
+  // defenses
+  let fortitude = character_sheet.as_ref()
+  .and_then(|c| c.attributes.fortitude.clone() );
+  let insight = character_sheet.as_ref()
+  .and_then(|c| c.attributes.insight.clone() );
+  let resolve = character_sheet.as_ref()
+  .and_then(|c| c.attributes.resolve.clone() );
+  let tenacity = character_sheet.as_ref()
+  .and_then(|c| c.attributes.tenacity.clone() );
   rsx! {
     div {
       class: "sheet-blank grid dim-attributes-wide",
-      SheetHeading {}
+      SheetHeading { level, character_name }
       HorizontalBar {}
       div {
         class: "uv-capabilites",
-        CapabilityBlock {}
-        DefensesBlock {}
-        div {
-          class: "grid dim-rank-table",
-          ResistancesBlock {}
-        }
+        CapabilityBlock { physique, warfare, spirit, manipulation }
+        DefensesBlock { fortitude, resolve, insight, tenacity }
+        ResistancesBlock {}
         BodyBlock {} 
       }
       div {
@@ -37,10 +60,16 @@ pub fn BlankSheet() -> Element {
 }
 
 #[component]
-pub fn SheetHeading() -> Element {
+pub fn SheetHeading(
+  #[props(default)] level: Option<i32>,
+  #[props(default)] character_name: Option<String>,
+) -> Element {
+  let level = level.map_or( "".into(), |l| l.to_string() );
+  let character_name = character_name.unwrap_or("".into());
   rsx! {
+    div { class: "uv-capabilities heavier", "{character_name}" }
     div {
-      class: "uv-other row",
+      class: "uv-defenses row",
       div {
         class: "row full align-center",
         div {
@@ -51,7 +80,7 @@ pub fn SheetHeading() -> Element {
         div {
           class: "row align-center content-right full",
           div { class: "highlight", "Level" }
-          div { class: "digit-box-sum" }
+          div { class: "digit-box-sum", "{level}" }
         }
       }
     }
@@ -71,16 +100,21 @@ pub fn AttributeHeadings() -> Element {
 
 
 #[component]
-pub fn CapabilityBlock() -> Element {
+pub fn CapabilityBlock(
+  #[props(default)] physique: Option<i32>,
+  #[props(default)] warfare: Option<i32>,
+  #[props(default)] spirit: Option<i32>,
+  #[props(default)] manipulation: Option<i32>,
+) -> Element {
   rsx! {
     div {
       class: "grid dim-rank-table",
       div { class: "subheading uv-title justify-left buffer", "Capabilities" }
       AttributeHeadings {}
-      CapabilityRow { title: "Physique", table_top: true }
-      CapabilityRow { title: "Warfare" }
-      CapabilityRow { title: "Spirit" }
-      CapabilityRow { title: "Manipulation" }
+      CapabilityRow { title: "Physique", value: physique, table_top: true, }
+      CapabilityRow { title: "Warfare", value: warfare, }
+      CapabilityRow { title: "Spirit", value: spirit, }
+      CapabilityRow { title: "Manipulation", value: manipulation, }
     }
   }
 }
@@ -107,9 +141,11 @@ pub fn ExpertiseBlock() -> Element {
 #[component]
 pub fn CapabilityRow(
   title: &'static str,
+  #[props(default)] value: Option<i32>,
   #[props(default)] fillin_title: bool,
   #[props(default)] table_top: bool,
 ) -> Element {
+
   let ( digit_sum_class, digit_class ) = match table_top {
     true => ("digit-box-sum", "digit-box border-ci"),
     false => ("digit-box-sum border-u", "digit-box border-l"),
@@ -136,17 +172,23 @@ pub fn CapabilityRow(
   }
 }
 
+
 #[component]
-pub fn DefensesBlock() -> Element {
+pub fn DefensesBlock(
+  #[props(default)] fortitude: Option<i32>,
+  #[props(default)] resolve: Option<i32>,
+  #[props(default)] insight: Option<i32>,
+  #[props(default)] tenacity: Option<i32>,
+) -> Element {
   rsx! {
     div {
       class: "grid dim-rank-table spacer-xlarge",
       div { class: "uv-title subheading justify-left", "Defenses" }
       AttributeHeadings {}
-      DefenseRow { title: "Fortitude", table_top: true }
-      DefenseRow { title: "Resolve" }
-      DefenseRow { title: "Insight" }
-      DefenseRow { title: "Tenacity" }
+      DefenseRow { title: "Fortitude", value: fortitude, table_top: true }
+      DefenseRow { title: "Resolve", value: resolve, }
+      DefenseRow { title: "Insight", value: insight, }
+      DefenseRow { title: "Tenacity", value: tenacity, }
       DodgeBlock {}
     }
   }
@@ -156,8 +198,10 @@ pub fn DefensesBlock() -> Element {
 #[component]
 pub fn DefenseRow(
   title: &'static str,
+  #[props(default)] value: Option<i32>,
   #[props(default)] table_top: bool,
 ) -> Element {
+  let value = value.map_or( "".into(), |l| l.to_string() );
   let ( digit_sum_class, digit_base_class, digit_rank_class, digit_class ) = match table_top {
     true => (
       "digit-box-sum", 
@@ -181,7 +225,7 @@ pub fn DefenseRow(
       div { class: digit_base_class, "{BASE_DEFENSE}" }
     }
     div { class: "uv-rank",
-      div { class: digit_rank_class }
+      div { class: digit_rank_class, "{value}" }
     }
     div { class: "uv-spec", 
       div { class: digit_class }
@@ -262,18 +306,21 @@ pub fn DodgeBlock() -> Element {
 #[component]
 pub fn ResistancesBlock() -> Element {
   return rsx!{
-    div { class: "uv-full spacer" }
-    div { class: "uv-total mini-text", "Total" }
-    div { class: "uv-rank mini-text", "Armor" }
-    div { class: "uv-spec mini-text", "Enchant" }
-    ResistanceRow { title: "Physical Resistance", table_top: true }
-    div { class: "uv-full spacer-xlarge" }
-    div { class: "uv-title subheading justify-left", "Other Resistances" }
-    ResistanceHeadings {}
-    ResistanceRow { title: "", display: TitleDisplay::BlankEntry, table_top: true }
-    ResistanceRow { title: "", display: TitleDisplay::BlankEntry }
-    ResistanceRow { title: "", display: TitleDisplay::BlankEntry }
-    ResistanceRow { title: "", display: TitleDisplay::BlankEntry }
+    div {
+      class: "grid dim-rank-table",
+      div { class: "uv-full spacer" }
+      div { class: "uv-total mini-text", "Total" }
+      div { class: "uv-rank mini-text", "Armor" }
+      div { class: "uv-spec mini-text", "Enchant" }
+      ResistanceRow { title: "Physical Resistance", table_top: true }
+      div { class: "uv-full spacer-xlarge" }
+      div { class: "uv-title subheading justify-left", "Other Resistances" }
+      ResistanceHeadings {}
+      ResistanceRow { title: "", display: TitleDisplay::BlankEntry, table_top: true }
+      ResistanceRow { title: "", display: TitleDisplay::BlankEntry }
+      ResistanceRow { title: "", display: TitleDisplay::BlankEntry }
+      ResistanceRow { title: "", display: TitleDisplay::BlankEntry }
+    }
   }
 }
 

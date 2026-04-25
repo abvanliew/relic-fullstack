@@ -66,7 +66,9 @@ fn level_bonuses() -> ProgressTrack {
       (ModifierClass::InitiatePathMin, 1),
       (ModifierClass::InitiatePathMax, 2),
       (ModifierClass::RankMax, 5),
-      (ModifierClass::AttributeRank, 17),
+      (ModifierClass::AttributeRank, 4),
+      (ModifierClass::CapabilityRank, 8),
+      (ModifierClass::DefenseRank, 8),
       (ModifierClass::GrowthRanks, 1),
       (ModifierClass::WalkingSpeed, 6),
       (ModifierClass::DashSpeed, 3),
@@ -118,11 +120,11 @@ fn adept_growth_bonuses() -> ProgressTrack {
     // Rank 1
     vec![(ModifierClass::HP, 1)],
     // Rank 2
-    vec![(ModifierClass::HP, 1), (ModifierClass::AttributeRank, 1)],
+    vec![(ModifierClass::HP, 1), (ModifierClass::CapabilityRank, 1)],
     // Rank 3
     vec![
       (ModifierClass::HP, 1),
-      (ModifierClass::CapabilityMaxRank, 1),
+      (ModifierClass::CapabilitySpecialization, 1),
     ],
   ];
 }
@@ -132,9 +134,9 @@ fn endurance_growth_bonuses() -> ProgressTrack {
     // Rank 1
     vec![(ModifierClass::HP, 2)],
     // Rank 2
-    vec![(ModifierClass::HP, 2), (ModifierClass::AttributeRank, 1)],
+    vec![(ModifierClass::HP, 2), (ModifierClass::DefenseRank, 1)],
     // Rank 3
-    vec![(ModifierClass::HP, 2), (ModifierClass::DefenseMaxRank, 1)],
+    vec![(ModifierClass::HP, 2), (ModifierClass::DefenseSpecialization, 1)],
   ];
 }
 
@@ -147,7 +149,7 @@ fn expert_growth_bonuses() -> ProgressTrack {
     // Rank 3
     vec![
       (ModifierClass::ExpertiseRank, 1),
-      (ModifierClass::ExpertiseMaxRank, 1),
+      (ModifierClass::ExpertiseSpecialization, 1),
     ],
     // Rank 4
     vec![(ModifierClass::HP, 1), (ModifierClass::ExpertiseRank, 1)],
@@ -157,7 +159,7 @@ fn expert_growth_bonuses() -> ProgressTrack {
     vec![
       (ModifierClass::HP, 1),
       (ModifierClass::ExpertiseRank, 1),
-      (ModifierClass::ExpertiseMaxRank, 1),
+      (ModifierClass::ExpertiseSpecialization, 1),
     ],
   ];
 }
@@ -301,143 +303,3 @@ fn magic_growth_bonuses() -> ProgressTrack {
     ],
   ];
 }
-
-// pub fn character_growth_track() -> CharacterGrowth {
-//   CharacterGrowth {
-//     levels: vec![
-//       // Level 1
-//       LevelGrowth {
-//         tier: Some(Tier::Initiate),
-//         hp: Some(25),
-//         max_ranks: Some(5),
-//         attributes: Some(19),
-//         expertise: Some(20),
-//         max_training: Some(1),
-//         training: Some(1),
-//         paths: Some(1),
-//         path_features: Some(1),
-//         ..Default::default()
-//       },
-//       // Level 2
-//       LevelGrowth {
-//         hp: Some(1),
-//         attributes: Some(1),
-//         expertise: Some(1),
-//         max_training: Some(1),
-//         training: Some(2),
-//         path_features: Some(1),
-//         features: Some(1),
-//         ..Default::default()
-//       },
-//       // Level 3
-//       LevelGrowth {
-//         hp: Some(1),
-//         attributes: Some(2),
-//         expertise: Some(2),
-//         max_training: Some(1),
-//         training: Some(1),
-//         path_features: Some(1),
-//         half_features: Some(1),
-//         ..Default::default()
-//       },
-//       // Level 4
-//       LevelGrowth {
-//         max_ranks: Some(1),
-//         hp: Some(1),
-//         attributes: Some(1),
-//         expertise: Some(1),
-//         features: Some(1),
-//         max_training: Some(1),
-//         training: Some(2),
-//         ..Default::default()
-//       },
-//       // Level 5
-//       LevelGrowth {
-//         hp: Some(1),
-//         attributes: Some(2),
-//         expertise: Some(2),
-//         features: Some(1),
-//         max_training: Some(1),
-//         training: Some(1),
-//         half_features: Some(1),
-//         ..Default::default()
-//       },
-//       // Level 6
-//       LevelGrowth {
-//         hp: Some(1),
-//         attributes: Some(2),
-//         expertise: Some(1),
-//         max_training: Some(1),
-//         training: Some(2),
-//         features: Some(1),
-//         ..Default::default()
-//       },
-//       // Level 7
-//       LevelGrowth {
-//         tier: Some(Tier::Journeyman),
-//         hp: Some(5),
-//         max_ranks: Some(1),
-//         attributes: Some(1),
-//         expertise: Some(2),
-//         max_training: Some(1),
-//         training: Some(1),
-//         paths: Some(1),
-//         features: Some(1),
-//         ..Default::default()
-//       },
-//       // Level 8
-//       LevelGrowth {
-//         hp: Some(1),
-//         attributes: Some(1),
-//         expertise: Some(1),
-//         max_training: Some(1),
-//         training: Some(2),
-//         path_features: Some(1),
-//         half_features: Some(1),
-//         ..Default::default()
-//       },
-//       // Level 9
-//       LevelGrowth {
-//         hp: Some(1),
-//         attributes: Some(2),
-//         expertise: Some(2),
-//         max_training: Some(1),
-//         training: Some(1),
-//         path_features: Some(1),
-//         ..Default::default()
-//       },
-//       // Level 10
-//       LevelGrowth {
-//         max_ranks: Some(1),
-//         hp: Some(1),
-//         attributes: Some(1),
-//         expertise: Some(1),
-//         max_training: Some(1),
-//         training: Some(2),
-//         features: Some(1),
-//         ..Default::default()
-//       },
-//       // Level 11
-//       LevelGrowth {
-//         hp: Some(1),
-//         attributes: Some(2),
-//         expertise: Some(2),
-//         features: Some(1),
-//         max_training: Some(1),
-//         training: Some(1),
-//         half_features: Some(1),
-//         ..Default::default()
-//       },
-//       // Level 12
-//       LevelGrowth {
-//         hp: Some(1),
-//         attributes: Some(2),
-//         expertise: Some(1),
-//         max_training: Some(1),
-//         training: Some(2),
-//         features: Some(1),
-//         ..Default::default()
-//       },
-//     ],
-//   }
-// }

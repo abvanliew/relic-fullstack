@@ -1,6 +1,12 @@
+use std::collections::HashSet;
+
+use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
-use crate::{character::prelude::{BlankSheet, SheetDetails}, server::prelude::CharacterSheetCache};
+use crate::character::prelude::{BodyStats, CharacterSheet, FillableSheet, SheetDetails, TrainingRanks};
+use crate::server::prelude::CharacterSheetCache;
+use crate::rules::prelude::AttributeRanks;
+
 
 #[component]
 pub fn CharacterSheetsPage() -> Element {
@@ -13,6 +19,7 @@ pub fn CharacterSheetsPage() -> Element {
     }
   }
 }
+
 
 #[component]
 pub fn SingleCharacterSheetPage(id: String) -> Element {
@@ -28,9 +35,35 @@ pub fn SingleCharacterSheetPage(id: String) -> Element {
   }
 }
 
+
 #[component]
 pub fn BlankSheetPage() -> Element {
+  let character_sheet = Some(CharacterSheet{
+    id: ObjectId::default(), 
+    name: "Character Name".into(), 
+    level: 1, 
+    attributes: AttributeRanks {
+      physique: Some(0),
+      warfare: Some(0),
+      spirit: Some(0),
+      manipulation: Some(0),
+      fortitude: Some(0),
+      resolve: Some(0),
+      insight: Some(0),
+      tenacity: Some(0),
+      ..AttributeRanks::default()
+    }, 
+    training: TrainingRanks::default(), 
+    body: BodyStats { hp: 30, constitution: 4, speed: 6 }, 
+    paths: HashSet::new(), 
+    skills: Vec::new(), 
+    flows: None, 
+    armor: None, 
+    weapons: None, 
+    resistances: None, 
+    expertise: None,
+  });
   return rsx! {
-    BlankSheet {}
+    FillableSheet { character_sheet }
   }
 }

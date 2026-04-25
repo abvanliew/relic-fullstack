@@ -115,8 +115,12 @@ pub fn CharacterGrowth(
 
 #[component]
 pub fn GrowthSelector(
-  training: TrainingClass, ranks_state: SelectionState, level: i32, rank: Signal<i32>,
-  growth_ranks_remaining: i32, display_training_signal: Signal<Option<TrainingClass>>,
+  training: TrainingClass, 
+  ranks_state: SelectionState, 
+  level: i32, 
+  rank: Signal<i32>,
+  growth_ranks_remaining: i32, 
+  display_training_signal: Signal<Option<TrainingClass>>,
   enabled: bool,
 ) -> Element {
   let conditional_class = match (ranks_state, enabled, rank() > 0) {

@@ -98,18 +98,18 @@ pub fn RollSnippet(roll: Roll) -> Element {
       span { " {keyword}" }
     }
     span { " {roll_class}" }
+    match (&roll.custom_modifier, &roll.modifier) {
+      ( Some(custom_modifier), _ ) => rsx! { span { " {custom_modifier}" } },
+      ( _, Some(Modifier::Advantage) ) => rsx! { span { " with advantage" } },
+      ( _, Some(Modifier::Disadvantage) ) => rsx! { span { " with disadvantage" } },
+      _ => rsx! {},
+    }
     match ( &roll.custom_target, &roll.difficulty, &roll.target ) {
       ( Some(target), _, _ ) => rsx! { span { " against {target}" } },
       ( _, Some(difficulty), _ ) => rsx! { span { " difficulty {difficulty}" } },
       ( _, _, Some( Target::Triggering ) ) => rsx! { span { " against {article} triggering target" } },
       ( _, _, Some( Target::None ) ) => rsx! {},
       _ => rsx! { span { " against {article} target" } },
-    }
-    match (&roll.custom_modifier, &roll.modifier) {
-      ( Some(custom_modifier), _ ) => rsx! { span { " {custom_modifier}" } },
-      ( _, Some(Modifier::Advantage) ) => rsx! { span { " with advantage" } },
-      ( _, Some(Modifier::Disadvantage) ) => rsx! { span { " with disadvantage" } },
-      _ => rsx! {},
     }
     span { "." }
   };

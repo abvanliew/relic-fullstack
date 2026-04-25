@@ -52,17 +52,14 @@ pub fn WeaponEntry(
   let opt_block = weapon_signal.block;
   rsx!(
     div {
-      class: "column",
+      class: "card-snug column",
+      div { class: "underline highlight", "{title}" }
       div {
-        class: "row",
-        span { class: "highlight", "{title}" }
-        div {
-          DiceGroupEntry { group: damage_dice }
-          " {damage_class}"
-        }
-        if let Some( block ) = opt_block {
-          div { "Block {block} Physical" }
-        }
+        DiceGroupEntry { group: damage_dice }
+        " {damage_class}"
+      }
+      if let Some( block ) = opt_block {
+        div { "Block {block} Physical" }
       }
       if let Some( range ) = opt_range {
         div { "Range {range}" }

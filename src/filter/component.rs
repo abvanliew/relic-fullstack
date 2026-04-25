@@ -6,7 +6,6 @@ use crate::common::{StaggeredCell, StaggeredGrid};
 use crate::keyword::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::component::*;
-// use crate::path::components::*;
 
 use super::sets::get_common_classifier_ids;
 
@@ -14,13 +13,15 @@ use super::sets::get_common_classifier_ids;
 pub struct SkillFilter {
   pub category: Signal<HashSet<String>>,
   pub path: Signal<HashSet<String>>,
+  pub mono_skill: Signal<bool>,
 }
 
 impl Default for SkillFilter {
   fn default() -> Self {
     let category = use_signal(|| HashSet::new());
     let path = use_signal(|| HashSet::new());
-    Self { category, path }
+    let mono_skill = use_signal(|| false);
+    Self { category, path, mono_skill }
   }
 }
 
@@ -29,7 +30,7 @@ pub fn SkillSearch() -> Element {
   let SkillCache(ref skill_cache) = use_context();
   let KeywordCache(ref keyword_cache) = use_context();
   let PathCache(ref path_cache) = use_context();
-  let filters = SkillFilter::default();
+  let mut filters = SkillFilter::default();
   let current_classifiers = (filters.category)();
   let classifier_ids = get_common_classifier_ids();
   let classifiers = classifier_ids
@@ -62,7 +63,9 @@ pub fn SkillSearch() -> Element {
     })
     .collect::<Vec<Element>>();
   let current_paths = (filters.path)();
-  let path_classifiers = path_cache.into_vec()
+  let mut paths = path_cache.into_vec();
+  paths.sort();
+  let path_classifiers = paths
     .into_iter()
     .map(|path| {
       let title = path.title;
@@ -96,7 +99,13 @@ pub fn SkillSearch() -> Element {
   .map(
     |skill| {
       let mut display: bool = true;
-      display = if current_classifiers.len() > 0 {
+      display = if display && (filters.mono_skill)() {
+        match &skill.paths {
+          Some(paths) => paths.len() == 1,
+          None => false,
+        }
+      } else { display };
+      display = if display && current_classifiers.len() > 0 {
         let keyword_object_ids = skill.get_keyword_ids();
         let keyword_id_set = keyword_object_ids
           .iter()
@@ -116,30 +125,45 @@ pub fn SkillSearch() -> Element {
       rsx! {
         StaggeredCell {
           additional_classes: if display { None } else { Some( "hidden".into() ) },
-          SkillCard { skill: skill.clone(), display: TermDisplay::Embeded, title_as_link: true }
+          SkillCard {
+            skill: skill.clone(),
+            display: TermDisplay::Embeded,
+            title_as_link: true,
+            include_path_chips: true
+          }
         }
       }
     }
   )
   .collect::<Vec<Element>>();
   let path_titles = current_paths.iter()
-  .filter_map(|path_id| path_cache.from_id(path_id))
-  .map(|path| path.title)
-  .collect::<Vec<String>>()
+    .filter_map(|path_id| path_cache.from_id(path_id))
+    .map(|path| path.title)
+    .collect::<Vec<String>>()
   ;
   let display_titles = path_titles.len() > 0;
   let joined_titles = path_titles.join(", ");
   return rsx! {
+    div { class: "no-print row selector-gap underhang",
+      input {
+        r#type: "checkbox",
+        checked: (filters.mono_skill)(),
+        oninput: move |_| {
+          filters.mono_skill.set( !(filters.mono_skill)() )
+        }
+      }
+      div { "Unique Skill" }
+    }
+    div { class: "no-print underhang", "Classifier" }
     div {
-      class: "no-print underhang",
-      div { "Classifier" }
+      class: "no-print underhang row-wrap selector-gap",
       for classifier in classifiers {
         {classifier}
       }
     }
+    div { class: "no-print underhang", "Paths" }
     div {
-      class: "no-print underhang",
-      div { "Paths" }
+      class: "no-print underhang row-wrap selector-gap",
       for path_classifier in path_classifiers {
         {path_classifier}
       }

@@ -56,6 +56,32 @@ impl Default for Skill {
   }
 }
 
+impl Ord for Skill {
+  fn cmp(&self, other: &Self) -> Ordering {
+    match self.tier.cmp(&other.tier) {
+      Ordering::Equal => (),
+      ord => return ord,
+    }
+    match self.order.cmp(&other.order) {
+      Ordering::Equal => (),
+      ord => return ord,
+    };
+    match (!self.is_ranked()).cmp(&(!other.is_ranked())) {
+      Ordering::Equal => (),
+      ord => return ord,
+    }
+    match self.training_cost.cmp(&other.training_cost) {
+      Ordering::Equal => (),
+      ord => return ord,
+    }
+    match self.resource_cost().cmp(&other.resource_cost()) {
+      Ordering::Equal => (),
+      ord => return ord,
+    }
+    return self.title.cmp(&other.title);
+  }
+}
+
 impl PartialOrd for Skill {
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
     match self.tier.partial_cmp(&other.tier) {
@@ -63,6 +89,10 @@ impl PartialOrd for Skill {
       ord => return ord,
     }
     match self.order.partial_cmp(&other.order) {
+      Some(Ordering::Equal) => (),
+      ord => return ord,
+    }
+    match (!self.is_ranked()).partial_cmp(&(!other.is_ranked())) {
       Some(Ordering::Equal) => (),
       ord => return ord,
     }
@@ -100,26 +130,12 @@ impl PartialOrd for Skill {
   }
 }
 
-impl Ord for Skill {
-  fn cmp(&self, other: &Self) -> Ordering {
-    match self.tier.cmp(&other.tier) {
-      Ordering::Equal => (),
-      ord => return ord,
-    }
-    match self.order.cmp(&other.order) {
-      Ordering::Equal => (),
-      ord => return ord,
-    };
-    return self.title.cmp(&other.title);
-  }
-}
-
 pub mod prelude {
   pub use super::activation::{Action, Activation};
   pub use super::aspect::{Property, RelicOrdering, TrainingCost};
   pub use super::cost::{ResourceCost, ResourcePool};
   pub use super::duration::Duration;
-  pub use super::filters::{keywords_from_skills, partition_skills_by_cost};
+  pub use super::filters::{keywords_from_skills};
   pub use super::target::{Target,TargetClass,Selection};
   pub use super::Skill;
 }

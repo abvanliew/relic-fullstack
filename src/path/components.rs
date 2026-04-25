@@ -52,19 +52,19 @@ pub fn PathPanel(
   #[props(default)] title_as_link: bool,
   #[props(default)] expandable: bool,
 ) -> Element {
-  let mut panel_display = use_signal(|| true);
+  let mut panel_display = use_signal(|| false);
   let id = path.id.to_string();
   let title = path.title;
   let optional_summary = path.summary;
   let SkillCache(ref skill_cache) = use_context();
   let skill_ids = path.skill_ids.unwrap_or_default();
-  let skills = skill_cache.from_object_ids(&skill_ids);
+  let mut skills = skill_cache.from_object_ids(&skill_ids);
+  skills.sort();
   let keyword_id_objects = keywords_from_skills(&skills);
   let KeywordCache(ref keyword_cache) = use_context();
   let keywords_all = keyword_cache.from_object_set(&keyword_id_objects);
-  let mut keywords = terms_and_conditions(keywords_all);
-  keywords.sort();
-  let (keystones, features, minor_features) = partition_skills_by_cost(skills);
+  let keywords = terms_and_conditions(keywords_all);
+  // let (keystones, features, minor_features) = partition_skills_by_cost(skills);
   return rsx! {
     if !hide_description {
       div {
@@ -85,39 +85,44 @@ pub fn PathPanel(
     }
     if !expandable || panel_display() {
       StaggeredGrid {
-        if keystones.len() > 0 {
-          // div {
-          //   class: "uv-full underhang keep-after",
-          //   div { class: "small-text dotted-underline", "Keystones" }
-          // }
-          for skill in keystones {
-            StaggeredCell {
-              SkillCard { skill, title_as_link: true }
-            }
+        for skill in skills {
+          StaggeredCell {
+            SkillCard { skill, title_as_link: true }
           }
         }
-        if features.len() > 0 {
-          // div {
-          //   class: "uv-full underhang keep-after",
-          //   div { class: "small-text dotted-underline", "Features" }
-          // }
-          for skill in features {
-            StaggeredCell {
-              SkillCard { skill, title_as_link: true }
-            }
-          }
-        }
-        if minor_features.len() > 0 {
-          // div {
-          //   class: "uv-full underhang keep-after",
-          //   div { class: "small-text dotted-underline", "Minor Features" }
-          // }
-          for skill in minor_features {
-            StaggeredCell {
-              SkillCard { skill, title_as_link: true }
-            }
-          }
-        }
+        // if keystones.len() > 0 {
+        //   // div {
+        //   //   class: "uv-full underhang keep-after",
+        //   //   div { class: "small-text dotted-underline", "Keystones" }
+        //   // }
+        //   for skill in keystones {
+        //     StaggeredCell {
+        //       SkillCard { skill, title_as_link: true }
+        //     }
+        //   }
+        // }
+        // if features.len() > 0 {
+        //   // div {
+        //   //   class: "uv-full underhang keep-after",
+        //   //   div { class: "small-text dotted-underline", "Features" }
+        //   // }
+        //   for skill in features {
+        //     StaggeredCell {
+        //       SkillCard { skill, title_as_link: true }
+        //     }
+        //   }
+        // }
+        // if minor_features.len() > 0 {
+        //   // div {
+        //   //   class: "uv-full underhang keep-after",
+        //   //   div { class: "small-text dotted-underline", "Minor Features" }
+        //   // }
+        //   for skill in minor_features {
+        //     StaggeredCell {
+        //       SkillCard { skill, title_as_link: true }
+        //     }
+        //   }
+        // }
         if keywords.len() > 0 {
           // div {
           //   class: "uv-full keep-after",

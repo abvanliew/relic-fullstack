@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 
+use crate::keyword::prelude::*;
 use crate::rules::rulebook::example_skills::{awesome_spell, ranked_boon, secret_handshake};
 use crate::skill::component::SkillCard;
 
@@ -21,6 +22,7 @@ pub fn MainRulesThread() -> Element {
       ResourcesThread {}
       NonCombatThread {}
       ReadingSkillCards {}
+      TermsConditions {}
     }
   }
 }
@@ -143,10 +145,10 @@ pub fn ActionEconomyTable() -> Element {
 #[component]
 pub fn CombatRoundThread() -> Element {
   rsx! {
-    div {
-      class: "subtitle",
-      "Combat Rounds"
-    }
+      div {
+        class: "title",
+        "Relic"
+      }
     div {
       class: "underline",
       "Initiative"
@@ -336,9 +338,6 @@ pub fn NonCombatThread() -> Element {
 
 #[component]
 pub fn ReadingSkillCards() -> Element {
-  // let ranked_boon = ranked_boon();
-  // let awesome_spell = awesome_spell();
-  // let secret_handshake = secret_handshake();
   rsx! {
     div {
       class: "subtitle",
@@ -360,17 +359,15 @@ pub fn ReadingSkillCards() -> Element {
       span { class: "italics", "Inherient, Keystone, Feature, Minor Feature, Spell or Cantrip" }
       ". Inherient skills are available to all characters. Keystones are granted when you start a path associated with the skill. Otherwise you must spend a feature or minor feature to learn the skill. Spell or Cantrip can be learned in place of a Feature or Minor Feature respectively. In some cases you will be limited to selecting from Spells or Cantrips."
     }
-    // SkillCard { skill: ranked_boon }
     div {
       span { class: "highlight", "Usage" }
       " - Below the Skill's name is it's activation in bold and its associated keywords in italics. If an activation is listed as Initial, then it can only be used once per round. Activations are covered in more depth in the Action Economy rules with the exception of the Boon which is a passive bonus. The keywords help determine how this skill might interact with other skills or game effects."
     }
-    // SkillCard { skill: awesome_spell }
     div {
       span { class: "highlight", "Secondary Actions" }
       " - In some cases skills learned will give you the ability to do more than one action or carry with it certain triggers. These secondary actions will have their own action name, activation and keywords. Generally these actions are dependant on the primary action and it will describe how and when to use them."
     }
-    // SkillCard { skill: secret_handshake }
+    div { class: "clear-both" }
   }
 }
 
@@ -389,3 +386,7 @@ pub fn ExampleSkills() -> Element {
     }
   }
 }
+
+
+
+

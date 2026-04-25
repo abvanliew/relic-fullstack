@@ -26,14 +26,14 @@ pub fn StaggeredCell(
     Some(Some(Ok(x))) => x.height(),
     _ => 0.0,
   };
-  let span_style = if height < increment {
-    format!("margin-bottom: {}px;", extra_height)
+  let style = if height < increment {
+    format!( "min-height: {}px;", extra_height )
   } else {
     let spans = ((height + extra_height) / increment).ceil() as i32;
+    // margin-bottom: {}px; 
     format!(
-      "margin-bottom: {}px; grid-row: span {}; _debug: height {}, extra_height: {}, increment: {};",
-      extra_height, spans,
-      height, extra_height, increment,
+      "grid-row: span {}; _debug: height {}, extra_height: {}, increment: {};",
+      spans, height, extra_height, increment,
     )
   };
   let extra_class = match additional_classes {
@@ -43,7 +43,7 @@ pub fn StaggeredCell(
   rsx!(
     div {
       class: "staggered-cell {extra_class}",
-      style: span_style,
+      style,
       onmounted: move |element| element_data.set( Some( element.data() ) ),
       {children}
     }
