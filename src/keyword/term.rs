@@ -97,13 +97,21 @@ pub(crate) fn TermsConditions() -> Element {
   let (terms, conditions) = partitioned_terms_and_conditions(&keywords);
   return rsx! {
     StaggeredGrid {
-      div { class: "uv-full subheading underhang", "Terms" }
+      StaggeredCell {
+        additional_classes: Some( "uv-full".into() ),
+        extra_height_override: Some( 8.0 ),
+        div { class: "subheading", "Terms" }
+      }
       for keyword in terms {
         StaggeredCell {
           KeywordCard { keyword }
         }
       }
-      div { class: "uv-full subheading underhang", "Conditions" }
+      StaggeredCell {
+        additional_classes: Some( "uv-full".into() ),
+        extra_height_override: Some( 8.0 ),
+        div { class: "subheading", "Conditions" }
+      }
       for keyword in conditions {
         StaggeredCell {
           KeywordCard { keyword }

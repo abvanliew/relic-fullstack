@@ -59,14 +59,13 @@ pub fn FlowBlock(flow: ReadSignal<FlowStat>) -> Element {
   let name = &read_flow.flow;
   let flow_value = read_flow.base;
   let pools = &read_flow.pools;
-  let span = pools.len() + 2;
+  let span = pools.len() + 1;
   return rsx!(
-    div { class: "uv-title-flow highlight", "{name} {flow_value}" }
+    div { class: "uv-full highlight", "{name} {flow_value}" }
     div {
       class: "uv-divider thin",
       style: "grid-row: span {span}"
     }
-    div { class: "uv-reserves italics", "Reserves" }
     for pool in pools {
       ResourcePoolEntry { pool: pool.clone(), flow_value }
     }
@@ -83,12 +82,13 @@ pub fn ResourcePoolEntry(pool: ReadSignal<ResourceStat>, flow_value: i32) -> Ele
   return rsx!(
     div { class: "uv-title bumper", "{resource}" }
     div {
-      class: "uv-flow row content-right",
-      BoxRow { count: pool_flow }
+      class: "uv-flow content-right underhang",
+      BoxRow { count: pool_reserves }
     }
     div {
-      class: "uv-reserves",
-      BoxRow { count: pool_reserves }
+      style: "min-width: max-content",
+      class: "uv-reserves row underhang",
+      BoxRow { count: pool_flow }
     }
   );
 }

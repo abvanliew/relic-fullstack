@@ -211,7 +211,7 @@ p {
     [defenses] 1fr 
     [resistances] 1fr 
     [expertise] 1fr 
-    [resources] 1fr 
+    [resources] 1.5fr
     [end];
 }
 
@@ -662,7 +662,7 @@ p {
 }
 
 .compact {
-  min-height: 16px;
+  min-height: 12px;
 }
 
 .min-height {
@@ -769,6 +769,7 @@ p {
 }
 
 .content-right {
+  display: flex;
   justify-content: right;
 }
 
