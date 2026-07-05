@@ -8,17 +8,11 @@ use serde::{Deserialize, Serialize};
 use crate::character::components::ConstitutionRow;
 use crate::character::expertise::ExpertiseComponent;
 use crate::character::flow::FlowResourcesBlock;
-// use crate::character::prelude::AttributeRow;
 use crate::common::{HorizontalBar, StaggeredCell, StaggeredGrid};
 use crate::equipment::armor::{Armor, ArmorEntry};
 use crate::equipment::weapon::{Weapon, WeaponEntry};
 use crate::keyword::prelude::{KeywordCard, terms_and_conditions};
 use crate::path::components::{PathChipsLoader};
-// use crate::keyword::prelude::*;
-// use crate::path::prelude::*;
-// use crate::rules::components::Modifier;
-// use crate::skill::component::*;
-// use crate::skill::prelude::*;
 use crate::Route;
 use crate::rules::prelude::*;
 use crate::server::prelude::{KeywordCache, SkillCache};
@@ -76,17 +70,21 @@ fn adjust_for_armor(
 ) {
   let mut base_resistances = resistances.unwrap_or_default();
   let Some( equiped_armor ) = armor else {
-    attributes.update_dodge_with_bulk(0, 0);
     return ( attributes, base_resistances, speed, 3); 
   };
-  base_resistances.update_physical_resistance(equiped_armor.physical_resistance);
-  attributes.update_dodge_with_bulk(
-    equiped_armor.tenacity_requirement, 
-    equiped_armor.speed_penalty.unwrap_or_default()
+  let title = equiped_armor.title.clone();
+  tracing::info!("Armor: {title}");
+  let equipable = attributes.update_dodge_with_bulk(
+    equiped_armor.fortitude_requirement, 
+    equiped_armor.bulk.unwrap_or(0),
   );
-  let speed_penalty = equiped_armor.speed_penalty.unwrap_or_default();
-  let speed = max(speed - speed_penalty, 1);
-  let dash = max(3 - speed_penalty, 1);
+  if !equipable {
+    return ( attributes, base_resistances, speed, 3);
+  }
+  base_resistances.update_physical_resistance(equiped_armor.physical_resistance);
+  let drag = equiped_armor.drag.unwrap_or(0);
+  let speed = max(speed - drag, 1);
+  let dash = max(3 - drag, 1);
   return ( attributes, base_resistances, speed, dash); 
 }
 
@@ -118,7 +116,6 @@ pub fn SheetDetails(
   let KeywordCache(ref keyword_cache) = use_context();
   let keywords_all = keyword_cache.from_object_set(&keyword_id_objects);
   let keywords = terms_and_conditions(keywords_all);
-
   let opt_weapons = sheet.weapons;
   let opt_flows = sheet.flows;
   let training = sheet.training;
@@ -133,7 +130,7 @@ pub fn SheetDetails(
       div {
         class: "row uv-right-half content-right row-wrap align-center",
         span { class: "highlight indent-small", " Level {sheet.level}" }
-        PathChipsLoader { path_ids }
+        PathChipsLoader { path_ids, chip_limit: 8 }
         span { class: "highlight", " Training" }
         " {training}"
       }

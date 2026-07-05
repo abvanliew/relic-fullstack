@@ -1,5 +1,5 @@
 use std::fmt::Display;
-use std::cmp::Ordering;
+use std::cmp::max;
 
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -32,6 +32,7 @@ pub struct AttributeRanks {
   pub resolve: Option<i32>,
   pub insight: Option<i32>,
   pub dodge: Option<i32>,
+  pub dodge_effective: Option<i32>,
 }
 
 fn unpack_to_tuple<T: Display>( value: &Option<i32>, id: T ) -> Option<(String, i32)> {
@@ -42,17 +43,25 @@ fn unpack_to_tuple<T: Display>( value: &Option<i32>, id: T ) -> Option<(String, 
 }
 
 impl AttributeRanks {
-  pub fn update_dodge_with_bulk(&mut self, bulk: i32, slow: i32) -> (bool, i32) {
-    let tenacity = self.tenacity.unwrap_or(0);
-    let net_tenacity = tenacity - bulk;
-    let equiped = net_tenacity >= 0;
-    let (dodge, net_slow) = match net_tenacity.cmp(&slow) {
-      Ordering::Less => (0, slow + net_tenacity),
-      Ordering::Equal => (0, 0),
-      Ordering::Greater => (net_tenacity - slow, 0),
-    };
-    self.dodge = Some(dodge);
-    return (equiped, net_slow);
+  pub fn current_dodge(&self) -> i32 {
+    if let Some( dodge_effective ) = self.dodge_effective {
+      return dodge_effective;
+    }
+    return self.dodge.unwrap_or(0);
+  }
+
+  pub fn update_dodge_with_bulk(&mut self, fortitude_requirement: i32, bulk: i32) -> bool {
+    let fortitude = self.fortitude.unwrap_or(0);
+    if fortitude_requirement > fortitude {
+      return false;
+    }
+    let dodge = self.dodge.unwrap_or(0);
+    let dodge_effective = max(0, dodge - bulk);
+    self.dodge_effective = Some(dodge_effective);
+    tracing::info!("Dodge: {dodge}");
+    tracing::info!("Bulk: {bulk}");
+    tracing::info!("Effective: {dodge_effective}");
+    return true;
   }
 
   pub fn list_capabilities( &self ) -> Vec<(String,i32)> {
@@ -67,11 +76,10 @@ impl AttributeRanks {
 
   pub fn list_defenses( &self ) -> Vec<(String,i32)> {
     let capabilities: Vec<Option<(String,i32)>>  = vec![
-      unpack_to_tuple( &self.tenacity, Defense::Tenacity ),
       unpack_to_tuple( &self.fortitude, Defense::Fortitude ),
       unpack_to_tuple( &self.resolve, Defense::Resolve ),
       unpack_to_tuple( &self.insight, Defense::Insight ),
-      unpack_to_tuple( &self.dodge, Defense::Dodge ),
+      unpack_to_tuple( &Some(self.current_dodge()), Defense::Dodge ),
     ];
     capabilities.into_iter().filter_map(|tuple|tuple).collect()
   }

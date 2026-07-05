@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use dioxus::prelude::*;
 
 const DEFAULT_INCREMENT: f64 = 12.0;
@@ -14,26 +12,14 @@ pub fn StaggeredCell(
 ) -> Element {
   let increment = increment_override.unwrap_or(DEFAULT_INCREMENT);
   let extra_height = extra_height_override.unwrap_or(DEFAULT_EXTRA_HEIGHT);
-
-  let mut element_data: Signal<Option<Rc<MountedData>>> = use_signal(|| None);
-  let rect_future = use_resource(move || async move {
-    match element_data() {
-      Some(x) => Some(x.get_client_rect().await),
-      None => None,
-    }
-  });
-  let height = match &*rect_future.read_unchecked() {
-    Some(Some(Ok(x))) => x.height(),
-    _ => 0.0,
-  };
-  let style = if height < increment {
-    format!( "min-height: {}px;", extra_height )
+  let mut resized_height: Signal<Option<f64>> = use_signal(|| None);
+  let height = resized_height().unwrap_or(0.0);
+  let style = if height + extra_height < increment {
+    format!( "_debug: height {height}, resized_height: {resized_height:?}, extra_height: {extra_height}, increment: {increment};" )
   } else {
     let spans = ((height + extra_height) / increment).ceil() as i32;
-    // margin-bottom: {}px; 
     format!(
-      "grid-row: span {}; _debug: height {}, extra_height: {}, increment: {};",
-      spans, height, extra_height, increment,
+      "grid-row: span {spans}; _debug: height {height}, resized_height: {resized_height:?}, extra_height: {extra_height}, increment: {increment};"
     )
   };
   let extra_class = match additional_classes {
@@ -44,16 +30,23 @@ pub fn StaggeredCell(
     div {
       class: "staggered-cell {extra_class}",
       style,
-      onmounted: move |element| element_data.set( Some( element.data() ) ),
+      onresize: move |event| {
+        match event.data().get_content_box_size() {
+          Ok(rect) => resized_height.set(Some(rect.height)),
+          _ => ()
+        }
+      },
       {children}
     }
   )
 }
 
 #[component]
-pub fn StaggeredGrid( children: Element ) -> Element {
+pub fn StaggeredGrid(
+  children: Element,
+  #[props(default, into)] class: String,
+) -> Element {
   return rsx! {
-    div { class: "staggered-grid", {children} }
+    div { class: "staggered-grid {class}", {children} }
   }
 }
-

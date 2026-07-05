@@ -22,6 +22,7 @@ pub enum Tense {
   Singular,
   Plural,
   Adjective,
+  Continuous,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
@@ -33,6 +34,7 @@ pub struct Tenses {
   pub singular: Option<String>,
   pub plural: Option<String>,
   pub adjective: Option<String>,
+  pub continuous: Option<String>,
 }
 
 impl Tenses {
@@ -44,6 +46,7 @@ impl Tenses {
       Tense::Singular => self.singular.clone(),
       Tense::Plural => self.plural.clone(),
       Tense::Adjective => self.adjective.clone(),
+      Tense::Continuous => self.continuous.clone(),
     }
   }
 }

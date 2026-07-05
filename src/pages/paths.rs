@@ -2,6 +2,7 @@ use crate::path::components::*;
 use crate::server::prelude::*;
 use dioxus::prelude::*;
 
+
 #[component]
 pub fn PathsPage() -> Element {
   let PathCache(ref path_cache) = use_context();

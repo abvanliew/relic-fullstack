@@ -4,6 +4,7 @@ use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
 use crate::character::prelude::{BodyStats, CharacterSheet, FillableSheet, SheetDetails, TrainingRanks};
+use crate::progression::prelude::ProgressChart;
 use crate::server::prelude::CharacterSheetCache;
 use crate::rules::prelude::AttributeRanks;
 
@@ -40,17 +41,9 @@ pub fn SingleCharacterSheetPage(id: String) -> Element {
 pub fn BlankSheetPage() -> Element {
   let character_sheet = Some(CharacterSheet{
     id: ObjectId::default(), 
-    name: "Character Name".into(), 
+    name: "".into(), 
     level: 1, 
     attributes: AttributeRanks {
-      physique: Some(0),
-      warfare: Some(0),
-      spirit: Some(0),
-      manipulation: Some(0),
-      fortitude: Some(0),
-      resolve: Some(0),
-      insight: Some(0),
-      tenacity: Some(0),
       ..AttributeRanks::default()
     }, 
     training: TrainingRanks::default(), 
@@ -65,5 +58,12 @@ pub fn BlankSheetPage() -> Element {
   });
   return rsx! {
     FillableSheet { character_sheet }
+  }
+}
+
+#[component]
+pub fn LevelingProgressionPage() -> Element {
+  rsx! {
+    ProgressChart {}
   }
 }

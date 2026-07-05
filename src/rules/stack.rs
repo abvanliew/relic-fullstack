@@ -23,9 +23,9 @@ pub struct Stack {
 }
 
 impl Stack {
-  pub fn from_blurb( blurb: String ) -> Self {
+  pub fn from_blurb(blurb: String) -> Self {
     Self {
-      block: rules_block_from_blurb( blurb ),
+      block: rules_block_from_blurb(blurb),
       ..Default::default()
     }
   }
@@ -57,9 +57,7 @@ impl Stack {
 }
 
 pub(crate) fn rules_stack_from_blurb(blurb: String) -> Option<RuleStacks> {
-  Some(vec![
-    Stack::from_blurb(blurb)
-  ])
+  Some(vec![Stack::from_blurb(blurb)])
 }
 
 #[component]
@@ -105,7 +103,8 @@ pub fn StackDetail(stack: Stack) -> Element {
 
 #[component]
 pub fn PropertyDetail(
-  title: String, #[props(default)] block: bool, children: Element, title_override: Option<Element>,
+  #[props(into)] title: String, #[props(default)] block: bool, children: Element,
+  title_override: Option<Element>,
 ) -> Element {
   return rsx! {
     if block {

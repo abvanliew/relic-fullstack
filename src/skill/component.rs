@@ -88,7 +88,8 @@ pub fn SkillCard(
     div {
       class: "card grid dim-keywords {extra_class}",
       onclick: move |e| { if let Some(handler) = on_click.as_ref() { handler.call(e); } },
-      div { class: "uv-title-property title nowrap gap",
+      div {
+        class: "uv-title-property title nowrap gap",
         if let Some( input_element ) = input {
           {input_element}
         }
@@ -125,6 +126,7 @@ pub fn SkillCard(
         PathChipsLoader {
           path_ids,
           additional_classes: Some( extra_class.clone() ),
+          chip_limit: 8,
         }
       }
     }
@@ -132,17 +134,11 @@ pub fn SkillCard(
 }
 
 #[component]
-fn ActionDetails(action: Action) -> Element {
+pub fn ActionDetails(action: Action) -> Element {
   let activation = action.title();
   let suffix_opt = action.suffix();
-  let KeywordCache(ref keyword_cache) = use_context();
   let keyword_ids = action.keyword_ids.unwrap_or_default();
-  let keywords = keyword_cache
-    .from_object_ids(&keyword_ids)
-    .iter()
-    .map(|keyword| keyword.title.clone())
-    .collect::<Vec<String>>();
-  let keyword_display = keywords.join(", ");
+  let keyword_display = display_keywords(&keyword_ids);
   let (duration, upkeep) = match &action.duration {
     Some(duration) => (Some(duration.base()), duration.upkeep()),
     None => (None, None),
@@ -156,43 +152,43 @@ fn ActionDetails(action: Action) -> Element {
       if let Some( suffix ) = suffix_opt {
         span {" {suffix} "}
       }
-      if keywords.len() > 0 {
+      if let Some( keyword_display ) = keyword_display {
         span {class: "italics", " - {keyword_display}"}
       }
     }
     if let Some( sections ) = action.condition {
       PropertyDetail {
-        title: "Condition".to_string(),
+        title: "Condition",
         RulesSectionSet { sections }
       }
     }
     if let Some( cost ) = action.cost {
       PropertyDetail {
-        title: "Cost".to_string(),
+        title: "Cost",
         "{cost}"
       }
     }
     if let Some( duration ) = duration {
       PropertyDetail {
-        title: "Duration".to_string(),
+        title: "Duration",
         "{duration}"
       }
     }
     if let Some( upkeep ) = upkeep {
       PropertyDetail {
-        title: "Upkeep".to_string(),
+        title: "Upkeep",
         "{upkeep}"
       }
     }
     if let Some( target ) = action.target {
       PropertyDetail {
-        title: "Target".to_string(),
+        title: "Target",
         "{target}"
       }
     }
     if let Some( sections ) = action.refresh {
       PropertyDetail {
-        title: "Refresh".to_string(),
+        title: "Refresh",
         RulesSectionSet { sections }
       }
     }

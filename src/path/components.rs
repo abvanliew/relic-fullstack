@@ -1,3 +1,4 @@
+use std::cmp::min;
 use std::collections::HashSet;
 
 use bson::oid::ObjectId;
@@ -39,6 +40,7 @@ pub fn PathPanelList(paths: Vec<Path>) -> Element {
           path,
           title_as_link: true,
           expandable: true,
+          hide_keywords: true,
         }
       }
     }
@@ -51,6 +53,7 @@ pub fn PathPanel(
   #[props(default)] hide_description: bool, 
   #[props(default)] title_as_link: bool,
   #[props(default)] expandable: bool,
+  #[props(default)] hide_keywords: bool,
 ) -> Element {
   let mut panel_display = use_signal(|| false);
   let id = path.id.to_string();
@@ -64,11 +67,10 @@ pub fn PathPanel(
   let KeywordCache(ref keyword_cache) = use_context();
   let keywords_all = keyword_cache.from_object_set(&keyword_id_objects);
   let keywords = terms_and_conditions(keywords_all);
-  // let (keystones, features, minor_features) = partition_skills_by_cost(skills);
   return rsx! {
     if !hide_description {
       div {
-        class: "thin-border break-before",
+        class: "secondary-background thin-border break-before",
         onclick: move |_| {
           if !expandable { return }
           panel_display.set( !panel_display() )
@@ -87,50 +89,10 @@ pub fn PathPanel(
       StaggeredGrid {
         for skill in skills {
           StaggeredCell {
-            SkillCard { skill, title_as_link: true }
+            SkillCard { skill, title_as_link: true, include_path_chips: true }
           }
         }
-        // if keystones.len() > 0 {
-        //   // div {
-        //   //   class: "uv-full underhang keep-after",
-        //   //   div { class: "small-text dotted-underline", "Keystones" }
-        //   // }
-        //   for skill in keystones {
-        //     StaggeredCell {
-        //       SkillCard { skill, title_as_link: true }
-        //     }
-        //   }
-        // }
-        // if features.len() > 0 {
-        //   // div {
-        //   //   class: "uv-full underhang keep-after",
-        //   //   div { class: "small-text dotted-underline", "Features" }
-        //   // }
-        //   for skill in features {
-        //     StaggeredCell {
-        //       SkillCard { skill, title_as_link: true }
-        //     }
-        //   }
-        // }
-        // if minor_features.len() > 0 {
-        //   // div {
-        //   //   class: "uv-full underhang keep-after",
-        //   //   div { class: "small-text dotted-underline", "Minor Features" }
-        //   // }
-        //   for skill in minor_features {
-        //     StaggeredCell {
-        //       SkillCard { skill, title_as_link: true }
-        //     }
-        //   }
-        // }
-        if keywords.len() > 0 {
-          // div {
-          //   class: "uv-full keep-after",
-          //   div {
-          //     class: "underhang",
-          //     div { class: "small-text dotted-underline", "Rules Refence" }
-          //   }
-          // }
+        if !hide_keywords && keywords.len() > 0 {
           for keyword in keywords {
             StaggeredCell {
               KeywordCard { keyword }
@@ -162,25 +124,37 @@ pub fn PathChipsCard(children: Element) -> Element {
 pub fn PathChipsLoader(
   path_ids: HashSet<ObjectId>, 
   #[props(default)] paths_as_links: bool,
-  #[props(default)] additional_classes: Option<String>,
+  additional_classes: Option<String>,
+  chip_limit: Option<usize>,
 ) -> Element {
   let PathCache( path_map ) = use_context::<PathCache>();
   let mut paths = path_map.from_object_set( &path_ids );
   paths.sort();
-  return rsx! { PathChips { paths, paths_as_links, additional_classes } };
+  return rsx! { PathChips { paths, paths_as_links, additional_classes, chip_limit } };
 }
 
 #[component]
 pub fn PathChips(
   paths: Vec<Path>, 
   #[props(default)] paths_as_links: bool,
-  #[props(default)] additional_classes: Option<String>,
+  additional_classes: Option<String>,
+  chip_limit: Option<usize>,
 ) -> Element {
+  let expanded_chips = use_signal(|| false);
   let chip_elements: Vec<Element> = paths
     .iter()
     .map(|path| path.as_chip( paths_as_links, additional_classes.clone() ))
     .collect();
-  rsx!(
-    for chip in chip_elements { {chip} }
-  )
+  let length = if expanded_chips() { paths.len()} else {chip_limit.map_or(paths.len(), |limit| min(limit,paths.len()))};
+  let difference = if length < paths.len() {
+    Some( paths.len() - length )
+  } else {
+    None
+  };
+  rsx!{
+    for i in 0..length { {chip_elements[i].clone()} }
+    if let Some( difference ) = difference {
+      div { class: "chip no-border", "... {difference} more" }
+    }
+  }
 }

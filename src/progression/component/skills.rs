@@ -151,6 +151,7 @@ pub fn SkillSelector(skill: Skill, mut skill_selection: SkillSelections) -> Elem
       PathChipsLoader {
         path_ids,
         additional_classes: Some( conditional_class.into() ),
+        chip_limit: 8,
       }
     }
   }

@@ -11,6 +11,14 @@ use crate::modifiers::prelude::Bonus;
 pub struct ModifierSet(HashMap<ModifierClass, Bonus<i32>>);
 
 impl ModifierSet {
+  pub fn from_bonuses(modifiers: Vec<(ModifierClass, i32)>) -> Self {
+    let mut modifier_map: HashMap<ModifierClass, Bonus<i32>> = HashMap::new();
+    for (class, value) in modifiers {
+      modifier_map.insert(class, Bonus::from_bonus(value) );
+    }
+    return Self(modifier_map);
+  }
+
   pub fn get(&self, class: &ModifierClass) -> i32 {
     let ModifierSet(map) = self;
     return map.get(class).unwrap_or(&Bonus::<i32>::default()).value();
@@ -62,6 +70,10 @@ pub enum ModifierClass {
   MinorFeature,
   InitiatePathMin,
   InitiatePathMax,
+  JourneymanPathMin,
+  JourneymanPathMax,
+  MasterPathMin,
+  MasterPathMax,
   GrowthRanks,
   WalkingSpeed,
   DashSpeed,

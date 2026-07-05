@@ -3,8 +3,12 @@ use std::collections::{HashMap, HashSet};
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
+use crate::equipment::base::Equipment;
+use crate::equipment::enchantment::Enchantment;
 use crate::keyword::prelude::*;
 use crate::path::prelude::*;
+use crate::server::enchantment::get_enchantment_map;
+use crate::server::equipment::get_equipment_map;
 use crate::skill::prelude::*;
 use crate::character::prelude::*;
 
@@ -126,6 +130,26 @@ impl CharacterSheetCache {
   pub fn use_context_provider() -> Self {
     let resource = use_resource(move || get_character_sheet_map());
     use_context_provider(|| CharacterSheetCache(MapCache { resource }))
+  }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct EnchantmentCache(pub MapCache<Enchantment>);
+
+impl EnchantmentCache {
+  pub fn use_context_provider() -> Self {
+    let resource = use_resource(move || get_enchantment_map());
+    use_context_provider(|| EnchantmentCache(MapCache { resource }))
+  }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct EquipmentCache(pub MapCache<Equipment>);
+
+impl EquipmentCache {
+  pub fn use_context_provider() -> Self {
+    let resource = use_resource(move || get_equipment_map());
+    use_context_provider(|| EquipmentCache(MapCache { resource }))
   }
 }
 

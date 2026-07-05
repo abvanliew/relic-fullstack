@@ -6,29 +6,29 @@ use serde::{Deserialize, Serialize};
 pub struct Armor {
   pub title: String,
   pub physical_resistance: i32,
-  pub tenacity_requirement: i32,
-  pub speed_penalty: Option<i32>,
+  pub fortitude_requirement: i32,
+  pub bulk: Option<i32>,
+  pub drag: Option<i32>,
 }
 
-
 #[component]
-pub fn ArmorEntry(
-  armor: Armor,
-) -> Element {
+pub fn ArmorEntry(armor: Armor) -> Element {
   let title = armor.title;
   let physical_resistance = armor.physical_resistance;
-  let tenacity_requirement = if armor.tenacity_requirement <= 0 {None} else {Some(armor.tenacity_requirement)};
-  let speed_penalty = armor.speed_penalty;
+  let fortitude_requirement = armor.fortitude_requirement;
   rsx! {
     div {
       class: "card-snug column",
       div { class: "underline highlight", "{title}" }
       div { "Armor {physical_resistance}" }
-      if let Some( tenacity_requirement ) = tenacity_requirement {
-        div { "Bulk {tenacity_requirement}" }
+      if fortitude_requirement > 0 {
+        div { "Required Fortitude {fortitude_requirement}" }
       }
-      if let Some( speed_penalty ) = speed_penalty {
-        div { "Drag {speed_penalty}" }
+      if let Some( bulk ) = armor.bulk {
+        div { "Bulk {bulk}" }
+      }
+      if let Some( drag ) = armor.drag {
+        div { "Drag {drag}" }
       }
     }
   }

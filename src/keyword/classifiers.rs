@@ -1,5 +1,8 @@
+use crate::server::prelude::KeywordCache;
+
 use super::Keyword;
 use bson::oid::ObjectId;
+use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt;
@@ -61,4 +64,18 @@ pub fn partitioned_terms_and_conditions(
   terms.sort();
   conditions.sort();
   return (terms, conditions);
+}
+
+pub fn display_keywords(keyword_ids: &Vec<ObjectId>) -> Option<String> {
+  let KeywordCache(ref keyword_cache) = use_context();
+  let keywords = keyword_cache
+    .from_object_ids(&keyword_ids)
+    .iter()
+    .map(|keyword| keyword.title.clone())
+    .collect::<Vec<String>>();
+  return if keywords.len() > 0 {
+    Some( keywords.join(", ") )
+  } else {
+    None
+  }
 }

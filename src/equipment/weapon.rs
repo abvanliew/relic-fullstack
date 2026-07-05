@@ -55,7 +55,7 @@ pub fn WeaponEntry(
       class: "card-snug column",
       div { class: "underline highlight", "{title}" }
       div {
-        DiceGroupEntry { group: damage_dice }
+        DiceGroupEntry { dice_group: damage_dice }
         " {damage_class}"
       }
       if let Some( block ) = opt_block {

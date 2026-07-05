@@ -36,6 +36,9 @@ pub enum Route {
   #[route("/filter")] SkillFilterPage {},
   #[route("/keywords")] KeywordsPage {},
   #[route("/blank-sheet")] BlankSheetPage {},
+  #[route("/leveling-progress")] LevelingProgressionPage {},
+  #[route("/enchantments")] EnchantmentsPage {},
+  #[route("/equipment")] EquipmentPage {},
   
   #[nest("/paths")]
     #[route("/")] PathsPage {},

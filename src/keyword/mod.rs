@@ -38,11 +38,12 @@ impl Default for Keyword {
 
 impl PartialOrd for Keyword {
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-    match self.class.partial_cmp(&other.class) {
-      Some(core::cmp::Ordering::Equal) => {},
-      ord => return ord,
-    }
-    self.title.partial_cmp(&other.title)
+    // match self.class.partial_cmp(&other.class) {
+    //   Some(core::cmp::Ordering::Equal) => {},
+    //   ord => return ord,
+    // }
+    // self.title.partial_cmp(&other.title)
+    Some(self.cmp(other))
   }
 }
 
@@ -57,7 +58,7 @@ impl Ord for Keyword {
 }
 
 pub mod prelude {
-  pub(crate) use super::classifiers::{terms_and_conditions, partitioned_terms_and_conditions, KeywordClassified};
+  pub(crate) use super::classifiers::{terms_and_conditions, partitioned_terms_and_conditions, KeywordClassified, display_keywords};
   pub use super::term::Term;
   pub(crate) use super::term::{KeywordBlocks, KeywordCard, KeywordCards, TermSnippet, TermsConditions};
   pub use super::Keyword;
