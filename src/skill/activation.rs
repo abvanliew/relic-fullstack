@@ -7,6 +7,9 @@ use serde::{Deserialize, Serialize};
 use crate::rules::prelude::*;
 use crate::skill::prelude::*;
 
+
+use dioxus::prelude::*;
+
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Action {
@@ -44,6 +47,17 @@ impl Default for Action {
 }
 
 impl Action {
+  pub fn activation_element(&self) -> Element {
+    let activation = self.title();
+    let suffix_opt = self.suffix();
+    return rsx! {
+      span { class: "highlight", "{activation}" }
+      if let Some( suffix ) = suffix_opt {
+        span {" {suffix} "}
+      }
+    }
+  }
+
   pub fn title(&self) -> String {
     return match self.initial {
       Some(true) => format!("Initial {}", self.class),

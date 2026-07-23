@@ -57,7 +57,7 @@ pub fn CharacterProgression() -> Element {
 
   let selected_paths: Signal<HashSet<String>> = use_signal(|| HashSet::new());
   let extra_features_signal: Signal<i32> = use_signal(|| 0);
-  let path_min = character_modifiers.get(&ModifierClass::InitiatePathMin);
+  let path_min = character_modifiers.get(&ModifierClass::InitiatePathRequired);
   let path_max = character_modifiers.get(&ModifierClass::InitiatePathMax);
 
   let growth_signals = TrainingGrowthSignals::default();

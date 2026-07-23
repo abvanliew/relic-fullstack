@@ -8,8 +8,10 @@ use super::cost::ResourceCost;
 pub struct Duration {
   pub class: DurationClass,
   pub length: Option<i32>,
-  pub expendable: Option<bool>,
-  pub upkeep: Option<bool>,
+  #[serde(default)]
+  pub expendable: bool,
+  #[serde(default)]
+  pub upkeep: bool,
   pub upkeep_cost: Option<ResourceCost>,
   pub custom: Option<String>,
 }
@@ -63,7 +65,7 @@ impl Duration {
       (DurationClass::Months, false, _) => format!("1 Month"),
       (_, _, _) => format!("Undefined"),
     };
-    if self.expendable.is_some() && self.expendable.unwrap() {
+    if self.expendable {
       base = format!("{base} or until expended")
     }
     return base;
@@ -76,7 +78,7 @@ impl Duration {
       self.class != DurationClass::WhileReserved,
     ) {
       (_, Some(cost), true) => Some(cost.to_string()),
-      (Some(_), _, true) => Some("At cost".into()),
+      (true, _, true) => Some("At cost".into()),
       _ => None,
     }
   }

@@ -3,10 +3,10 @@ use std::collections::HashSet;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
+use crate::builder::CharacterBuildPanel;
 use crate::character::prelude::{BodyStats, CharacterSheet, FillableSheet, SheetDetails, TrainingRanks};
-use crate::progression::prelude::ProgressChart;
 use crate::server::prelude::CharacterSheetCache;
-use crate::rules::prelude::AttributeRanks;
+use crate::rules::prelude::{AttributeRanks, ProgressChart};
 
 
 #[component]
@@ -65,5 +65,13 @@ pub fn BlankSheetPage() -> Element {
 pub fn LevelingProgressionPage() -> Element {
   rsx! {
     ProgressChart {}
+  }
+}
+
+
+#[component]
+pub fn CharacterBuildPage() -> Element {
+  rsx! {
+    CharacterBuildPanel {}
   }
 }

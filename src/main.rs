@@ -1,4 +1,5 @@
 mod asset;
+mod builder;
 mod character;
 mod common;
 mod equipment;
@@ -33,6 +34,7 @@ pub enum Route {
 
   #[route("/")] MainRules {},
   #[route("/builder")] CharacterBuilder {},
+  #[route("/builder2")] CharacterBuildPage {},
   #[route("/filter")] SkillFilterPage {},
   #[route("/keywords")] KeywordsPage {},
   #[route("/blank-sheet")] BlankSheetPage {},

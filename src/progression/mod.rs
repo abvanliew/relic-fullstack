@@ -6,9 +6,9 @@ mod track;
 mod training;
 
 pub mod prelude {
-  // pub use super::track::{character_growth_track, training_growth_track};
+  pub use super::track::LevelTrack;
   // pub use super::training::{CharacterBonus, TrainingGrowth};
-  pub use super::progress_sheet::ProgressChart;
   pub use super::component::ranks::RankDisplay;
   pub use super::fixed::{BASE_DEFENSE, BASE_RESIST};
+  pub use super::progress_sheet::{TrainingTables, LevelTable};
 }

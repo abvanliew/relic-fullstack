@@ -40,7 +40,7 @@ pub fn PathPanelList(paths: Vec<Path>) -> Element {
           path,
           title_as_link: true,
           expandable: true,
-          hide_keywords: true,
+          hide_keywords: false,
         }
       }
     }
@@ -55,7 +55,7 @@ pub fn PathPanel(
   #[props(default)] expandable: bool,
   #[props(default)] hide_keywords: bool,
 ) -> Element {
-  let mut panel_display = use_signal(|| false);
+  let mut panel_display = use_signal(|| true);
   let id = path.id.to_string();
   let title = path.title;
   let optional_summary = path.summary;

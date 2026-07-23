@@ -35,12 +35,12 @@ pub fn awesome_spell() -> Skill {
     ] ),
     condition: rule_sections_from_blurb( "When you want to do something cool".into() ),
     cost: Some(ResourceCost::from_mana(1)),
-    duration: Some(Duration::five_min()),
+    duration: Some(Duration{upkeep: true, ..Duration::five_min()}),
     target: Some(Target{
       class: TargetClass::Burst,
       range: Some( 16 ),
       selection: Some( Selection::CreatureObject),
-      custom_selection: Some( "As many things as you want".into() ),
+      any: true,
       ..Default::default()
     }),
     rules: rules_stack_from_blurb( "This spell has an amazing affect!".into() ),

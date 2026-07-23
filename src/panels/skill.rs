@@ -41,6 +41,7 @@ pub fn SingleSkillPage(id: String) -> Element {
 
 #[component]
 pub fn SkillsPage() -> Element {
+  let mut collapsed = use_signal(|| false);
   let SkillCache(ref skill_cache) = use_context();
   if let Some(element) = skill_cache.status_element() {
     return element;
@@ -48,8 +49,16 @@ pub fn SkillsPage() -> Element {
   let mut skills = skill_cache.into_vec();
   skills.sort();
   return rsx! {
+    div {
+      class: "max-content padding outlined-box underhang",
+      onclick: move |event| {
+        event.stop_propagation();
+        collapsed.set(!collapsed());
+      },
+      if collapsed() { "Expand Skills" } else { "Collapse Skills" }
+    }
     StaggeredGrid {
-      SkillCardElements { skills, display: TermDisplay::Embeded, title_as_link: true, include_path_chips: true }
+      SkillCardElements { skills, display: TermDisplay::Embeded, title_as_link: true, include_path_chips: true, collapsed: collapsed() }
     }
   }
 }

@@ -14,6 +14,8 @@ pub struct Target {
   pub limit: Option<i32>,
   pub suffix: Option<String>,
   pub placed: Option<bool>,
+  #[serde(default)]
+  pub any: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq)]
@@ -112,27 +114,12 @@ impl fmt::Display for Target {
       &self.size,
       &self.limit,
       &self.placed,
+      &self.any,
     ) {
-      (TargetClass::Touch, _, _, None, _) => {
+      (TargetClass::Touch, _, _, None, _, _) => {
         format!("{} {} within reach", self.article(), self.singular(),)
       },
-      (TargetClass::LineOfSight, _, _, _, _) => format!(
-        "{} {} within line of sight",
-        self.article(),
-        self.singular(),
-      ),
-      (TargetClass::SeeOrHear, Some(range), _, _, _) => format!(
-        "{} {} that can see or hear you within range {}",
-        self.article(),
-        self.singular(),
-        range,
-      ),
-      (TargetClass::SeeOrHear, _, _, _, _) => format!(
-        "{} {} that can see or hear you",
-        self.article(),
-        self.singular(),
-      ),
-      (TargetClass::Touch, _, _, Some(limit), _) => format!(
+      (TargetClass::Touch, _, _, Some(limit), _, _) => format!(
         "Up to {} {} within reach",
         limit,
         if *limit != 0 {
@@ -141,10 +128,26 @@ impl fmt::Display for Target {
           self.singular()
         },
       ),
-      (TargetClass::Weapon, _, _, None, _) => {
+      (TargetClass::LineOfSight, _, _, _, _, _) => format!(
+        "{} {} within line of sight",
+        self.article(),
+        self.singular(),
+      ),
+      (TargetClass::SeeOrHear, Some(range), _, _, _, _) => format!(
+        "{} {} that can see or hear you within range {}",
+        self.article(),
+        self.singular(),
+        range,
+      ),
+      (TargetClass::SeeOrHear, _, _, _, _, _) => format!(
+        "{} {} that can see or hear you",
+        self.article(),
+        self.singular(),
+      ),
+      (TargetClass::Weapon, _, _, None, _, _) => {
         format!("{} {} within weapon reach", self.article(), self.singular(),)
       },
-      (TargetClass::Weapon, _, _, Some(limit), _) => format!(
+      (TargetClass::Weapon, _, _, Some(limit), _, _) => format!(
         "Up to {} {} within weapon reach",
         limit,
         if *limit != 0 {
@@ -153,13 +156,13 @@ impl fmt::Display for Target {
           self.singular()
         }
       ),
-      (TargetClass::Range, Some(range), _, None, _) => format!(
+      (TargetClass::Range, Some(range), _, None, _, _) => format!(
         "{} {} within range {}",
         self.article(),
         self.singular(),
         range,
       ),
-      (TargetClass::Range, Some(range), _, Some(limit), _) => format!(
+      (TargetClass::Range, Some(range), _, Some(limit), _, _) => format!(
         "Up to {} {} within range {}",
         limit,
         if *limit != 0 {
@@ -169,10 +172,13 @@ impl fmt::Display for Target {
         },
         range,
       ),
-      (TargetClass::Burst, Some(range), _, None, _) => {
+      (TargetClass::Burst, Some(range), _, None, _, false) => {
         format!("All {} within range {}", self.plural(), range,)
       },
-      (TargetClass::Burst, Some(range), _, Some(limit), _) => format!(
+      (TargetClass::Burst, Some(range), _, _, _, true) => {
+        format!("Any {} within range {}", self.plural(), range,)
+      },
+      (TargetClass::Burst, Some(range), _, Some(limit), _, _) => format!(
         "Up to {limit} {} within range {range}",
         if *limit != 0 {
           self.plural()
@@ -180,23 +186,23 @@ impl fmt::Display for Target {
           self.singular()
         },
       ),
-      (TargetClass::Line, _, Some(size), None, _) => {
+      (TargetClass::Line, _, Some(size), None, _, _) => {
         format!("All {} in a Line {size} spaces long", self.plural(),)
       },
-      (TargetClass::Cone, _, Some(size), None, _) => {
+      (TargetClass::Cone, _, Some(size), None, _, _) => {
         format!("All {} in a Cone size {size}", self.plural(),)
       },
-      (TargetClass::RadiusCorner, Some(range), Some(size), _, Some(true)) => {
+      (TargetClass::RadiusCorner, Some(range), Some(size), _, Some(true), _) => {
         format!("Place a radius {size} area centered on the corner of a space within range {range}")
       },
-      (TargetClass::RadiusCorner, Some(range), Some(size), _, _) => format!(
+      (TargetClass::RadiusCorner, Some(range), Some(size), _, _, _) => format!(
         "All {} within a radius {size} area centered on the corner of a space within range {range}",
         self.plural(),
       ),
-      (TargetClass::RadiusSpace, Some(range), Some(size), _, Some(true)) => {
+      (TargetClass::RadiusSpace, Some(range), Some(size), _, Some(true), _) => {
         format!("Place a radius {size} area centered on a space within range {range}")
       },
-      (TargetClass::RadiusSpace, Some(range), Some(size), _, _) => format!(
+      (TargetClass::RadiusSpace, Some(range), Some(size), _, _, _) => format!(
         "All {} within a radius {size} area centered on a space within range {range}",
         self.plural(),
       ),

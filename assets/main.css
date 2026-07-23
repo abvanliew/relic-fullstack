@@ -116,11 +116,12 @@ p {
 }
 
 .staggered-medium {
-  grid-template-columns: repeat( auto-fit, 300px);
+  column-gap: 24px;
+  grid-template-columns: repeat( auto-fit, 280px);
 }
 
 .staggered-medium .card {
-  width: 300px;
+  width: 280px;
 }
 
 .staggered-small {
@@ -188,6 +189,7 @@ p {
 
 .padded-grid div {
   padding: 2.5px 4px;
+  width: 100%;
 }
 
 .dim-keywords {
@@ -415,10 +417,25 @@ p {
 .uv-major-mana-area { grid-area: major-mana; }
 .uv-major-mana-drain-area { grid-area: major-mana-drain; }
 
-.alt-background div:nth-child(8n+5),
-.alt-background div:nth-child(8n+6), 
-.alt-background div:nth-child(8n+7), 
-.alt-background div:nth-child(8n+8) {
+.alt-background-4 div:nth-child(8n+5),
+.alt-background-4 div:nth-child(8n+6), 
+.alt-background-4 div:nth-child(8n+7), 
+.alt-background-4 div:nth-child(8n+8), 
+
+.alt-background-5 div:nth-child(10n+6),
+.alt-background-5 div:nth-child(10n+7),
+.alt-background-5 div:nth-child(10n+8),
+.alt-background-5 div:nth-child(10n+9),
+.alt-background-5 div:nth-child(10n+10),
+
+.alt-background-8 div:nth-child(16n+9), 
+.alt-background-8 div:nth-child(16n+10), 
+.alt-background-8 div:nth-child(16n+11), 
+.alt-background-8 div:nth-child(16n+12), 
+.alt-background-8 div:nth-child(16n+13), 
+.alt-background-8 div:nth-child(16n+14), 
+.alt-background-8 div:nth-child(16n+15), 
+.alt-background-8 div:nth-child(16n+16) {
   background-color: #3f3f3f;
 }
 
@@ -881,14 +898,41 @@ p {
     break-inside: avoid-page !important;
   }
 
-  .alt-background div:nth-child(8n+5),
-  .alt-background div:nth-child(8n+6), 
-  .alt-background div:nth-child(8n+7), 
-  .alt-background div:nth-child(8n+8) {
+  .alt-background-4 div:nth-child(8n+5),
+  .alt-background-4 div:nth-child(8n+6), 
+  .alt-background-4 div:nth-child(8n+7), 
+  .alt-background-4 div:nth-child(8n+8),
+
+  .alt-background-5 div:nth-child(10n+6),
+  .alt-background-5 div:nth-child(10n+7),
+  .alt-background-5 div:nth-child(10n+8),
+  .alt-background-5 div:nth-child(10n+9),
+  .alt-background-5 div:nth-child(10n+10),
+  
+  .alt-background-8 div:nth-child(16n+9), 
+  .alt-background-8 div:nth-child(16n+10), 
+  .alt-background-8 div:nth-child(16n+11), 
+  .alt-background-8 div:nth-child(16n+12), 
+  .alt-background-8 div:nth-child(16n+13), 
+  .alt-background-8 div:nth-child(16n+14), 
+  .alt-background-8 div:nth-child(16n+15), 
+  .alt-background-8 div:nth-child(16n+16) {
     background-color: #d1d1d1;
     color: #000000;
     print-color-adjust: exact;
   }
+
+  .secondary-background{
+    background-color: #e1e1e1;
+    color: #000000;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  .secondary-background a {
+    color: #000000;
+  }
+
 
   .no-print, .no-print * {
     display: none !important;
@@ -915,6 +959,8 @@ p {
     --faded: #3f3f3f;
   }
 }
+
+.padding { padding: 0.36rem }
 
 .full { width: 100%; }
 

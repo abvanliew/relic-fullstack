@@ -1,4 +1,12 @@
+mod action_economy;
+mod creation_progression;
+mod dice_rolling;
+mod equipment;
 mod example_skills;
-mod main;
+mod out_of_combat;
+mod primary_rules;
+mod resources;
 
-pub use main::MainRulesThread;
+pub use primary_rules::MainRulesThread;
+pub use creation_progression::ProgressChart;
+pub use equipment::WeaponExplainer;

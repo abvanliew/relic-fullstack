@@ -1,7 +1,5 @@
-use crate::{
-  modifiers::prelude::{ModifierClass, ModifierSet},
-  progression::training::TrainingClass,
-};
+use crate::progression::training::TrainingClass;
+use crate::modifiers::prelude::{ModifierClass, ModifierSet};
 
 #[derive(Debug, Clone)]
 pub struct LevelTrack;
@@ -73,8 +71,9 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::HP, 30),
       (ModifierClass::Constituion, 4),
       (ModifierClass::MinorFeature, 1),
-      (ModifierClass::InitiatePathMin, 1),
+      (ModifierClass::InitiatePathRequired, 1),
       (ModifierClass::InitiatePathMax, 2),
+      (ModifierClass::InitiatePathOptional, 1),
       (ModifierClass::RankMax, 5),
       (ModifierClass::AttributeRank, 4),
       (ModifierClass::CapabilityRank, 8),
@@ -89,6 +88,7 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::HP, 2),
       (ModifierClass::Feature, 1),
       (ModifierClass::InitiatePathMax, 1),
+      (ModifierClass::InitiatePathOptional, 1),
       (ModifierClass::AttributeRank, 1),
       (ModifierClass::ExpertiseRank, 2),
       (ModifierClass::GrowthRanks, 2),
@@ -98,6 +98,7 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::HP, 2),
       (ModifierClass::MinorFeature, 1),
       (ModifierClass::InitiatePathMax, 1),
+      (ModifierClass::InitiatePathOptional, 1),
       (ModifierClass::AttributeRank, 2),
       (ModifierClass::ExpertiseRank, 2),
       (ModifierClass::GrowthRanks, 1),
@@ -131,18 +132,19 @@ fn level_bonuses() -> ProgressSetTrack {
     // Level 7
     ModifierSet::from_bonuses(vec![
       (ModifierClass::HP, 5),
-      (ModifierClass::JourneymanPathMin, 1),
-      (ModifierClass::JourneymanPathMax, 1),
+      (ModifierClass::JourneymanPathRequired, 1),
+      (ModifierClass::JourneymanPathOptional, 1),
       (ModifierClass::Feature, 1),
       (ModifierClass::RankMax, 1),
-      (ModifierClass::AttributeRank, 1),
+      (ModifierClass::AttributeRank, 2),
       (ModifierClass::ExpertiseRank, 3),
       (ModifierClass::GrowthRanks, 1),
     ]),
     // Level 8
     ModifierSet::from_bonuses(vec![
       (ModifierClass::HP, 2),
-      (ModifierClass::JourneymanPathMax, 1),
+      (ModifierClass::JourneymanPathOptional, 1),
+      (ModifierClass::Feature, 1),
       (ModifierClass::MinorFeature, 1),
       (ModifierClass::AttributeRank, 1),
       (ModifierClass::ExpertiseRank, 1),
@@ -151,7 +153,63 @@ fn level_bonuses() -> ProgressSetTrack {
     // Level 9
     ModifierSet::from_bonuses(vec![
       (ModifierClass::HP, 2),
-      (ModifierClass::JourneymanPathMax, 1),
+      (ModifierClass::JourneymanPathOptional, 1),
+      (ModifierClass::Feature, 1),
+      (ModifierClass::AttributeRank, 2),
+      (ModifierClass::ExpertiseRank, 2),
+      (ModifierClass::GrowthRanks, 1),
+    ]),
+    // Level 10
+    ModifierSet::from_bonuses(vec![
+      (ModifierClass::HP, 2),
+      (ModifierClass::Feature, 1),
+      (ModifierClass::RankMax, 1),
+      (ModifierClass::AttributeRank, 1),
+      (ModifierClass::ExpertiseRank, 1),
+      (ModifierClass::GrowthRanks, 2),
+    ]),
+    // Level 11
+    ModifierSet::from_bonuses(vec![
+      (ModifierClass::HP, 2),
+      (ModifierClass::Feature, 1),
+      (ModifierClass::MinorFeature, 1),
+      (ModifierClass::AttributeRank, 2),
+      (ModifierClass::ExpertiseRank, 2),
+      (ModifierClass::GrowthRanks, 2),
+    ]),
+    // Level 12
+    ModifierSet::from_bonuses(vec![
+      (ModifierClass::HP, 2),
+      (ModifierClass::Feature, 1),
+      (ModifierClass::AttributeRank, 1),
+      (ModifierClass::ExpertiseRank, 1),
+      (ModifierClass::GrowthRanks, 2),
+    ]),
+    // Level 13
+    ModifierSet::from_bonuses(vec![
+      (ModifierClass::HP, 5),
+      (ModifierClass::MasterPathRequired, 1),
+      (ModifierClass::MasterPathOptional, 1),
+      (ModifierClass::Feature, 1),
+      (ModifierClass::RankMax, 1),
+      (ModifierClass::AttributeRank, 2),
+      (ModifierClass::ExpertiseRank, 3),
+      (ModifierClass::GrowthRanks, 1),
+    ]),
+    // Level 14
+    ModifierSet::from_bonuses(vec![
+      (ModifierClass::HP, 2),
+      (ModifierClass::MasterPathOptional, 1),
+      (ModifierClass::Feature, 1),
+      (ModifierClass::MinorFeature, 1),
+      (ModifierClass::AttributeRank, 1),
+      (ModifierClass::ExpertiseRank, 1),
+      (ModifierClass::GrowthRanks, 2),
+    ]),
+    // Level 15
+    ModifierSet::from_bonuses(vec![
+      (ModifierClass::HP, 2),
+      (ModifierClass::JourneymanPathOptional, 1),
       (ModifierClass::Feature, 1),
       (ModifierClass::AttributeRank, 2),
       (ModifierClass::ExpertiseRank, 2),
@@ -231,7 +289,8 @@ fn innate_growth_bonuses() -> ProgressTrack {
       (ModifierClass::InnateFlow, 1),
     ],
     // Rank 6
-    vec![(ModifierClass::HP, 1), (ModifierClass::InnatePoolAll, 1)],
+    vec![(ModifierClass::HP, 1),
+      (ModifierClass::InnatePool, 1), (ModifierClass::InnatePoolAll, 1)],
   ];
 }
 
@@ -255,7 +314,8 @@ fn resonance_growth_bonuses() -> ProgressTrack {
       (ModifierClass::ResonanceFlow, 1),
     ],
     // Rank 6
-    vec![(ModifierClass::HP, 1), (ModifierClass::ResonancePoolAll, 1)],
+    vec![(ModifierClass::HP, 1), 
+      (ModifierClass::ResonancePool, 1),(ModifierClass::ResonancePoolAll, 1)],
   ];
 }
 

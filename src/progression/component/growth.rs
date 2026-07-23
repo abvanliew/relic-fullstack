@@ -5,7 +5,8 @@ use dioxus::prelude::*;
 
 use crate::common::*;
 use crate::progression::component::SelectionState;
-use crate::progression::{track::GrowthTrack, training::TrainingClass};
+use crate::progression::track::GrowthTrack;
+use crate::progression::training::TrainingClass;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TrainingGrowthSignals {

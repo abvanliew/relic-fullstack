@@ -39,11 +39,12 @@ pub fn SkillCardElements(
   #[props(default)] display: TermDisplay, 
   #[props(default)] title_as_link: bool,
   #[props(default)] include_path_chips: bool,
+  #[props(default)] collapsed: bool,
 ) -> Element {
   rsx! {
     for skill in skills {
       StaggeredCell {
-        SkillCard { skill, display, title_as_link, include_path_chips }
+        SkillCard { skill, display, title_as_link, include_path_chips, collapsed }
       }
     }
   }
@@ -53,12 +54,12 @@ pub fn SkillCardElements(
 pub fn SkillCard(
   skill: Skill, 
   #[props(default)] display: TermDisplay, 
-  #[props(default)] include_keyword_description: bool, 
   #[props(default)] title_as_link: bool,
   #[props(default)] input: Option<Element>,
   #[props(default)] on_click: Option<EventHandler<MouseEvent>>,
   #[props(default)] additional_classes: Option<String>,
   #[props(default)] include_path_chips: bool,
+  #[props(default)] collapsed: bool,
 ) -> Element {
   let id = skill.id.to_string();
   let title = skill.title.clone();
@@ -66,20 +67,11 @@ pub fn SkillCard(
   let opt_description = skill.description.clone();
   let action = skill.action.clone();
   let opt_sub_actions = skill.sub_actions.clone();
-  let path_ids = match include_path_chips {
-    true => skill.paths.clone().unwrap_or_default(),
-    false => HashSet::new(),
+  let path_ids = match (include_path_chips, collapsed) {
+    (true, false) => skill.paths.clone().unwrap_or_default(),
+    _ => HashSet::new(),
   };
-  let keywords_optional = match include_keyword_description {
-    false => None,
-    true => {
-      let KeywordCache(ref keyword_cache) = use_context();
-      let keyword_object_ids = skill.get_keyword_ids();
-      let unsorted_keywords =
-        terms_and_conditions(keyword_cache.from_object_ids(&Vec::from_iter(keyword_object_ids)));
-      Some(unsorted_keywords)
-    },
-  };
+  let activation_element = action.activation_element();
   let extra_class = match additional_classes {
     Some(class) => class,
     None => "".into(),
@@ -102,22 +94,22 @@ pub fn SkillCard(
         }
       }
       div { class: "uv-property",
+        if collapsed {
+          {activation_element}
+        } else {
         div { class: "nowrap italics", "{training_requirements}" }
+        }
       }
       if let Some( description ) = opt_description {
         div { class: "uv-full", "{description}" }
       }
-      ActionDetails { action }
-      if let Some( sub_actions ) = opt_sub_actions {
-        for action in sub_actions {
-          div { class: "spacer" }
-          ActionDetails { action }
-        }
-      }
-      if let Some( keywords ) = keywords_optional {
-        if keywords.len() > 0 {
-          HorizontalBar {}
-          KeywordBlocks { keywords }
+      if !collapsed {
+        ActionDetails { action }
+        if let Some( sub_actions ) = opt_sub_actions {
+          for action in sub_actions {
+            div { class: "spacer" }
+            ActionDetails { action }
+          }
         }
       }
     }
@@ -134,9 +126,10 @@ pub fn SkillCard(
 }
 
 #[component]
-pub fn ActionDetails(action: Action) -> Element {
-  let activation = action.title();
-  let suffix_opt = action.suffix();
+pub fn ActionDetails(
+  action: Action,
+) -> Element {
+  let activation_element = action.activation_element();
   let keyword_ids = action.keyword_ids.unwrap_or_default();
   let keyword_display = display_keywords(&keyword_ids);
   let (duration, upkeep) = match &action.duration {
@@ -148,10 +141,7 @@ pub fn ActionDetails(action: Action) -> Element {
       div { class: "uv-full subtitle", "{sub_title}" }
     }
     div { class: "uv-full inline",
-      span { class: "highlight", "{activation}" }
-      if let Some( suffix ) = suffix_opt {
-        span {" {suffix} "}
-      }
+      {activation_element}
       if let Some( keyword_display ) = keyword_display {
         span {class: "italics", " - {keyword_display}"}
       }
