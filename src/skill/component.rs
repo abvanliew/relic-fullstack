@@ -21,12 +21,10 @@ pub enum TermDisplay {
 
 #[component]
 pub fn SkillCardElementsLoader(
-  skill_ids: Vec<ObjectId>, 
-  #[props(default)] display: TermDisplay, 
-  #[props(default)] title_as_link: bool,
-  #[props(default)] include_path_chips: bool,
+  skill_ids: Vec<ObjectId>, #[props(default)] display: TermDisplay,
+  #[props(default)] title_as_link: bool, #[props(default)] include_path_chips: bool,
 ) -> Element {
-  let SkillCache( ref skill_map ) = use_context();
+  let SkillCache(ref skill_map) = use_context();
   let skills = skill_map.from_object_ids(&skill_ids);
   rsx! {
     SkillCardElements { skills, display, title_as_link, include_path_chips }
@@ -35,10 +33,8 @@ pub fn SkillCardElementsLoader(
 
 #[component]
 pub fn SkillCardElements(
-  skills: Vec<Skill>, 
-  #[props(default)] display: TermDisplay, 
-  #[props(default)] title_as_link: bool,
-  #[props(default)] include_path_chips: bool,
+  skills: Vec<Skill>, #[props(default)] display: TermDisplay,
+  #[props(default)] title_as_link: bool, #[props(default)] include_path_chips: bool,
   #[props(default)] collapsed: bool,
 ) -> Element {
   rsx! {
@@ -52,13 +48,10 @@ pub fn SkillCardElements(
 
 #[component]
 pub fn SkillCard(
-  skill: Skill, 
-  #[props(default)] display: TermDisplay, 
-  #[props(default)] title_as_link: bool,
+  skill: Skill, #[props(default)] display: TermDisplay, #[props(default)] title_as_link: bool,
   #[props(default)] input: Option<Element>,
   #[props(default)] on_click: Option<EventHandler<MouseEvent>>,
-  #[props(default)] additional_classes: Option<String>,
-  #[props(default)] include_path_chips: bool,
+  #[props(default)] additional_classes: Option<String>, #[props(default)] include_path_chips: bool,
   #[props(default)] collapsed: bool,
 ) -> Element {
   let id = skill.id.to_string();
@@ -126,9 +119,7 @@ pub fn SkillCard(
 }
 
 #[component]
-pub fn ActionDetails(
-  action: Action,
-) -> Element {
+pub fn ActionDetails(action: Action) -> Element {
   let activation_element = action.activation_element();
   let keyword_ids = action.keyword_ids.unwrap_or_default();
   let keyword_display = display_keywords(&keyword_ids);

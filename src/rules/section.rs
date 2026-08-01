@@ -14,11 +14,11 @@ pub struct Section {
 }
 
 impl Section {
-  pub fn from_blurb(blurb:String)->Self {
+  pub fn from_blurb(blurb: String) -> Self {
     Self::from_block(rules_block_from_blurb(blurb))
   }
 
-  pub fn from_block(block:Option<RulesBlock>) -> Self {
+  pub fn from_block(block: Option<RulesBlock>) -> Self {
     Self {
       block,
       ..Default::default()
@@ -51,7 +51,7 @@ pub(crate) fn rule_sections_from_blurb(blurb: String) -> Option<RuleSections> {
   Some(rule_sections_from_blurb_certain(blurb))
 }
 
-pub(crate) fn rule_sections_from_block( block: RulesBlock ) -> RuleSections {
+pub(crate) fn rule_sections_from_block(block: RulesBlock) -> RuleSections {
   vec![Section::from_block(Some(block))]
 }
 

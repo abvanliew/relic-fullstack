@@ -14,7 +14,7 @@ impl ModifierSet {
   pub fn from_bonuses(modifiers: Vec<(ModifierClass, i32)>) -> Self {
     let mut modifier_map: HashMap<ModifierClass, Bonus<i32>> = HashMap::new();
     for (class, value) in modifiers {
-      modifier_map.insert(class, Bonus::from_bonus(value) );
+      modifier_map.insert(class, Bonus::from_bonus(value));
     }
     return Self(modifier_map);
   }
@@ -79,7 +79,7 @@ pub enum ModifierClass {
   WalkingSpeed,
   DashSpeed,
   AnointmentPool,
-  AnimalismPool,
+  AnimismPool,
   SanguinePool,
   RagePool,
   InnatePool,

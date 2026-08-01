@@ -63,6 +63,7 @@ pub fn CharacterSkills(skill_selection: SkillSelections, core_constraints: Vec<S
       }
     }
     StaggeredGrid {
+      class: "stg-large",
       for skill in skills {
         StaggeredCell {
           SkillSelector {

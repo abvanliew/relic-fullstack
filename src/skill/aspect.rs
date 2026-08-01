@@ -39,7 +39,7 @@ impl fmt::Display for TrainingCost {
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default, PartialOrd, Ord, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct RelicOrdering {
-  category: i32,
+  pub category: i32,
 }
 
 impl Skill {
@@ -50,7 +50,7 @@ impl Skill {
       parts.push("Ranked".into());
     }
     parts.push(self.training_cost.to_string());
-    return parts.join(" ")
+    return parts.join(" ");
   }
 
   pub fn weight(&self) -> i32 {

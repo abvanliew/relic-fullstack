@@ -46,12 +46,10 @@ pub fn terms_and_conditions(keywords: Vec<Keyword>) -> Vec<Keyword> {
     })
     .collect();
   filtered_keywords.sort();
-  return filtered_keywords
+  return filtered_keywords;
 }
 
-pub fn partitioned_terms_and_conditions(
-  keywords: &Vec<Keyword>
-) -> (Vec<Keyword>, Vec<Keyword>) {
+pub fn partitioned_terms_and_conditions(keywords: &Vec<Keyword>) -> (Vec<Keyword>, Vec<Keyword>) {
   let mut terms = Vec::new();
   let mut conditions = Vec::new();
   for keyword in keywords {
@@ -74,8 +72,8 @@ pub fn display_keywords(keyword_ids: &Vec<ObjectId>) -> Option<String> {
     .map(|keyword| keyword.title.clone())
     .collect::<Vec<String>>();
   return if keywords.len() > 0 {
-    Some( keywords.join(", ") )
+    Some(keywords.join(", "))
   } else {
     None
-  }
+  };
 }

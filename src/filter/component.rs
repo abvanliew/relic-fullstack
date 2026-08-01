@@ -21,7 +21,11 @@ impl Default for SkillFilter {
     let category = use_signal(|| HashSet::new());
     let path = use_signal(|| HashSet::new());
     let mono_skill = use_signal(|| false);
-    Self { category, path, mono_skill }
+    Self {
+      category,
+      path,
+      mono_skill,
+    }
   }
 }
 
@@ -95,16 +99,17 @@ pub fn SkillSearch() -> Element {
   let mut skills = skill_cache.into_vec();
   skills.sort();
   let skill_elements = skills
-  .iter()
-  .map(
-    |skill| {
+    .iter()
+    .map(|skill| {
       let mut display: bool = true;
       display = if display && (filters.mono_skill)() {
         match &skill.paths {
           Some(paths) => paths.len() == 1,
           None => false,
         }
-      } else { display };
+      } else {
+        display
+      };
       display = if display && current_classifiers.len() > 0 {
         let keyword_object_ids = skill.get_keyword_ids();
         let keyword_id_set = keyword_object_ids
@@ -112,16 +117,21 @@ pub fn SkillSearch() -> Element {
           .map(|object_id| object_id.to_string())
           .collect::<HashSet<String>>();
         keyword_id_set.intersection(&current_classifiers).count() > 0
-      } else { display };
+      } else {
+        display
+      };
       display = if display && current_paths.len() > 0 {
-        let path_id_set = skill.paths
+        let path_id_set = skill
+          .paths
           .clone()
           .unwrap_or_default()
           .iter()
           .map(|object_id| object_id.to_string())
           .collect::<HashSet<String>>();
         path_id_set.intersection(&current_paths).count() > 0
-      } else { display };
+      } else {
+        display
+      };
       rsx! {
         StaggeredCell {
           additional_classes: if display { None } else { Some( "hidden".into() ) },
@@ -133,14 +143,13 @@ pub fn SkillSearch() -> Element {
           }
         }
       }
-    }
-  )
-  .collect::<Vec<Element>>();
-  let path_titles = current_paths.iter()
+    })
+    .collect::<Vec<Element>>();
+  let path_titles = current_paths
+    .iter()
     .filter_map(|path_id| path_cache.from_id(path_id))
     .map(|path| path.title)
-    .collect::<Vec<String>>()
-  ;
+    .collect::<Vec<String>>();
   let display_titles = path_titles.len() > 0;
   let joined_titles = path_titles.join(", ");
   return rsx! {

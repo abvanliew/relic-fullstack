@@ -9,7 +9,6 @@ use super::client::{docs_to_map, get_collection};
 #[cfg(feature = "server")]
 use mongodb::bson::{doc, Document};
 
-
 #[server]
 pub async fn get_enchantment_map() -> Result<HashMap<String, Enchantment>, ServerFnError> {
   let collection = get_collection::<Document>("enchantments_display");

@@ -3,6 +3,7 @@ use std::collections::{HashMap, HashSet};
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
+use crate::character::prelude::*;
 use crate::equipment::base::Equipment;
 use crate::equipment::enchantment::Enchantment;
 use crate::keyword::prelude::*;
@@ -10,12 +11,11 @@ use crate::path::prelude::*;
 use crate::server::enchantment::get_enchantment_map;
 use crate::server::equipment::get_equipment_map;
 use crate::skill::prelude::*;
-use crate::character::prelude::*;
 
 use super::keyword::get_keyword_map;
 use super::path::get_path_map;
-use super::skill::get_skill_map;
 use super::sheet::get_character_sheet_map;
+use super::skill::get_skill_map;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum ResourceStatus {
@@ -174,6 +174,13 @@ impl PathCache {
       .collect();
     paths.sort();
     return paths;
+  }
+
+  pub fn get_sorted_titles(&self, object_ids: &HashSet<ObjectId>) -> Vec<String> {
+    let PathCache(cache) = &self;
+    let mut paths = cache.from_object_set(object_ids);
+    paths.sort();
+    return paths.iter().map(|path| path.title.clone()).collect();
   }
 }
 

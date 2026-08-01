@@ -9,12 +9,11 @@ use crate::character::prelude::DamageClass;
 use crate::keyword::prelude::display_keywords;
 use crate::rules::prelude::{DiceGroup, DiceGroupEntry};
 
-
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(tag = "class")]
 pub enum Equipment {
-  Weapon( Weapon ),
-  Armor( Armor ),
+  Weapon(Weapon),
+  Armor(Armor),
 }
 
 impl Equipment {
@@ -50,7 +49,7 @@ pub struct Weapon {
   #[serde(default)]
   reach: bool,
   block: Option<i32>,
-  
+
   range: Option<i32>,
   range_max: Option<i32>,
   reload: Option<ReloadAction>,
@@ -83,7 +82,6 @@ impl PartialOrd for Weapon {
     Some(self.cmp(other))
   }
 }
-
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum WeightClass {
@@ -135,7 +133,7 @@ pub fn EquipmentCard(equipment: Equipment) -> Element {
   return match equipment {
     Equipment::Weapon(weapon) => rsx! { WeaponEntry { weapon } },
     Equipment::Armor(armor) => rsx! { ArmorEntry { armor } },
-  }
+  };
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -153,27 +151,45 @@ pub fn WeaponEntry(weapon: Weapon, #[props(default)] display: EquipmentDisplay) 
   let handed = match weapon.handed {
     Some(1) => Some("One Handed".into()),
     Some(2) => Some("Two Handed".into()),
-    _ => None
+    _ => None,
   };
-  let natural = if weapon.natural { Some("Natural".into()) } else { None };
-  let double = if weapon.double { Some("Double".into()) } else { None };
-  let reach = if weapon.reach { Some("Reach".into()) } else { None };
+  let natural = if weapon.natural {
+    Some("Natural".into())
+  } else {
+    None
+  };
+  let double = if weapon.double {
+    Some("Double".into())
+  } else {
+    None
+  };
+  let reach = if weapon.reach {
+    Some("Reach".into())
+  } else {
+    None
+  };
   let dice_group = weapon.damage_dice;
   let damage_class = weapon.damage_class;
   let physique_req = weapon.physique_req;
-  let physique_req_display = physique_req.clone().map_or("-".into(), |req|req.to_string());
+  let physique_req_display = physique_req
+    .clone()
+    .map_or("-".into(), |req| req.to_string());
   let block = weapon.block.map(|block| format!("Block {block}"));
   let range = match (weapon.range, weapon.range_max) {
-    (Some( range ), Some( max )) => Some(format!( "Range {range} ({max})" )),
-    (Some( range ), _) => Some(format!( "Range {range}" )),
-    _ => None
+    (Some(range), Some(max)) => Some(format!("Range {range} ({max})")),
+    (Some(range), _) => Some(format!("Range {range}")),
+    _ => None,
   };
-  let reload = weapon.reload.map(|reload| format!( "Reload {reload}" ));
-  let range_reload = vec![
-    range.clone(),
-    reload.clone(),
-  ].into_iter().flatten().collect::<Vec<String>>();
-  let range_reload_display = if range_reload.len() > 0 { Some(range_reload.join(", ")) } else { None };
+  let reload = weapon.reload.map(|reload| format!("Reload {reload}"));
+  let range_reload = vec![range.clone(), reload.clone()]
+    .into_iter()
+    .flatten()
+    .collect::<Vec<String>>();
+  let range_reload_display = if range_reload.len() > 0 {
+    Some(range_reload.join(", "))
+  } else {
+    None
+  };
   let keywords = display_keywords(&weapon.keywords);
   let properties = vec![
     natural.clone(),
@@ -181,8 +197,15 @@ pub fn WeaponEntry(weapon: Weapon, #[props(default)] display: EquipmentDisplay) 
     reach.clone(),
     block.clone(),
     keywords.clone(),
-  ].into_iter().flatten().collect::<Vec<String>>();
-  let properties_display = if properties.len() > 0 { Some(properties.join(", ")) } else { None };
+  ]
+  .into_iter()
+  .flatten()
+  .collect::<Vec<String>>();
+  let properties_display = if properties.len() > 0 {
+    Some(properties.join(", "))
+  } else {
+    None
+  };
   let characteristics = vec![
     Some(weapon_class.clone()),
     Some(weight_class.clone()),
@@ -194,10 +217,13 @@ pub fn WeaponEntry(weapon: Weapon, #[props(default)] display: EquipmentDisplay) 
     range.clone(),
     reload.clone(),
     keywords.clone(),
-  ].into_iter().flatten().collect::<Vec<String>>();
+  ]
+  .into_iter()
+  .flatten()
+  .collect::<Vec<String>>();
   let characteristics_display = characteristics.join(", ");
   return match &display {
-    EquipmentDisplay::Card => rsx!{
+    EquipmentDisplay::Card => rsx! {
       div {
         class: "card grid dim-keywords",
         div { class: "uv-full title", "{title}" }
@@ -227,16 +253,15 @@ pub fn WeaponEntry(weapon: Weapon, #[props(default)] display: EquipmentDisplay) 
       div { class: "centered", "{physique_req_display}" }
       div { "{characteristics_display}" }
     },
-  }
+  };
 }
-
 
 #[component]
 pub fn EquipmentRow(equipment: Equipment) -> Element {
   return match equipment {
     Equipment::Weapon(weapon) => rsx! { WeaponEntry { weapon, display: EquipmentDisplay::Row } },
     Equipment::Armor(armor) => rsx! { ArmorEntry { armor, display: EquipmentDisplay::Row } },
-  }
+  };
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
@@ -297,25 +322,38 @@ pub fn ArmorEntry(armor: Armor, #[props(default)] display: EquipmentDisplay) -> 
   let title = armor.title;
   let armor_resistance = armor.armor;
   let fortitude_req = armor.fortitude_req;
-  let fortitude_req_display = fortitude_req.clone().map_or("-".into(), |req|req.to_string());
+  let fortitude_req_display = fortitude_req
+    .clone()
+    .map_or("-".into(), |req| req.to_string());
   let weight = armor.weight;
-  let bulk_display = armor.bulk.map(|bulk| format!( "Bulk {bulk}" ));
-  let drag_display = armor.drag.map(|drag| format!( "Drag {drag}" ));
-  let bulk_drag = vec![
-    bulk_display.clone(),
-    drag_display.clone(),
-  ].into_iter().flatten().collect::<Vec<String>>();
-  let bulk_drag_display = if bulk_drag.len() > 0 { Some(bulk_drag.join(", ")) } else { None };
-  let elemental_resistance = if armor.elemental_resistance { Some( "Elemental Resistance".to_string() ) } else { None };
+  let bulk_display = armor.bulk.map(|bulk| format!("Bulk {bulk}"));
+  let drag_display = armor.drag.map(|drag| format!("Drag {drag}"));
+  let bulk_drag = vec![bulk_display.clone(), drag_display.clone()]
+    .into_iter()
+    .flatten()
+    .collect::<Vec<String>>();
+  let bulk_drag_display = if bulk_drag.len() > 0 {
+    Some(bulk_drag.join(", "))
+  } else {
+    None
+  };
+  let elemental_resistance = if armor.elemental_resistance {
+    Some("Elemental Resistance".to_string())
+  } else {
+    None
+  };
   let properties = vec![
-    Some( weight.to_string() ),
+    Some(weight.to_string()),
     bulk_display.clone(),
     drag_display.clone(),
     elemental_resistance.clone(),
-  ].into_iter().flatten().collect::<Vec<String>>();
+  ]
+  .into_iter()
+  .flatten()
+  .collect::<Vec<String>>();
   let properties_display = properties.join(", ");
   return match &display {
-    EquipmentDisplay::Card => rsx!{
+    EquipmentDisplay::Card => rsx! {
       div {
         class: "card grid dim-keywords",
         div { class: "uv-full title", "{title}" }
@@ -342,5 +380,5 @@ pub fn ArmorEntry(armor: Armor, #[props(default)] display: EquipmentDisplay) -> 
       div { class: "centered", "{fortitude_req_display}" }
       div { "{properties_display}" }
     },
-  }
+  };
 }

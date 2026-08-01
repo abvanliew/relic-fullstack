@@ -1,6 +1,5 @@
-pub use dioxus::prelude::*;
 use crate::pages::QuickTerm;
-
+pub use dioxus::prelude::*;
 
 #[component]
 pub fn WeaponExplainer() -> Element {

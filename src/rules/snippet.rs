@@ -16,7 +16,7 @@ pub struct Snippet {
 }
 
 impl Snippet {
-  pub fn from_blurb(blurb:String)->Self {
+  pub fn from_blurb(blurb: String) -> Self {
     Self {
       text: Some(blurb),
       ..Default::default()

@@ -58,7 +58,8 @@ pub fn SkillsPage() -> Element {
       if collapsed() { "Expand Skills" } else { "Collapse Skills" }
     }
     StaggeredGrid {
+      class: "stg-large",
       SkillCardElements { skills, display: TermDisplay::Embeded, title_as_link: true, include_path_chips: true, collapsed: collapsed() }
     }
-  }
+  };
 }

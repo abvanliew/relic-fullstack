@@ -41,7 +41,7 @@ pub struct RankSelections {
   pub insight: RankSignal,
   pub expertise: Signal<Vec<(String, RankSignal)>>,
   pub anointment_pool: Signal<i32>,
-  pub animalism_pool: Signal<i32>,
+  pub animism_pool: Signal<i32>,
   pub sanguine_pool: Signal<i32>,
   pub rage_pool: Signal<i32>,
 }
@@ -50,7 +50,7 @@ impl Default for RankSelections {
   fn default() -> Self {
     let expertise = use_signal(|| Vec::new());
     let anointment_pool = use_signal(|| 0);
-    let animalism_pool = use_signal(|| 0);
+    let animism_pool = use_signal(|| 0);
     let sanguine_pool = use_signal(|| 0);
     let rage_pool = use_signal(|| 0);
     Self {
@@ -64,7 +64,7 @@ impl Default for RankSelections {
       insight: Default::default(),
       expertise,
       anointment_pool,
-      animalism_pool,
+      animism_pool,
       sanguine_pool,
       rage_pool,
     }
@@ -141,7 +141,7 @@ pub fn CharacterRanks(
   let remaining_defense_max = defense_max_ranks - defense_max_count();
 
   let mut resource_selectors: Vec<Element> = Vec::new();
-  let innate_current_ranks = (rank_selections.animalism_pool)()
+  let innate_current_ranks = (rank_selections.animism_pool)()
     + (rank_selections.anointment_pool)()
     + (rank_selections.sanguine_pool)()
     + (rank_selections.rage_pool)();
@@ -161,7 +161,7 @@ pub fn CharacterRanks(
   for (class, pool) in innate_pools {
     let (title, ranks_base) = match &class {
       ModifierClass::AnointmentPool => ("Anointment", Some(rank_selections.anointment_pool)),
-      ModifierClass::AnimalismPool => ("Animalism", Some(rank_selections.animalism_pool)),
+      ModifierClass::AnimismPool => ("Animism", Some(rank_selections.animism_pool)),
       ModifierClass::SanguinePool => ("Sanguine", Some(rank_selections.sanguine_pool)),
       ModifierClass::RagePool => ("Rage", Some(rank_selections.rage_pool)),
       _ => ("other", None),

@@ -11,13 +11,13 @@ use crate::character::flow::FlowResourcesBlock;
 use crate::common::{HorizontalBar, StaggeredCell, StaggeredGrid};
 use crate::equipment::armor::{Armor, ArmorEntry};
 use crate::equipment::weapon::{Weapon, WeaponEntry};
-use crate::keyword::prelude::{KeywordCard, terms_and_conditions};
-use crate::path::components::{PathChipsLoader};
-use crate::Route;
+use crate::keyword::prelude::{terms_and_conditions, KeywordCard};
+use crate::path::components::PathChipsLoader;
 use crate::rules::prelude::*;
 use crate::server::prelude::{KeywordCache, SkillCache};
 use crate::skill::component::SkillCardElements;
 use crate::skill::prelude::keywords_from_skills;
+use crate::Route;
 
 use super::aspects::{BodyStats, TrainingRanks};
 // use super::attribute::*;
@@ -46,53 +46,38 @@ pub struct CharacterSheet {
 }
 
 #[component]
-pub fn SheetTable(
-  sheets: Vec<CharacterSheet>,
-  #[props(default)] named_url: bool,
-) -> Element {
-  rsx!(
-    for sheet in sheets {
-      SheetDetails {
-        sheet,
-        named_url,
-      }
-    }
-  )
+pub fn SheetTable(sheets: Vec<CharacterSheet>, #[props(default)] named_url: bool) -> Element {
+  rsx!(for sheet in sheets {
+    SheetDetails { sheet, named_url }
+  })
 }
 
-fn adjust_for_armor( 
-  armor: &Option<Armor>,
-  mut attributes: AttributeRanks, 
-  resistances: Option<Resistances>, 
+fn adjust_for_armor(
+  armor: &Option<Armor>, mut attributes: AttributeRanks, resistances: Option<Resistances>,
   speed: i32,
-) -> (
-  AttributeRanks, Resistances, i32, i32
-) {
+) -> (AttributeRanks, Resistances, i32, i32) {
   let mut base_resistances = resistances.unwrap_or_default();
-  let Some( equiped_armor ) = armor else {
-    return ( attributes, base_resistances, speed, 3); 
+  let Some(equiped_armor) = armor else {
+    return (attributes, base_resistances, speed, 3);
   };
   let title = equiped_armor.title.clone();
   tracing::info!("Armor: {title}");
   let equipable = attributes.update_dodge_with_bulk(
-    equiped_armor.fortitude_requirement, 
+    equiped_armor.fortitude_requirement,
     equiped_armor.bulk.unwrap_or(0),
   );
   if !equipable {
-    return ( attributes, base_resistances, speed, 3);
+    return (attributes, base_resistances, speed, 3);
   }
   base_resistances.update_physical_resistance(equiped_armor.physical_resistance);
   let drag = equiped_armor.drag.unwrap_or(0);
   let speed = max(speed - drag, 1);
   let dash = max(3 - drag, 1);
-  return ( attributes, base_resistances, speed, dash); 
+  return (attributes, base_resistances, speed, dash);
 }
 
 #[component]
-pub fn SheetDetails(
-  sheet: CharacterSheet,
-  #[props(default)] named_url: bool,
-) -> Element {
+pub fn SheetDetails(sheet: CharacterSheet, #[props(default)] named_url: bool) -> Element {
   let id = sheet.id.to_string();
   let name = sheet.name;
   let (attributes, resistances, speed, dash) = adjust_for_armor(
@@ -103,14 +88,17 @@ pub fn SheetDetails(
   );
 
   let (armor_opt, armor_title) = match &sheet.armor {
-    Some( equiped_armor ) => (Some(equiped_armor.clone()), Some(equiped_armor.title.clone())),
+    Some(equiped_armor) => (
+      Some(equiped_armor.clone()),
+      Some(equiped_armor.title.clone()),
+    ),
     None => (None, None),
   };
   let body = sheet.body;
   let hp = body.hp;
   let path_ids = sheet.paths;
   let skill_ids = sheet.skills;
-  let SkillCache( ref skill_map ) = use_context();
+  let SkillCache(ref skill_map) = use_context();
   let skills = skill_map.from_object_ids(&skill_ids);
   let keyword_id_objects = keywords_from_skills(&skills);
   let KeywordCache(ref keyword_cache) = use_context();
@@ -176,7 +164,7 @@ pub fn SheetDetails(
       div {
         class: "uv-until-resources column underhang",
         div { class: "subheading underhang", "Equipment" }
-          div { class: "staggered-grid-small", 
+          div { class: "staggered-grid-small",
           if let Some( weapons ) = opt_weapons {
             for weapon in weapons {
               StaggeredCell { WeaponEntry { weapon } }

@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 use crate::rules::prelude::*;
 use crate::skill::prelude::*;
 
-
 use dioxus::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
@@ -16,7 +15,8 @@ pub struct Action {
   pub class: Activation,
   pub sub_title: Option<String>,
   pub keyword_ids: Option<Vec<ObjectId>>,
-  pub initial: Option<bool>,
+  #[serde(default)]
+  pub initial: bool,
 
   pub condition: Option<RuleSections>,
   pub cost: Option<ResourceCost>,
@@ -34,7 +34,7 @@ impl Default for Action {
       class: Activation::Boon,
       sub_title: None,
       keyword_ids: None,
-      initial: None,
+      initial: false,
       condition: None,
       cost: None,
       duration: None,
@@ -55,12 +55,12 @@ impl Action {
       if let Some( suffix ) = suffix_opt {
         span {" {suffix} "}
       }
-    }
+    };
   }
 
   pub fn title(&self) -> String {
     return match self.initial {
-      Some(true) => format!("Initial {}", self.class),
+      true => format!("Initial {}", self.class),
       _ => format!("{}", self.class),
     };
   }

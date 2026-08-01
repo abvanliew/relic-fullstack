@@ -1,13 +1,13 @@
-use crate::progression::training::TrainingClass;
 use crate::modifiers::prelude::{ModifierClass, ModifierSet};
+use crate::progression::training::TrainingClass;
 
 #[derive(Debug, Clone)]
 pub struct LevelTrack;
 
 impl LevelTrack {
-  pub fn compile_level_modifiers(index: usize) -> Vec<(ModifierSet,ModifierSet)> {
+  pub fn compile_level_modifiers(index: usize) -> Vec<(ModifierSet, ModifierSet)> {
     let mut running_modifiers = ModifierSet::default();
-    let mut by_level: Vec<(ModifierSet,ModifierSet)> = Vec::new();
+    let mut by_level: Vec<(ModifierSet, ModifierSet)> = Vec::new();
     for i in 0..index {
       let current_modifiers = level_bonuses()[i].clone();
       running_modifiers.append(&current_modifiers);
@@ -239,7 +239,10 @@ fn endurance_growth_bonuses() -> ProgressTrack {
     // Rank 2
     vec![(ModifierClass::HP, 2), (ModifierClass::DefenseRank, 1)],
     // Rank 3
-    vec![(ModifierClass::HP, 2), (ModifierClass::DefenseSpecialization, 1)],
+    vec![
+      (ModifierClass::HP, 2),
+      (ModifierClass::DefenseSpecialization, 1),
+    ],
   ];
 }
 
@@ -251,7 +254,7 @@ fn expert_growth_bonuses() -> ProgressTrack {
     vec![(ModifierClass::HP, 1), (ModifierClass::ExpertiseRank, 1)],
     // Rank 3
     vec![
-      (ModifierClass::HP, 1), 
+      (ModifierClass::HP, 1),
       (ModifierClass::ExpertiseRank, 1),
       (ModifierClass::ExpertiseSpecialization, 1),
     ],
@@ -289,8 +292,11 @@ fn innate_growth_bonuses() -> ProgressTrack {
       (ModifierClass::InnateFlow, 1),
     ],
     // Rank 6
-    vec![(ModifierClass::HP, 1),
-      (ModifierClass::InnatePool, 1), (ModifierClass::InnatePoolAll, 1)],
+    vec![
+      (ModifierClass::HP, 1),
+      (ModifierClass::InnatePool, 1),
+      (ModifierClass::InnatePoolAll, 1),
+    ],
   ];
 }
 
@@ -300,7 +306,7 @@ fn resonance_growth_bonuses() -> ProgressTrack {
     vec![(ModifierClass::ResonancePool, 1)],
     // Rank 2
     vec![
-      (ModifierClass::HP, 1), 
+      (ModifierClass::HP, 1),
       (ModifierClass::ResonancePool, 1),
       (ModifierClass::ResonanceFlow, 1),
     ],
@@ -314,8 +320,11 @@ fn resonance_growth_bonuses() -> ProgressTrack {
       (ModifierClass::ResonanceFlow, 1),
     ],
     // Rank 6
-    vec![(ModifierClass::HP, 1), 
-      (ModifierClass::ResonancePool, 1),(ModifierClass::ResonancePoolAll, 1)],
+    vec![
+      (ModifierClass::HP, 1),
+      (ModifierClass::ResonancePool, 1),
+      (ModifierClass::ResonancePoolAll, 1),
+    ],
   ];
 }
 

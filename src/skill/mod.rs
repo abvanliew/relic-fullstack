@@ -135,7 +135,7 @@ pub mod prelude {
   pub use super::aspect::{Property, RelicOrdering, TrainingCost};
   pub use super::cost::{ResourceCost, ResourcePool};
   pub use super::duration::Duration;
-  pub use super::filters::{keywords_from_skills};
-  pub use super::target::{Target,TargetClass,Selection};
+  pub use super::filters::keywords_from_skills;
+  pub use super::target::{Selection, Target, TargetClass};
   pub use super::Skill;
 }

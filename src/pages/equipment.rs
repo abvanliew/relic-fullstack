@@ -1,10 +1,10 @@
 use dioxus::prelude::*;
 
+use crate::common::{StaggeredCell, StaggeredGrid};
 use crate::equipment::base::{Equipment, EquipmentCard, EquipmentRow};
+use crate::equipment::enchantment::EnchantmentDetails;
 use crate::rules::prelude::WeaponExplainer;
 use crate::server::prelude::*;
-use crate::equipment::enchantment::EnchantmentDetails;
-use crate::common::{StaggeredCell, StaggeredGrid};
 
 #[component]
 pub fn EnchantmentsPage() -> Element {
@@ -37,12 +37,14 @@ pub fn EquipmentPage() -> Element {
   }
   let mut equipment_list = equipment_cache.into_vec();
   equipment_list.sort();
-  let (weapons, armors_all): (Vec<Equipment>, Vec<Equipment>) = equipment_list.clone().into_iter().partition(
-    |equipment| matches!(equipment, Equipment::Weapon(_))
-  );
-  let armors = armors_all.into_iter().filter(
-    |equipment| ! equipment.is_special_material()
-  ).collect::<Vec<Equipment>>();
+  let (weapons, armors_all): (Vec<Equipment>, Vec<Equipment>) = equipment_list
+    .clone()
+    .into_iter()
+    .partition(|equipment| matches!(equipment, Equipment::Weapon(_)));
+  let armors = armors_all
+    .into_iter()
+    .filter(|equipment| !equipment.is_special_material())
+    .collect::<Vec<Equipment>>();
   return rsx! {
     div {
       class: "column gap-large",
@@ -80,10 +82,7 @@ pub fn EquipmentPage() -> Element {
 }
 
 #[component]
-pub fn QuickTerm(
-  title: String,
-  children: Element,
-) -> Element {
+pub fn QuickTerm(title: String, children: Element) -> Element {
   rsx! {
     div { span { class: "highlight bumper", "{title}" } "- " {children} }
   }

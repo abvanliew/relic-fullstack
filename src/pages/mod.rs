@@ -5,7 +5,8 @@ mod paths;
 mod skill_filter;
 
 pub use characters::{
-  BlankSheetPage, CharacterSheetsPage, LevelingProgressionPage, SingleCharacterSheetPage, CharacterBuildPage,
+  BlankSheetPage, CharacterBuildPage, CharacterSheetsPage, LevelingProgressionPage,
+  SingleCharacterSheetPage,
 };
 pub use equipment::{EnchantmentsPage, EquipmentPage, QuickTerm};
 pub use keywords::KeywordsPage;

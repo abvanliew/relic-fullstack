@@ -6,5 +6,5 @@ use crate::filter::*;
 pub fn SkillFilterPage() -> Element {
   return rsx! {
     SkillSearch {}
-  }
+  };
 }

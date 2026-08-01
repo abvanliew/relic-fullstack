@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 
-
 #[component]
 pub fn ResourcesThread() -> Element {
   rsx! {
@@ -65,8 +64,8 @@ pub fn ResourcesTable() -> Element {
       div { class: "uv-innate-area middle highlight", "Innate" }
       div { class: "uv-anointment-area", "Anointment" }
       div { class: "uv-anointment-drain-area", "d6" }
-      div { class: "uv-animalism-area", "Animalism" }
-      div { class: "uv-animalism-drain-area", "d8" }
+      div { class: "uv-animism-area", "Animism" }
+      div { class: "uv-animism-drain-area", "d8" }
       div { class: "uv-sanguine-area", "Sanguine" }
       div { class: "uv-sanguine-drain-area", "d10" }
       div { class: "uv-rage-area", "Rage" }

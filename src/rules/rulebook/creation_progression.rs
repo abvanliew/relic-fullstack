@@ -1,7 +1,6 @@
-use dioxus::prelude::*;
 use crate::pages::QuickTerm;
 use crate::progression::prelude::{LevelTable, TrainingTables};
-
+use dioxus::prelude::*;
 
 #[component]
 pub fn CreationExplainer() -> Element {

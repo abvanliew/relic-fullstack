@@ -1,5 +1,5 @@
-use std::fmt::Display;
 use std::cmp::max;
+use std::fmt::Display;
 
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -35,16 +35,16 @@ pub struct AttributeRanks {
   pub dodge_effective: Option<i32>,
 }
 
-fn unpack_to_tuple<T: Display>( value: &Option<i32>, id: T ) -> Option<(String, i32)> {
+fn unpack_to_tuple<T: Display>(value: &Option<i32>, id: T) -> Option<(String, i32)> {
   match value {
-    Some( rank ) => Some((id.to_string(), *rank)),
+    Some(rank) => Some((id.to_string(), *rank)),
     None => None,
   }
 }
 
 impl AttributeRanks {
   pub fn current_dodge(&self) -> i32 {
-    if let Some( dodge_effective ) = self.dodge_effective {
+    if let Some(dodge_effective) = self.dodge_effective {
       return dodge_effective;
     }
     return self.dodge.unwrap_or(0);
@@ -64,24 +64,24 @@ impl AttributeRanks {
     return true;
   }
 
-  pub fn list_capabilities( &self ) -> Vec<(String,i32)> {
-    let capabilities: Vec<Option<(String,i32)>>  = vec![
-      unpack_to_tuple( &self.physique, Capability::Physique ),
-      unpack_to_tuple( &self.warfare, Capability::Warfare ),
-      unpack_to_tuple( &self.spirit, Capability::Spirit ),
-      unpack_to_tuple( &self.manipulation, Capability::Manipulation ),
+  pub fn list_capabilities(&self) -> Vec<(String, i32)> {
+    let capabilities: Vec<Option<(String, i32)>> = vec![
+      unpack_to_tuple(&self.physique, Capability::Physique),
+      unpack_to_tuple(&self.warfare, Capability::Warfare),
+      unpack_to_tuple(&self.spirit, Capability::Spirit),
+      unpack_to_tuple(&self.manipulation, Capability::Manipulation),
     ];
-    capabilities.into_iter().filter_map(|tuple|tuple).collect()
+    capabilities.into_iter().filter_map(|tuple| tuple).collect()
   }
 
-  pub fn list_defenses( &self ) -> Vec<(String,i32)> {
-    let capabilities: Vec<Option<(String,i32)>>  = vec![
-      unpack_to_tuple( &self.fortitude, Defense::Fortitude ),
-      unpack_to_tuple( &self.resolve, Defense::Resolve ),
-      unpack_to_tuple( &self.insight, Defense::Insight ),
-      unpack_to_tuple( &Some(self.current_dodge()), Defense::Dodge ),
+  pub fn list_defenses(&self) -> Vec<(String, i32)> {
+    let capabilities: Vec<Option<(String, i32)>> = vec![
+      unpack_to_tuple(&self.fortitude, Defense::Fortitude),
+      unpack_to_tuple(&self.resolve, Defense::Resolve),
+      unpack_to_tuple(&self.insight, Defense::Insight),
+      unpack_to_tuple(&Some(self.current_dodge()), Defense::Dodge),
     ];
-    capabilities.into_iter().filter_map(|tuple|tuple).collect()
+    capabilities.into_iter().filter_map(|tuple| tuple).collect()
   }
 }
 
@@ -160,9 +160,7 @@ pub fn StatBlockSnippet(stats: StatBlock) -> Element {
 }
 
 #[component]
-pub fn CapabilityBlock(
-  attributes: AttributeRanks,
-) -> Element {
+pub fn CapabilityBlock(attributes: AttributeRanks) -> Element {
   let capabilities = attributes.list_capabilities();
   return rsx! {
     for (capability, rank) in capabilities {
@@ -172,13 +170,11 @@ pub fn CapabilityBlock(
         Modifier { value: rank }
       }
     }
-  }
+  };
 }
 
 #[component]
-pub fn DefenseBlock(
-  attributes: AttributeRanks,
-) -> Element {
+pub fn DefenseBlock(attributes: AttributeRanks) -> Element {
   let defenses = attributes.list_defenses();
   return rsx! {
     for (defense, rank) in defenses {
@@ -188,5 +184,5 @@ pub fn DefenseBlock(
         "{rank + BASE_DEFENSE}"
       }
     }
-  }
+  };
 }

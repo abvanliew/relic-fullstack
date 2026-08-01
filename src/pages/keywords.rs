@@ -6,5 +6,5 @@ use crate::keyword::prelude::*;
 pub fn KeywordsPage() -> Element {
   return rsx! {
     TermsConditions {}
-  }
+  };
 }

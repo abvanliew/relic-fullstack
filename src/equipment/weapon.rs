@@ -39,9 +39,7 @@ impl fmt::Display for WeaponClass {
 }
 
 #[component]
-pub fn WeaponEntry(
-  weapon: ReadSignal<Weapon>,
-) -> Element {
+pub fn WeaponEntry(weapon: ReadSignal<Weapon>) -> Element {
   let weapon_signal = &weapon.read();
   let title = &weapon_signal.title;
   let weapon_class = &weapon_signal.class;

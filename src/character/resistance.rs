@@ -15,8 +15,7 @@ pub enum ResistanceDisplay {
 
 #[component]
 pub fn ResistanceDetails(
-  resistances: Resistances,
-  #[props(default)] display: ResistanceDisplay,
+  resistances: Resistances, #[props(default)] display: ResistanceDisplay,
 ) -> Element {
   let physical_total = resistances.get_category(&DamageCategory::Physical);
   let elemental_total = resistances.get_category(&DamageCategory::Elemental);
@@ -119,7 +118,7 @@ impl Resistances {
 
   pub fn update_physical_resistance(&mut self, value: i32) {
     self.physical = match self.physical {
-      Some( current_value ) => Some(max(current_value, value )),
+      Some(current_value) => Some(max(current_value, value)),
       None => Some(value),
     }
   }

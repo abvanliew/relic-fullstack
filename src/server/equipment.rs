@@ -9,7 +9,6 @@ use super::client::{docs_to_map, get_collection};
 #[cfg(feature = "server")]
 use mongodb::bson::{doc, Document};
 
-
 #[server]
 pub async fn get_equipment_map() -> Result<HashMap<String, Equipment>, ServerFnError> {
   let collection = get_collection::<Document>("equipment_display");

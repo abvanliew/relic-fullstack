@@ -1,7 +1,7 @@
+use crate::common::StaggeredGrid;
 use crate::path::components::*;
 use crate::server::prelude::*;
 use dioxus::prelude::*;
-
 
 #[component]
 pub fn PathsPage() -> Element {
@@ -11,7 +11,9 @@ pub fn PathsPage() -> Element {
     Some(mut paths) => {
       paths.sort();
       return rsx! {
-        PathPanelList { paths }
+        StaggeredGrid {
+          PathPanelList { paths }
+        }
       };
     },
     None => {
@@ -28,8 +30,7 @@ pub fn SinglePath(id: String) -> Element {
   match path_cache.from_id(&id) {
     Some(path) => {
       return rsx! {
-        div {
-          class: "column gap-large",
+        StaggeredGrid {
           PathPanel { path }
         }
       }

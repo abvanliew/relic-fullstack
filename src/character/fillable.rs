@@ -64,14 +64,13 @@ pub fn FillableSheet(#[props(default)] character_sheet: Option<CharacterSheet>) 
 
 #[component]
 pub fn SheetHeading(
-  #[props(default)] level: Option<i32>, 
-  #[props(default)] character_name: Option<String>, 
+  #[props(default)] level: Option<i32>, #[props(default)] character_name: Option<String>,
 ) -> Element {
   let level = level.map_or("".into(), |l| l.to_string());
   let character_name = character_name.unwrap_or("".into());
   rsx! {
     div {
-      class: "uv-capabilities row align-center row-height", 
+      class: "uv-capabilities row align-center row-height",
       div { class: "highlight", "Character:" }
       div { class: "heavier", "{character_name}" }
     }
@@ -83,7 +82,7 @@ pub fn SheetHeading(
       div { class: "digit-box-sum", "{level}" }
     }
     div {
-      class: "uv-capabilities row align-center row-height", 
+      class: "uv-capabilities row align-center row-height",
       div { class: "highlight", "Description:" }
       div { class: "heavier", "" }
     }
@@ -141,10 +140,10 @@ pub fn ExpertiseBlock() -> Element {
 
 #[component]
 pub fn CapabilityRow(
-  #[props(into)] #[props(default)] title: String,
-  #[props(default)] value: Option<i32>,
-  #[props(default)] fillin_title: bool,
-  #[props(default)] table_top: bool,
+  #[props(into)]
+  #[props(default)]
+  title: String, #[props(default)] value: Option<i32>,
+  #[props(default)] fillin_title: bool, #[props(default)] table_top: bool,
 ) -> Element {
   let (digit_sum_class, digit_class) = match table_top {
     true => ("digit-box-sum", "digit-box border-ci"),
@@ -174,10 +173,8 @@ pub fn CapabilityRow(
 
 #[component]
 pub fn DefensesBlock(
-  #[props(default)] fortitude: Option<i32>, 
-  #[props(default)] resolve: Option<i32>, 
-  #[props(default)] insight: Option<i32>, 
-  #[props(default)] dodge: Option<i32>, 
+  #[props(default)] fortitude: Option<i32>, #[props(default)] resolve: Option<i32>,
+  #[props(default)] insight: Option<i32>, #[props(default)] dodge: Option<i32>,
 ) -> Element {
   rsx! {
     div {
@@ -314,7 +311,10 @@ pub enum TitleDisplay {
 
 #[component]
 pub fn ResistanceRow(
-  #[props(into)] #[props(default)] title: String, #[props(default)] display: TitleDisplay, #[props(default)] table_top: bool,
+  #[props(into)]
+  #[props(default)]
+  title: String, #[props(default)] display: TitleDisplay,
+  #[props(default)] table_top: bool,
 ) -> Element {
   let (digit_sum_class, digit_class) = match table_top {
     true => ("digit-box-sum", "digit-box border-ci"),
@@ -343,7 +343,6 @@ pub fn ResistanceRow(
   }
 }
 
-
 #[derive(Debug, Default, Clone, PartialEq)]
 pub enum SpeedCalc {
   #[default]
@@ -353,9 +352,7 @@ pub enum SpeedCalc {
 }
 
 #[component]
-pub fn SpeedBlock(
-  #[props(default)] speed_calc: SpeedCalc,
-) -> Element {
+pub fn SpeedBlock(#[props(default)] speed_calc: SpeedCalc) -> Element {
   return rsx! {
     div { class: "uv-total mini-text buffer anchor-down", "Total" }
     match &speed_calc {
@@ -420,7 +417,7 @@ pub fn SpeedBlock(
         }
       },
     }
-  }
+  };
 }
 
 #[component]
@@ -429,7 +426,7 @@ pub fn BodyBlock() -> Element {
     div {
       class: "grid dim-rank-table",
       div { class: "uv-title subheading justify-left spacer-xlarge", "Body" }
-      
+
       SpeedBlock { speed_calc: SpeedCalc::SixWithDrag }
 
       div { class: "uv-title justify-left spacer", "Health" }

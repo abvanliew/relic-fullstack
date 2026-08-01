@@ -17,42 +17,45 @@ pub fn ranked_boon() -> Skill {
     ..Default::default()
   };
 
-  return Skill { 
+  return Skill {
     title: "Something Bonus".into(),
-    training_cost: TrainingCost::Full, 
-    ranked: Some( true ),
-    action, 
+    training_cost: TrainingCost::Full,
+    ranked: Some(true),
+    action,
     ..Default::default()
-  }
+  };
 }
 
 pub fn awesome_spell() -> Skill {
   let action = Action {
-    initial: Some( true ),
+    initial: true,
     class: Activation::ComplexAction,
-    keyword_ids: Some( vec! [
-      ObjectId::from_str( "691401e931fbdfcd5247c9ab" ).unwrap_or_default()
-    ] ),
-    condition: rule_sections_from_blurb( "When you want to do something cool".into() ),
+    keyword_ids: Some(vec![
+      ObjectId::from_str("691401e931fbdfcd5247c9ab").unwrap_or_default()
+    ]),
+    condition: rule_sections_from_blurb("When you want to do something cool".into()),
     cost: Some(ResourceCost::from_mana(1)),
-    duration: Some(Duration{upkeep: true, ..Duration::five_min()}),
-    target: Some(Target{
+    duration: Some(Duration {
+      upkeep: true,
+      ..Duration::five_min()
+    }),
+    target: Some(Target {
       class: TargetClass::Burst,
-      range: Some( 16 ),
-      selection: Some( Selection::CreatureObject),
+      range: Some(16),
+      selection: Some(Selection::CreatureObject),
       any: true,
       ..Default::default()
     }),
-    rules: rules_stack_from_blurb( "This spell has an amazing affect!".into() ),
+    rules: rules_stack_from_blurb("This spell has an amazing affect!".into()),
     ..Default::default()
   };
 
   return Skill {
     title: "Awesome Spell".into(),
-    training_cost: TrainingCost::Spell, 
-    action, 
+    training_cost: TrainingCost::Spell,
+    action,
     ..Default::default()
-  }
+  };
 }
 
 pub fn secret_handshake() -> Skill {
@@ -106,11 +109,11 @@ pub fn secret_handshake() -> Skill {
     },
   ]);
 
-  return Skill { 
+  return Skill {
     title: "Secret Handshake".into(),
     training_cost: TrainingCost::Keystone,
-    action, 
+    action,
     sub_actions,
     ..Default::default()
-  }
+  };
 }

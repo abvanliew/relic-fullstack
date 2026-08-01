@@ -7,6 +7,6 @@ mod out_of_combat;
 mod primary_rules;
 mod resources;
 
-pub use primary_rules::MainRulesThread;
 pub use creation_progression::ProgressChart;
 pub use equipment::WeaponExplainer;
+pub use primary_rules::MainRulesThread;

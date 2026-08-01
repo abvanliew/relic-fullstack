@@ -4,7 +4,7 @@ use std::fmt;
 #[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, Hash)]
 pub enum ResourcePool {
   Anointment,
-  Animalism,
+  Animism,
   Sanguine,
   Rage,
   Channel,
@@ -24,7 +24,7 @@ impl fmt::Display for ResourcePool {
       "{}",
       match self {
         ResourcePool::Anointment => "Anointment",
-        ResourcePool::Animalism => "Animalism",
+        ResourcePool::Animism => "Animism",
         ResourcePool::Sanguine => "Sanguine",
         ResourcePool::Rage => "Rage",
         ResourcePool::Channel => "Channel",
@@ -43,7 +43,7 @@ impl ResourcePool {
   pub fn drain(&self) -> String {
     match self {
       ResourcePool::Anointment => "d6",
-      ResourcePool::Animalism => "d8",
+      ResourcePool::Animism => "d8",
       ResourcePool::Sanguine => "d10",
       ResourcePool::Rage => "d12",
       ResourcePool::Mastery => "d6",

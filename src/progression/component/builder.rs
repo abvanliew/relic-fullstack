@@ -283,7 +283,7 @@ pub fn CharacterProgression() -> Element {
   let mut innate_pools: Vec<(ModifierClass, i32)> = Vec::new();
   for pool_class in vec![
     &ModifierClass::AnointmentPool,
-    &ModifierClass::AnimalismPool,
+    &ModifierClass::AnimismPool,
     &ModifierClass::SanguinePool,
     &ModifierClass::RagePool,
   ] {
@@ -300,7 +300,7 @@ pub fn CharacterProgression() -> Element {
     speed: character_modifiers.get(&ModifierClass::WalkingSpeed),
     dash: character_modifiers.get(&ModifierClass::DashSpeed),
   };
-  
+
   rsx! {
     div {
       class: "row",

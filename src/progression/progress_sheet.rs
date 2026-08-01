@@ -5,7 +5,6 @@ use crate::progression::track::{GrowthTrack, LevelTrack};
 use crate::progression::training::TrainingClass;
 use crate::rules::components::Modifier;
 
-
 #[component]
 pub fn LevelTable() -> Element {
   let levels = LevelTrack::compile_level_modifiers(12);
@@ -19,7 +18,6 @@ pub fn LevelTable() -> Element {
     }
   }
 }
-
 
 #[component]
 pub fn LevelHeader() -> Element {
@@ -50,11 +48,13 @@ pub fn LevelRow(
   let path_initiate_required = individual_level.get(&ModifierClass::InitiatePathRequired);
   let path_initiate_optional = individual_level.get(&ModifierClass::InitiatePathOptional);
   let path_initiate_max = path_initiate_required + path_initiate_optional;
-  let path_initiate_running = running_total.get(&ModifierClass::InitiatePathRequired) + running_total.get(&ModifierClass::InitiatePathOptional);
+  let path_initiate_running = running_total.get(&ModifierClass::InitiatePathRequired)
+    + running_total.get(&ModifierClass::InitiatePathOptional);
   let path_journeyman_required = individual_level.get(&ModifierClass::JourneymanPathRequired);
   let path_journeyman_running = running_total.get(&ModifierClass::JourneymanPathOptional);
   let path_master_running = running_total.get(&ModifierClass::MasterPathOptional);
-  let feature = individual_level.get(&ModifierClass::Feature) + path_initiate_max - path_initiate_required;
+  let feature =
+    individual_level.get(&ModifierClass::Feature) + path_initiate_max - path_initiate_required;
   let minor_feature = individual_level.get(&ModifierClass::MinorFeature);
   let mut features_choices: Vec<String> = Vec::new();
   if path_initiate_required > 0 {
@@ -64,14 +64,22 @@ pub fn LevelRow(
     features_choices.push(format!("{path_journeyman_required} Journeyman Path"));
   }
   if path_initiate_optional > 0 && feature > 0 {
-    let path_feature_overlap = path_initiate_optional.min( feature);
+    let path_feature_overlap = path_initiate_optional.min(feature);
     features_choices.push(format!("{path_feature_overlap} Initiate Path or Feature"));
     if feature > path_initiate_optional {
       let net_feature = feature - path_initiate_optional;
-      features_choices.push(if net_feature == 1 {"1 Feature".into()} else {format!( "{net_feature} Features" )});
+      features_choices.push(if net_feature == 1 {
+        "1 Feature".into()
+      } else {
+        format!("{net_feature} Features")
+      });
     }
   } else if feature > 0 {
-    features_choices.push(if feature == 1 {"1 Feature".into()} else {format!( "{feature} Features" )});
+    features_choices.push(if feature == 1 {
+      "1 Feature".into()
+    } else {
+      format!("{feature} Features")
+    });
   }
   if minor_feature > 0 {
     features_choices.push(format!("{minor_feature} Minor Feature"));
@@ -108,7 +116,9 @@ pub fn TrainingTables() -> Element {
 }
 
 #[component]
-pub fn TrainingTable(training_class: TrainingClass) -> Element {
+pub fn TrainingTable(
+  training_class: TrainingClass, #[props(default)] highlight_rank: Option<i32>,
+) -> Element {
   let modifier_keys = match &training_class {
     TrainingClass::Adept => vec![
       ModifierClass::HP,
@@ -154,7 +164,7 @@ pub fn TrainingTable(training_class: TrainingClass) -> Element {
       class: "table-grid padded-grid {table_class}",
       TrainingHeader { training_class }
       for rank in 1..=12 {
-        TrainingRow { rank, training_class, modifier_keys: modifier_keys.clone() }
+        TrainingRow { rank, training_class, modifier_keys: modifier_keys.clone(), highlight_rank: highlight_rank.clone() }
       }
     }
   }
@@ -206,16 +216,23 @@ pub fn TrainingHeader(training_class: TrainingClass) -> Element {
 }
 
 #[component]
-pub fn TrainingRow(rank: i32, training_class: TrainingClass, modifier_keys: Vec<ModifierClass>) -> Element {
+pub fn TrainingRow(
+  rank: i32, training_class: TrainingClass, modifier_keys: Vec<ModifierClass>,
+  #[props(default)] highlight_rank: Option<i32>,
+) -> Element {
   let modifiers = GrowthTrack::class_at(&training_class, rank);
   let modifier_values = modifier_keys
     .iter()
     .map(|class| modifiers.get(class))
     .collect::<Vec<i32>>();
+  let highlight = match highlight_rank {
+    Some(target_rank) => target_rank == rank,
+    None => false,
+  };
   rsx! {
-    div { class: "uv-first", "{rank}" }
-    for value in modifier_values {
-      div { Modifier { value } }
+    div { class: if highlight { "uv-first thin-border left-cap selected" } else {"uv-first thin-padding"}, "{rank}" }
+    for i in 0..modifier_values.len() {
+      div { class: if highlight && modifier_values.len() - 1 == i { "thin-border right-cap selected" } else if highlight { "thin-border mid-cap selected" } else {"thin-padding"}, Modifier { value: modifier_values[i] } }
     }
   }
 }

@@ -56,8 +56,8 @@ pub fn ReadingSkillCards() -> Element {
       span { class: "highlight", "Skill Name" }
       " - The underlined bold text on the top left of the card is the skill name."
     }
-    QuickTerm { 
-      title: "Training Requirements", 
+    QuickTerm {
+      title: "Training Requirements",
       "In the top right of a card in italics you will see its tier and training cost. The tiers are "
       span { class: "italics", "Initiate, Journeyman and Master" }
       ". Your character must be at least the tier listed to learn the skill. If the training cost is qualified as a Ranked then the skill can be taken multiple times for increased affect, otherwise it can learned once. The training cost of a skill can be "
@@ -96,7 +96,6 @@ pub fn ReadingSkillCards() -> Element {
   }
 }
 
-
 #[component]
 pub fn ExampleSkills() -> Element {
   let ranked_boon = ranked_boon();
@@ -111,7 +110,3 @@ pub fn ExampleSkills() -> Element {
     }
   }
 }
-
-
-
-

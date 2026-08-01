@@ -80,6 +80,7 @@ pub enum Capability {
   Physique,
   Warfare,
   Spirit,
+  Presence,
   Manipulation,
 }
 
@@ -91,7 +92,8 @@ impl fmt::Display for Capability {
       match self {
         Capability::Physique => "Physique",
         Capability::Warfare => "Warfare",
-        Capability::Spirit => "Spirit",
+        Capability::Spirit => "Presence",
+        Capability::Presence => "Presence",
         Capability::Manipulation => "Manipulation",
       }
     )

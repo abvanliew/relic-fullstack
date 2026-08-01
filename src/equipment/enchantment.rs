@@ -77,13 +77,13 @@ impl Display for AttunementRune {
 
 pub fn attunement_rune_order() -> Vec<AttunementRune> {
   vec![
-    AttunementRune::Hune, 
-    AttunementRune::Kal, 
-    AttunementRune::Bok, 
-    AttunementRune::Pir, 
-    AttunementRune::Kin, 
-    AttunementRune::Alu, 
-    AttunementRune::Lat, 
+    AttunementRune::Hune,
+    AttunementRune::Kal,
+    AttunementRune::Bok,
+    AttunementRune::Pir,
+    AttunementRune::Kin,
+    AttunementRune::Alu,
+    AttunementRune::Lat,
   ]
 }
 
@@ -108,19 +108,26 @@ pub fn EnchantmentDetails(enchantment: Enchantment) -> Element {
   let description = enchantment.description;
   let actions = enchantment.actions;
   let rank_displays = vec![
-    enchantment.rank.map(|value|format!("+{value}")),
-    enchantment.rank_min.map(|value|format!("Minimum {value}")),
-  ].into_iter().flatten().collect::<Vec<String>>();
-  let rank_text_result = if rank_displays.len()>0 {Some(rank_displays.join(", "))} else {None};
+    enchantment.rank.map(|value| format!("+{value}")),
+    enchantment.rank_min.map(|value| format!("Minimum {value}")),
+  ]
+  .into_iter()
+  .flatten()
+  .collect::<Vec<String>>();
+  let rank_text_result = if rank_displays.len() > 0 {
+    Some(rank_displays.join(", "))
+  } else {
+    None
+  };
   let base_cost = enchantment.base_cost;
   let ranked_cost = enchantment.ranked_cost;
   let attunement_runes: Option<String> = if enchantment.attunement.len() > 0 {
     let rune_text = attunement_rune_order()
-    .iter()
-    .filter_map(|rune| enchantment.attunement.get(rune))
-    .map(|rune|rune.to_string())
-    .collect::<Vec<String>>();
-    Some( rune_text.join(", ") )
+      .iter()
+      .filter_map(|rune| enchantment.attunement.get(rune))
+      .map(|rune| rune.to_string())
+      .collect::<Vec<String>>();
+    Some(rune_text.join(", "))
   } else {
     None
   };

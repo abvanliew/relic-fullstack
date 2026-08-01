@@ -88,14 +88,19 @@ impl Target {
     match (&self.selection, &self.custom_selection) {
       (_, Some(_)) => "",
       (
-        Some(Selection::Creature) | Some(Selection::Space) | Some(Selection::CreatureObject) 
-        | Some(Selection::CreatureSpace) | Some(Selection::CreatureObjectSpace), 
-        _
+        Some(Selection::Creature)
+        | Some(Selection::Space)
+        | Some(Selection::CreatureObject)
+        | Some(Selection::CreatureSpace)
+        | Some(Selection::CreatureObjectSpace),
+        _,
       ) => "A",
       (
-        Some(Selection::Ally) | Some(Selection::Enemy) | Some(Selection::Object) 
-        | Some(Selection::ObjectSpace), 
-        _
+        Some(Selection::Ally)
+        | Some(Selection::Enemy)
+        | Some(Selection::Object)
+        | Some(Selection::ObjectSpace),
+        _,
       ) => "An",
       _ => "Some",
     }

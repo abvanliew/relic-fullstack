@@ -32,7 +32,7 @@ impl ModifierClass {
       ModifierClass::InnatePool => format!("+{value} to an Innate Pool"),
       ModifierClass::InnatePoolAll => format!("+{value} to all Innate Pools"),
       ModifierClass::AnointmentPool => format!("+{value} to the Anointment Resource Pool"),
-      ModifierClass::AnimalismPool => format!("+{value} to the Animalism Resource Pool"),
+      ModifierClass::AnimismPool => format!("+{value} to the Animism Resource Pool"),
       ModifierClass::SanguinePool => format!("+{value} to the Sanguine Resource Pool"),
       ModifierClass::RagePool => format!("+{value} to the Rage Resource Pool"),
       ModifierClass::ResonanceFlow => format!("+{value} Resonance Flow"),

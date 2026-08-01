@@ -93,7 +93,7 @@ pub(crate) fn KeywordBlock(keyword: Keyword) -> Element {
 
 #[component]
 pub(crate) fn TermsConditions() -> Element {
-  let KeywordCache( ref keyword_cache) = use_context();
+  let KeywordCache(ref keyword_cache) = use_context();
   let keywords = keyword_cache.into_result_vec().unwrap_or_default();
   let (terms, conditions) = partitioned_terms_and_conditions(&keywords);
   return rsx! {
@@ -119,5 +119,5 @@ pub(crate) fn TermsConditions() -> Element {
         }
       }
     }
-  }
+  };
 }
