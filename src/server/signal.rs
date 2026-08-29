@@ -168,7 +168,7 @@ impl PathCache {
       .into_vec()
       .into_iter()
       .filter(|path| match path.inherient {
-        Some(true) => include_inherent,
+        true => include_inherent,
         _ => true,
       })
       .collect();

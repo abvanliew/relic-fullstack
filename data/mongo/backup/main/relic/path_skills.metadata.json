@@ -1,0 +1,1 @@
+{"options":{"viewOn":"paths","pipeline":[{"$lookup":{"from":"skills","localField":"skillIds","foreignField":"_id","as":"skills"}},{"$unset":"skillIds"},{"$lookup":{"from":"rankedBonuses","localField":"rankedBonusIds","foreignField":"_id","as":"rankedBonuses"}},{"$unset":"rankedBonusIds"}]},"indexes":[],"collectionName":"path_skills","type":"view"}

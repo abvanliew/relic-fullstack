@@ -1,18 +1,23 @@
+use std::hash::Hash;
 use std::collections::HashSet;
+
 
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
 use crate::asset::icon::{IMG_SELECTED, IMG_UNSELECTED};
-use crate::common::StaggeredGrid;
+use crate::common::{StaggeredCell, StaggeredGrid};
 use crate::path::components::PathPanel;
 use crate::progression::fixed::{MAX_LEVEL, MIN_LEVEL};
+use crate::skill::prelude::*;
 
-use crate::builder::level_selections::{
+use crate::builder::character_build::{
   CharacterBuild, Counter, SelectionStatus, SelectionValidity,
 };
-use crate::progression::prelude::{TrainingClass, TrainingTable};
-use crate::server::prelude::PathCache;
+use crate::progression::prelude::{LevelTable, TrainingClass, TrainingTable};
+use crate::server::prelude::{PathCache, SkillCache};
+use crate::skill::component::SkillCard;
+use crate::skill::Skill;
 
 pub enum Interactible {
   Selectable,
@@ -41,26 +46,28 @@ pub fn CharacterBuildPanel() -> Element {
   return rsx! {
     div{ class: "column gap-large",
       // div { "{build_debug:#?}" }
-      LevelSelector { build_signal }
-      PathSelector { build_signal }
-      TrainingSelector { build_signal }
-      FeatureSelector {}
-      AttributeSelector {}
-      EquipmentSelector {}
+      CharacterGroup { build_signal }
+      PathGroup { build_signal }
+      TrainingGroup { build_signal }
+      FeatureGroup { build_signal }
+      AttributeSelector { build_signal }
+      EquipmentSelector { build_signal }
     }
   };
 }
 
 #[component]
-pub fn LevelSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
+pub fn CharacterGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
   let level = build_signal().get_level();
-  rsx!(
-    div {
-      class: "row align-center",
-      div { "Level" }
-      div {
+  rsx! {
+    SectionBar {
+      title: "Character",
+      bar: rsx! {
+        "Level"
         select {
+          class: "big-text",
           autocomplete: "off",
+          onclick: move |event| { event.stop_propagation(); },
           onchange: move |event| {
             let mut new_build = build_signal().clone();
             let new_level = event.value().parse::<i32>().ok().unwrap_or(MIN_LEVEL).max(MIN_LEVEL).min(MAX_LEVEL);
@@ -73,9 +80,11 @@ pub fn LevelSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
             option { value: lvl, label: lvl, selected: level == lvl, }
           }
         }
-      }
+      },
+      explainer: rsx! {},
+      LevelTable { highlight_level: level }
     }
-  )
+  }
 }
 
 #[component]
@@ -106,7 +115,7 @@ pub fn SectionBar(
         },
         "i"
       }
-      {bar}
+      div { class: "section", {bar} }
     }
     if display_section() {
       if display_explainer() { {explainer} }
@@ -116,30 +125,27 @@ pub fn SectionBar(
 }
 
 #[component]
-pub fn PathSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
+pub fn PathGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
   let build = build_signal();
   let expanded_path: Signal<Option<ObjectId>> = use_signal(|| None);
-  let filter_signal = use_signal(|| HashSet::<i32>::new());
+  let filter_signal = use_signal(|| HashSet::<Categorization>::new());
   let filter_set = filter_signal();
   let path_cache = use_context::<PathCache>();
   let mut paths = path_cache.get_sorted_paths(false);
-  let current_paths = build.get_current_paths();
+  let current_paths = build.get_current_path_ids();
 
   if filter_set.len() > 0 {
     paths = paths
       .into_iter()
-      .filter(|path| match &path.order {
-        Some(order) => filter_set.contains(&order.category),
-        None => false,
-      })
+      .filter(|path| filter_set.contains(&path.category))
       .collect();
   }
   let (path_validity, count_required, count_initiate) = build.get_path_validation_status();
   let mut path_titles = path_cache.get_sorted_titles(&current_paths);
-  if count_initiate.min < count_initiate.max {
+  if count_initiate.current < count_initiate.max {
     path_titles.push(format!(
       "+{} Bonus Features",
-      count_initiate.max - count_initiate.min
+      count_initiate.max - count_initiate.current
     ));
   }
   let path_title_display = path_titles.join(", ");
@@ -154,19 +160,18 @@ pub fn PathSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
       title: "Paths",
       bar,
       explainer: PathSelectionExplainer(),
-      display_default: true,
       div {
         class: "row align-center",
         div { class:"italics small-text","Filters"}
-        PathFilter { title: "Mundane", value: 1, filter_signal }
-        PathFilter { title: "Innate", value: 2, filter_signal }
-        PathFilter { title: "Resonant", value: 3, filter_signal }
-        PathFilter { title: "Magic", value: 4, filter_signal }
+        FilterButton { title: "Mundane", value: Categorization::Mundane, filter_signal }
+        FilterButton { title: "Innate", value: Categorization::Innate, filter_signal }
+        FilterButton { title: "Resonance", value: Categorization::Resonance, filter_signal }
+        FilterButton { title: "Magic", value: Categorization::Magic, filter_signal }
       }
       div {
         class: "auto-flow-min flow-small",
         for path in paths {
-          PathButton { title: path.title.clone(), id: path.id.clone(), build_signal, expanded_path, path_validity }
+          PathSelector { title: path.title.clone(), id: path.id.clone(), build_signal, expanded_path, path_validity }
           match expanded_path() {
             Some(expand_id) => {
               rsx! {
@@ -188,39 +193,42 @@ pub fn PathSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
 
 #[component]
 pub fn CounterBadge(title: String, counter: Counter) -> Element {
-  let min = counter.min;
-  let max = counter.max;
-  let extra_class = if min < max {
-    "bg-warn"
-  } else if min == max {
-    "bg-info"
-  } else {
-    "bg-error"
+  let (value, remainder, max) = counter.effective();
+  let term = match ( value == 0, remainder == 0 ) {
+    ( true, true ) => format!("0"),
+    ( true, false ) => format!("\u{00BD}"),
+    ( false, true ) => format!("{value}"),
+    ( false, false ) => format!("{value} \u{00BD}"),
+  };
+  let extra_class = match counter.valid() {
+    SelectionValidity::Available | SelectionValidity::Minimal => "bg-warn",
+    SelectionValidity::Full => "bg-info",
+    SelectionValidity::Invalid => "bg-error",
   };
   return rsx! {
     div {
       class: "compact-badge column align-center small-text {extra_class}",
       div { "{title}" }
-      div { "{min} / {max}" }
+      div { "{term} / {max}" }
     }
   };
 }
 
 #[component]
-pub fn PathFilter(title: String, value: i32, mut filter_signal: Signal<HashSet<i32>>) -> Element {
+pub fn FilterButton<T: 'static>(title: String, value: T, mut filter_signal: Signal<HashSet<T>>) -> Element where T: Eq, T: Clone + PartialEq + Eq + Hash {
   let filter_set = filter_signal();
   let selected = filter_set.contains(&value);
   return rsx! {
     div {
       class: "row",
       div {
-        class: if selected { "medium-border selected" } else { "thin-border" },
+        class: if selected { "medium-border selected" } else { "thin-border minimal-background" },
         onclick: move |event| {
           event.stop_propagation();
           let mut new_filter = filter_set.clone();
           match selected {
             true => new_filter.remove(&value),
-            false => new_filter.insert(value),
+            false => new_filter.insert(value.clone()),
           };
           filter_signal.set(new_filter);
         },
@@ -231,7 +239,7 @@ pub fn PathFilter(title: String, value: i32, mut filter_signal: Signal<HashSet<i
 }
 
 #[component]
-pub fn PathButton(
+pub fn PathSelector(
   title: String, id: ObjectId, path_validity: SelectionValidity,
   mut build_signal: Signal<CharacterBuild>, mut expanded_path: Signal<Option<ObjectId>>,
 ) -> Element {
@@ -241,16 +249,17 @@ pub fn PathButton(
     Some(expand_id) => expand_id == id,
     None => false,
   };
+  let more_classes = if expand { "selected" } else { "" };
   let interactible = interaction(&status, &path_validity);
-  let (img_src, extra_classes) = match interactible {
-    Interactible::Selectable => (IMG_UNSELECTED, ""),
-    Interactible::Deselectable => (IMG_SELECTED, ""),
-    Interactible::LockedOut => (IMG_UNSELECTED, "disabled"),
-    Interactible::LockedIn => (IMG_SELECTED, "disabled"),
+  let (img_src, extra_classes, img_class) = match interactible {
+    Interactible::Selectable => (IMG_UNSELECTED, "", ""),
+    Interactible::Deselectable => (IMG_SELECTED, "", "selected-filter"),
+    Interactible::LockedOut => (IMG_UNSELECTED, "disabled", ""),
+    Interactible::LockedIn => (IMG_SELECTED, "disabled", ""),
   };
   return rsx! {
     div {
-      class: "card-snug row align-center underhang {extra_classes}",
+      class: "card-snug minimal-background row align-center underhang {more_classes} {extra_classes}",
       onclick: move |event| {
         event.stop_propagation();
         if expand {
@@ -276,6 +285,7 @@ pub fn PathButton(
             _ => (),
           };
         },
+        class: "{img_class}",
         src: "{img_src}"
       }
       span { "{title}" }
@@ -292,7 +302,7 @@ pub fn PathSelectionExplainer() -> Element {
 }
 
 #[component]
-pub fn TrainingSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
+pub fn TrainingGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
   let build = build_signal();
   let expand_signal: Signal<Option<TrainingClass>> = use_signal(|| None);
   let max = build.get_level();
@@ -302,12 +312,13 @@ pub fn TrainingSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
   let sum = current_training.sum();
   let total = build.get_training_ranks();
   let counter = Counter {
-    min: sum,
+    current: sum,
     max: total,
+    ..Default::default()
   };
   let remaining_ranks = total - sum;
   let modifiers = build.get_training_modifiers();
-
+  build.get_path_constraints();
   return rsx! {
     SectionBar {
       title: "Trainings",
@@ -319,59 +330,16 @@ pub fn TrainingSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
       div { "Bonuses: {modifiers}" }
       div {
         class: "auto-flow-min flow-xsmall",
-        TrainingPicker {
-          build_signal,
-          training_class: TrainingClass::Adept,
-          current: current_training.adept.unwrap_or(0),
-          min: previous_training.adept.unwrap_or(0),
-          max,
-          remaining_ranks,
-          expand_signal,
-        }
-        TrainingPicker {
-          build_signal,
-          training_class: TrainingClass::Endurance,
-          current: current_training.endurance.unwrap_or(0),
-          min: previous_training.endurance.unwrap_or(0),
-          max,
-          remaining_ranks,
-          expand_signal,
-        }
-        TrainingPicker {
-          build_signal,
-          training_class: TrainingClass::Expert,
-          current: current_training.expert.unwrap_or(0),
-          min: previous_training.expert.unwrap_or(0),
-          max,
-          remaining_ranks,
-          expand_signal,
-        }
-        TrainingPicker {
-          build_signal,
-          training_class: TrainingClass::Innate,
-          current: current_training.innate.unwrap_or(0),
-          min: previous_training.innate.unwrap_or(0),
-          max,
-          remaining_ranks,
-          expand_signal,
-        }
-        TrainingPicker {
-          build_signal,
-          training_class: TrainingClass::Resonance,
-          current: current_training.resonant.unwrap_or(0),
-          min: previous_training.resonant.unwrap_or(0),
-          max,
-          remaining_ranks,
-          expand_signal,
-        }
-        TrainingPicker {
-          build_signal,
-          training_class: TrainingClass::Magic,
-          current: current_training.magic.unwrap_or(0),
-          min: previous_training.magic.unwrap_or(0),
-          max,
-          remaining_ranks,
-          expand_signal,
+        for class in TrainingClass::ordered() {
+          TrainingSelector {
+            build_signal,
+            training_class: class.clone(),
+            current: current_training.get(&class),
+            min: previous_training.get(&class),
+            max,
+            remaining_ranks,
+            expand_signal,
+          }
         }
       }
     }
@@ -379,12 +347,12 @@ pub fn TrainingSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
 }
 
 #[component]
-pub fn TrainingPicker(
+pub fn TrainingSelector(
   mut build_signal: Signal<CharacterBuild>, training_class: TrainingClass, current: i32, min: i32,
   max: i32, remaining_ranks: i32, expand_signal: Signal<Option<TrainingClass>>,
 ) -> Element {
   let build = build_signal();
-  let expanded = match expand_signal() {
+  let expanded: bool = match expand_signal() {
     Some(selected_class) => selected_class.eq(&training_class),
     None => false,
   };
@@ -392,14 +360,13 @@ pub fn TrainingPicker(
   let disabled = min == max_rank;
   return rsx! {
     div {
-      class: if expanded {"medium-border selected underhang"} else {"thin-border underhang"},
+      class: if expanded {"medium-border selected underhang align-center"} else {"thin-border minimal-background underhang align-center"},
       onclick: move |event| {
         expand_signal.set(if expanded {None} else {Some(training_class.clone())});
         event.stop_propagation();
       },
-      "{training_class}"
       input {
-        class: if disabled {"input disabled"} else {"input"}, type: "number",
+        class: if disabled {"input disabled big-text bumper"} else {"input big-text bumper"}, type: "number",
         value: current, min, max: max_rank,
         oninput: move |event| {
           let value = event.value().parse::<i32>()
@@ -413,6 +380,7 @@ pub fn TrainingPicker(
           event.stop_propagation();
         }
       }
+      " {training_class}"
     }
     if expanded {
       div {
@@ -424,19 +392,171 @@ pub fn TrainingPicker(
 }
 
 #[component]
-pub fn FeatureSelector() -> Element {
+pub fn FeatureGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
+  let SkillCache(ref skill_map) = use_context();
+  let build = build_signal();
+  let category_filter_signal = use_signal(|| HashSet::<Categorization>::new());
+  let category_filter = category_filter_signal();
+  let misc_filter_signal = use_signal(|| HashSet::<i32>::new());
+  let include_keystones = misc_filter_signal().contains(&1);
+
+  let (skill_ranges, counters) = build.get_skill_ranges();
+  let skill_ranks = skill_ranges.ranges.into_iter()
+    .filter_map(|(id, range)| {
+      match skill_map.from_object_id(&id) {
+        Some(skill) => Some((skill, range)),
+        None => None,
+      }
+    })
+    .filter(|(skill, _)|
+      match (include_keystones, &skill.training_cost) {
+        ( true, TrainingCost::Keystone ) => true,
+        ( false, TrainingCost::Keystone ) => false,
+        _ => true,
+      })
+    .filter(|(skill, _)|
+      category_filter.len() == 0 || ( category_filter.len() > 0 && category_filter.contains(&skill.category) )
+    )
+    .collect::<Vec<_>>();
+  let partitioned_skill_ranks = partitioned_sorted_skills(&skill_ranks);
   return rsx! {
     SectionBar {
       title: "Features",
-      bar: rsx! {},
+      bar: rsx! {
+        for counter in counters {
+          FeatureSelectionBadge { counter }
+        }
+      },
       explainer: rsx! {},
-
+      div {
+        class: "row align-center",
+        div { class:"italics small-text","Filters"}
+        FilterButton { title: "Mundane", value: Categorization::Mundane, filter_signal: category_filter_signal }
+        FilterButton { title: "Innate", value: Categorization::Innate, filter_signal: category_filter_signal }
+        FilterButton { title: "Resonance", value: Categorization::Resonance, filter_signal: category_filter_signal }
+        FilterButton { title: "Magic", value: Categorization::Magic, filter_signal: category_filter_signal }
+        FilterButton { title: "Show Keystones", value: 1, filter_signal: misc_filter_signal }
+      }
+      for (training, skill_ranges) in partitioned_skill_ranks {
+        if skill_ranges.len() > 0 {
+          CollapsibleSection {
+            class: "dotted-underline heavier slightlight",
+            section: rsx! { "{training}s" },
+            StaggeredGrid {
+              class: "stg-large",
+              for (skill, range) in skill_ranges {
+                StaggeredCell {
+                  SkillSelector {
+                    build_signal,
+                    skill, current: range.current,
+                    min: range.min,
+                    max: range.max,
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   };
 }
 
 #[component]
-pub fn AttributeSelector() -> Element {
+pub fn FeatureSelectionBadge(counter: Counter) -> Element {
+  let title = counter.title.clone().unwrap_or("undefined".into());
+  return rsx! {
+    CounterBadge { title, counter }
+  };
+}
+
+#[component]
+pub fn CollapsibleSection(class: String, section: Element, children: Element) -> Element {
+  let mut display = use_signal(|| true);
+  return rsx! {
+    div {
+      class,
+      onclick: move |event| {
+        event.stop_propagation();
+        display.set(!display());
+      },
+      {section}
+    }
+    if display() {
+      {children}
+    }
+  }
+}
+
+#[component]
+pub fn SkillSelector(mut build_signal: Signal<CharacterBuild>, skill: Skill, min: i32, max: i32, current: i32 ) -> Element {
+  let interactive = match skill.training_cost {
+    TrainingCost::Inherient | TrainingCost::Keystone => false,
+    _ => true,
+  };
+  let (input, click_event) = match (interactive, skill.is_ranked()) {
+    (false, false) => (None, None),
+    (false, true) => (
+      Some( rsx! {
+        div { class: "heavy", "{current} x" }
+      } ),
+      None,
+    ),
+    (true, false) => (
+      None, 
+      Some( EventHandler::new(
+        move |event: Event<MouseData>| {
+          event.stop_propagation();
+          if !interactive { return; }
+          let mut new_build = build_signal().clone();
+          let new_rank = match (max <= 0, current <=0 ) {
+            (true, _) | (_, false) => 0,
+            (_, true) => 1,
+          };
+          new_build.set_skill_ranks(&skill.id, new_rank);
+          build_signal.set(new_build);
+        } 
+      ) ),
+    ),
+    (true, true) => (
+      Some( rsx! {
+        input {
+          class: "input", type: "number",
+          value: current, min: min, max: max,
+          oninput: move |event| {
+            let value = event.value().parse::<i32>()
+            .unwrap_or_default()
+            .min(max).max(min);
+            let mut new_build = build_signal().clone();
+            new_build.set_skill_ranks(&skill.id, value);
+            build_signal.set(new_build);
+          },
+          onclick: move |event| {
+            event.stop_propagation();
+          }
+        }
+      } ), 
+      None
+    ),
+  };
+  let additional_classes =  match ( current > 0, max <= 0 ) {
+    (true, _) => Some("selected".into()),
+    (_, true) => Some("disabled".into()),
+    _ => None
+  };
+  return rsx! {
+    SkillCard {
+      skill,
+      click_event,
+      input,
+      additional_classes,
+      include_path_chips: true
+    }
+  };
+}
+
+#[component]
+pub fn AttributeSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
   return rsx! {
     SectionBar {
       title: "Attributes",
@@ -447,7 +567,7 @@ pub fn AttributeSelector() -> Element {
 }
 
 #[component]
-pub fn EquipmentSelector() -> Element {
+pub fn EquipmentSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
   return rsx! {
     SectionBar {
       title: "Equipment",

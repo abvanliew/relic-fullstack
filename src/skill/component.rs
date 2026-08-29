@@ -4,12 +4,9 @@ use crate::common::*;
 use crate::keyword::prelude::*;
 use crate::path::components::{PathChipsCard, PathChipsLoader};
 use crate::rules::prelude::*;
-use crate::server::prelude::*;
-use crate::skill::prelude::Action;
 use crate::skill::prelude::*;
 use crate::Route;
 
-use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Default, Eq)]
@@ -17,18 +14,6 @@ pub enum TermDisplay {
   #[default]
   Standard,
   Embeded,
-}
-
-#[component]
-pub fn SkillCardElementsLoader(
-  skill_ids: Vec<ObjectId>, #[props(default)] display: TermDisplay,
-  #[props(default)] title_as_link: bool, #[props(default)] include_path_chips: bool,
-) -> Element {
-  let SkillCache(ref skill_map) = use_context();
-  let skills = skill_map.from_object_ids(&skill_ids);
-  rsx! {
-    SkillCardElements { skills, display, title_as_link, include_path_chips }
-  }
 }
 
 #[component]
@@ -48,10 +33,13 @@ pub fn SkillCardElements(
 
 #[component]
 pub fn SkillCard(
-  skill: Skill, #[props(default)] display: TermDisplay, #[props(default)] title_as_link: bool,
+  skill: Skill, 
+  #[props(default)] display: TermDisplay, 
+  #[props(default)] title_as_link: bool,
   #[props(default)] input: Option<Element>,
-  #[props(default)] on_click: Option<EventHandler<MouseEvent>>,
-  #[props(default)] additional_classes: Option<String>, #[props(default)] include_path_chips: bool,
+  #[props(default)] click_event: Option<EventHandler<MouseEvent>>,
+  #[props(default)] additional_classes: Option<String>, 
+  #[props(default)] include_path_chips: bool,
   #[props(default)] collapsed: bool,
 ) -> Element {
   let id = skill.id.to_string();
@@ -59,7 +47,7 @@ pub fn SkillCard(
   let training_requirements = skill.training_requirements();
   let opt_description = skill.description.clone();
   let action = skill.action.clone();
-  let opt_sub_actions = skill.sub_actions.clone();
+  let sub_actions = skill.sub_actions.clone();
   let path_ids = match (include_path_chips, collapsed) {
     (true, false) => skill.paths.clone().unwrap_or_default(),
     _ => HashSet::new(),
@@ -72,13 +60,14 @@ pub fn SkillCard(
   rsx!(
     div {
       class: "card grid dim-keywords {extra_class}",
-      onclick: move |e| { if let Some(handler) = on_click.as_ref() { handler.call(e); } },
+      onclick: move |e| { if let Some(handler) = click_event.as_ref() { handler.call(e); } },
       div {
-        class: "uv-title-property title nowrap gap",
+        class: "uv-title-property align-center gap",
         if let Some( input_element ) = input {
           {input_element}
         }
         div {
+          class: "title",
           if title_as_link {
             Link { to: Route::SingleSkillPage { id }, "{title}" }
           } else {
@@ -90,7 +79,7 @@ pub fn SkillCard(
         if collapsed {
           {activation_element}
         } else {
-        div { class: "nowrap italics", "{training_requirements}" }
+          div { class: "nowrap italics", "{training_requirements}" }
         }
       }
       if let Some( description ) = opt_description {
@@ -98,7 +87,7 @@ pub fn SkillCard(
       }
       if !collapsed {
         ActionDetails { action }
-        if let Some( sub_actions ) = opt_sub_actions {
+        if sub_actions.len() > 0 {
           for action in sub_actions {
             div { class: "spacer" }
             ActionDetails { action }
@@ -111,7 +100,7 @@ pub fn SkillCard(
         PathChipsLoader {
           path_ids,
           additional_classes: Some( extra_class.clone() ),
-          chip_limit: 8,
+          chip_limit: 4,
         }
       }
     }
@@ -119,7 +108,7 @@ pub fn SkillCard(
 }
 
 #[component]
-pub fn ActionDetails(action: Action) -> Element {
+pub fn ActionDetails(action: RelicAction) -> Element {
   let activation_element = action.activation_element();
   let keyword_ids = action.keyword_ids.unwrap_or_default();
   let keyword_display = display_keywords(&keyword_ids);

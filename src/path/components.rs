@@ -54,8 +54,8 @@ pub fn PathPanel(
   let title = path.title;
   let optional_summary = path.summary;
   let SkillCache(ref skill_cache) = use_context();
-  let skill_ids = path.skill_ids.unwrap_or_default();
-  let mut skills = skill_cache.from_object_ids(&skill_ids);
+  let skill_ids = path.skill_ids;
+  let mut skills = skill_cache.from_object_set(&skill_ids);
   skills.sort();
   let keyword_id_objects = keywords_from_skills(&skills);
   let KeywordCache(ref keyword_cache) = use_context();
@@ -146,10 +146,11 @@ pub fn PathChips(
   } else {
     None
   };
+  let extra_classes = additional_classes.unwrap_or_default();
   rsx! {
     for i in 0..length { {chip_elements[i].clone()} }
     if let Some( difference ) = difference {
-      div { class: "chip no-border", "... {difference} more" }
+      div { class: "chip no-border {extra_classes}", "... {difference} more" }
     }
   }
 }

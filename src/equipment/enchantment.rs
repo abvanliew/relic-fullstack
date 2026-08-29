@@ -9,7 +9,7 @@ use crate::common::HorizontalBar;
 use crate::modifiers::prelude::*;
 use crate::rules::prelude::*;
 use crate::skill::component::ActionDetails;
-use crate::skill::prelude::Action;
+use crate::skill::prelude::RelicAction;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -29,7 +29,7 @@ pub struct Enchantment {
 
   pub modifiers: Option<ModifierSet>,
   #[serde(default)]
-  pub actions: Vec<Action>,
+  pub actions: Vec<RelicAction>,
 }
 
 impl Default for Enchantment {

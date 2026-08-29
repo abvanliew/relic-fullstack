@@ -6,14 +6,14 @@ use crate::progression::training::TrainingClass;
 use crate::rules::components::Modifier;
 
 #[component]
-pub fn LevelTable() -> Element {
+pub fn LevelTable(#[props(default)] highlight_level: Option<i32>,) -> Element {
   let levels = LevelTrack::compile_level_modifiers(12);
   rsx! {
     div {
       class: "table-grid padded-grid alt-background-8",
       LevelHeader {}
       for (index, (individual_level, running_total)) in levels.into_iter().enumerate() {
-        LevelRow { index, individual_level, running_total }
+        LevelRow { index, individual_level, running_total, highlight_level }
       }
     }
   }
@@ -33,9 +33,13 @@ pub fn LevelHeader() -> Element {
   }
 }
 
+
+
+
 #[component]
 pub fn LevelRow(
   index: usize, individual_level: ModifierSet, running_total: ModifierSet,
+  #[props(default)] highlight_level: Option<i32>,
 ) -> Element {
   let level = index + 1;
   let hp = individual_level.get(&ModifierClass::HP);
@@ -85,15 +89,20 @@ pub fn LevelRow(
     features_choices.push(format!("{minor_feature} Minor Feature"));
   }
   let feature_text = features_choices.join(", ");
+  let highlight = match highlight_level {
+    Some(target_level) => target_level == level as i32,
+    None => false,
+  };
+  let mid_class = if highlight { "fill-height thin-border mid-cap selected" } else {"fill-height thin-padding"};
   rsx! {
-    div { class: "uv-first", "{level}" }
-    div { if level == 1 { "{hp}" } else { Modifier {value: hp} } }
-    div { "{rank_max}" }
-    div { if level == 1 { "{attributes}" } else { Modifier {value: attributes} } }
-    div { if level == 1 { "{expertises}" } else { Modifier {value: expertises} } }
-    div { if level == 1 { "{growth}" } else { Modifier {value: growth} } }
-    div { "{path_initiate_running} / {path_journeyman_running} / {path_master_running}" }
-    div { class: "left", "{feature_text}" }
+    div { class: if highlight { "uv-first fill-height thin-border left-cap selected" } else {"uv-first fill-height thin-padding"}, "{level}" }
+    div { class: mid_class, if level == 1 { "{hp}" } else { Modifier {value: hp} } }
+    div { class: mid_class, "{rank_max}" }
+    div { class: mid_class, if level == 1 { "{attributes}" } else { Modifier {value: attributes} } }
+    div { class: mid_class, if level == 1 { "{expertises}" } else { Modifier {value: expertises} } }
+    div { class: mid_class, if level == 1 { "{growth}" } else { Modifier {value: growth} } }
+    div { class: mid_class, "{path_initiate_running} / {path_journeyman_running} / {path_master_running}" }
+    div { class: if highlight {"fill-height left thin-border right-cap selected"} else {"fill-height left thin-padding"}, "{feature_text}" }
   }
 }
 

@@ -103,7 +103,7 @@ pub fn CharacterProgression() -> Element {
     .into_vec()
     .iter()
     .filter_map(|path| match path.inherient {
-      Some(true) => Some(path.id.to_string()),
+      true => Some(path.id.to_string()),
       _ => None,
     })
     .collect::<Vec<String>>();
@@ -123,10 +123,7 @@ pub fn CharacterProgression() -> Element {
     let (mut path_constraints, additional_budget) = path.selection_constraints();
     weight_budget += additional_budget;
     constraints.append(&mut path_constraints);
-    let Some(path_skill_ids) = path.skill_ids else {
-      continue;
-    };
-    for skill_id in path_skill_ids {
+    for skill_id in path.skill_ids {
       let Some(skill) = skill_map_cache.from_object_id(&skill_id) else {
         continue;
       };

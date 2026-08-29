@@ -1,0 +1,1 @@
+{"options":{"viewOn":"equipment","pipeline":[{"$match":{"state":"Display"}}]},"indexes":[],"collectionName":"equipment_display","type":"view"}

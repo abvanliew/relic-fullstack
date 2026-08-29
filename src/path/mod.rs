@@ -5,7 +5,7 @@ use bson::oid::ObjectId;
 use selection::SkillFilter;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use crate::rules::prelude::*;
 use crate::skill::prelude::*;
@@ -18,23 +18,19 @@ pub struct Path {
   pub tier: Tier,
   pub title: String,
   pub summary: Option<String>,
-  pub skill_ids: Option<Vec<ObjectId>>,
-  pub inherient: Option<bool>,
-  pub order: Option<RelicOrdering>,
-  pub selections: Option<HashMap<SkillFilter, i32>>,
+  #[serde(default)]
+  pub skill_ids: HashSet<ObjectId>,
+  #[serde(default)]
+  pub inherient: bool,
+  #[serde(default)]
+  pub selections: HashMap<SkillFilter, i32>,
+  #[serde(default)]
+  pub category: Categorization,
 }
 
 impl PartialOrd for Path {
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-    match self.tier.partial_cmp(&other.tier) {
-      Some(Ordering::Equal) => (),
-      ord => return ord,
-    }
-    match self.order.partial_cmp(&other.order) {
-      Some(Ordering::Equal) => (),
-      ord => return ord,
-    }
-    self.title.partial_cmp(&other.title)
+    Some(self.cmp(other))
   }
 
   fn lt(&self, other: &Self) -> bool {
@@ -66,14 +62,9 @@ impl Ord for Path {
       Ordering::Equal => (),
       ord => return ord,
     }
-    match (&self.order, &other.order) {
-      (None, None) => (),
-      (Some(_), None) => return Ordering::Less,
-      (None, Some(_)) => return Ordering::Greater,
-      (Some(self_order), Some(other_order)) => match self_order.cmp(&other_order) {
-        Ordering::Equal => (),
-        ord => return ord,
-      },
+    match self.category.cmp(&other.category) {
+      Ordering::Equal => (),
+      ord => return ord,
     }
     return self.title.cmp(&other.title);
   }

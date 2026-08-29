@@ -1,0 +1,1 @@
+{"options":{"viewOn":"keywords","pipeline":[{"$match":{"state":"Display"}},{"$unset":"state"}]},"indexes":[],"collectionName":"keywords_display","type":"view"}

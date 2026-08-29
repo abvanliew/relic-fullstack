@@ -5,20 +5,20 @@ use serde::{Deserialize, Serialize};
 
 use self::SkillFilter::*;
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialOrd, Ord, PartialEq, Eq)]
 pub struct SelectionFilter {
   pub path_filter: PathFilter,
   pub skill_filter: SkillFilter,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialOrd, Ord, PartialEq, Eq, Hash)]
 pub enum PathFilter {
   #[default]
   All,
   Single(String),
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, PartialOrd, Ord, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialOrd, Ord, PartialEq, Eq, Hash)]
 pub enum SkillFilter {
   #[default]
   Features,
@@ -98,7 +98,7 @@ impl Constraint {
 
 impl Path {
   pub fn selection_constraints(&self) -> (Vec<Constraint>, i32) {
-    let selections = self.selections.clone().unwrap_or_default();
+    let selections = self.selections.clone();
     let mut constraints = Vec::<Constraint>::new();
     let mut constraint_weights = 0;
     for (skill_filter, ranks) in selections {

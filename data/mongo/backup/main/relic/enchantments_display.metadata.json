@@ -1,0 +1,1 @@
+{"options":{"viewOn":"enchantments","pipeline":[{"$match":{"state":"Display"}}]},"indexes":[],"collectionName":"enchantments_display","type":"view"}

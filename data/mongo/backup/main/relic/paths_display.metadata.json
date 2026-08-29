@@ -1,0 +1,1 @@
+{"options":{"viewOn":"paths","pipeline":[{"$lookup":{"from":"rankedBonuses","localField":"rankedBonusIds","foreignField":"_id","as":"rankedBonuses"}},{"$unset":"string"},{"$match":{"state":"Display"}},{"$unset":"rankedBonusIds"},{"$sort":{"tier":{"$numberInt":"1"},"order.catagory":{"$numberInt":"1"}}}]},"indexes":[],"collectionName":"paths_display","type":"view"}

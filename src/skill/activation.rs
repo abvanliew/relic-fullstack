@@ -11,7 +11,7 @@ use dioxus::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
-pub struct Action {
+pub struct RelicAction {
   pub class: Activation,
   pub sub_title: Option<String>,
   pub keyword_ids: Option<Vec<ObjectId>>,
@@ -28,7 +28,7 @@ pub struct Action {
   pub rules: Option<RuleStacks>,
 }
 
-impl Default for Action {
+impl Default for RelicAction {
   fn default() -> Self {
     Self {
       class: Activation::Boon,
@@ -46,7 +46,7 @@ impl Default for Action {
   }
 }
 
-impl Action {
+impl RelicAction {
   pub fn activation_element(&self) -> Element {
     let activation = self.title();
     let suffix_opt = self.suffix();

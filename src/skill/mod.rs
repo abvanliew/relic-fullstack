@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::modifiers::prelude::*;
 use crate::rules::prelude::*;
-use activation::Action;
+use activation::RelicAction;
 use aspect::*;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Eq)]
@@ -27,13 +27,15 @@ pub struct Skill {
   pub summary: Option<String>,
   pub description: Option<String>,
   pub training_cost: TrainingCost,
-  pub action: Action,
-  pub sub_actions: Option<Vec<Action>>,
-  pub order: RelicOrdering,
+  pub action: RelicAction,
+  #[serde(default)]
+  pub sub_actions: Vec<RelicAction>,
   pub paths: Option<HashSet<ObjectId>>,
   pub modifiers: Option<ModifierSet>,
   pub ranked: Option<bool>,
   pub core: Option<bool>,
+  #[serde(default)]
+  pub category: Categorization,
 }
 
 impl Default for Skill {
@@ -46,12 +48,12 @@ impl Default for Skill {
       description: None,
       training_cost: TrainingCost::Inherient,
       action: Default::default(),
-      sub_actions: None,
-      order: Default::default(),
+      sub_actions: Vec::new(),
       paths: None,
       modifiers: None,
       ranked: None,
       core: None,
+      category: Categorization::Unknown,
     }
   }
 }
@@ -62,18 +64,18 @@ impl Ord for Skill {
       Ordering::Equal => (),
       ord => return ord,
     }
-    match self.order.cmp(&other.order) {
-      Ordering::Equal => (),
-      ord => return ord,
-    };
-    match (!self.is_ranked()).cmp(&(!other.is_ranked())) {
-      Ordering::Equal => (),
-      ord => return ord,
-    }
     match self.training_cost.cmp(&other.training_cost) {
       Ordering::Equal => (),
       ord => return ord,
     }
+    match (self.is_ranked()).cmp(&(other.is_ranked())) {
+      Ordering::Equal => (),
+      ord => return ord,
+    }
+    match self.category.cmp(&other.category) {
+      Ordering::Equal => (),
+      ord => return ord,
+    };
     match self.resource_cost().cmp(&other.resource_cost()) {
       Ordering::Equal => (),
       ord => return ord,
@@ -84,27 +86,7 @@ impl Ord for Skill {
 
 impl PartialOrd for Skill {
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-    match self.tier.partial_cmp(&other.tier) {
-      Some(Ordering::Equal) => (),
-      ord => return ord,
-    }
-    match self.order.partial_cmp(&other.order) {
-      Some(Ordering::Equal) => (),
-      ord => return ord,
-    }
-    match (!self.is_ranked()).partial_cmp(&(!other.is_ranked())) {
-      Some(Ordering::Equal) => (),
-      ord => return ord,
-    }
-    match self.training_cost.partial_cmp(&other.training_cost) {
-      Some(Ordering::Equal) => (),
-      ord => return ord,
-    }
-    match self.resource_cost().partial_cmp(&other.resource_cost()) {
-      Some(Ordering::Equal) => (),
-      ord => return ord,
-    }
-    return self.title.partial_cmp(&other.title);
+    Some(self.cmp(other))
   }
 
   fn lt(&self, other: &Self) -> bool {
@@ -131,11 +113,11 @@ impl PartialOrd for Skill {
 }
 
 pub mod prelude {
-  pub use super::activation::{Action, Activation};
-  pub use super::aspect::{Property, RelicOrdering, TrainingCost};
+  pub use super::activation::{RelicAction, Activation};
+  pub use super::aspect::{Property, TrainingCost, Categorization};
   pub use super::cost::{ResourceCost, ResourcePool};
   pub use super::duration::Duration;
-  pub use super::filters::keywords_from_skills;
+  pub use super::filters::{keywords_from_skills, partitioned_sorted_skills};
   pub use super::target::{Selection, Target, TargetClass};
   pub use super::Skill;
 }

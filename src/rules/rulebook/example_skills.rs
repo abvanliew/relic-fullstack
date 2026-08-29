@@ -6,7 +6,7 @@ use crate::rules::prelude::*;
 use crate::skill::prelude::*;
 
 pub fn ranked_boon() -> Skill {
-  let action = Action {
+  let action = RelicAction {
     class: Activation::Boon,
     keyword_ids: Some( vec! [
       ObjectId::from_str( "68a394e242060f16e214d04a" ).unwrap_or_default()
@@ -27,7 +27,7 @@ pub fn ranked_boon() -> Skill {
 }
 
 pub fn awesome_spell() -> Skill {
-  let action = Action {
+  let action = RelicAction {
     initial: true,
     class: Activation::ComplexAction,
     keyword_ids: Some(vec![
@@ -59,7 +59,7 @@ pub fn awesome_spell() -> Skill {
 }
 
 pub fn secret_handshake() -> Skill {
-  let action = Action {
+  let action = RelicAction {
     class: Activation::Action,
     keyword_ids: Some( vec! [
       ObjectId::from_str( "68a394e242060f16e214d04a" ).unwrap_or_default()
@@ -74,8 +74,8 @@ pub fn secret_handshake() -> Skill {
     ] ),
     ..Default::default()
   };
-  let sub_actions = Some(vec! [
-    Action {
+  let sub_actions = vec! [
+    RelicAction {
       class: Activation::Action,
       sub_title: Some( "Fake and Snap".into() ),
       keyword_ids: Some( vec! [
@@ -91,7 +91,7 @@ pub fn secret_handshake() -> Skill {
       ] ),
       ..Default::default()
     },
-    Action {
+    RelicAction {
       class: Activation::Action,
       sub_title: Some( "The Spartan Grasp".into() ),
       keyword_ids: Some( vec! [
@@ -107,7 +107,7 @@ pub fn secret_handshake() -> Skill {
       ] ),
       ..Default::default()
     },
-  ]);
+  ];
 
   return Skill {
     title: "Secret Handshake".into(),

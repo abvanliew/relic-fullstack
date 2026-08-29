@@ -145,14 +145,14 @@ pub fn SkillSelector(skill: Skill, mut skill_selection: SkillSelections) -> Elem
       skill: skill,
       display: TermDisplay::Embeded,
       input: ranked_input,
-      on_click: Some(EventHandler::new(on_click)),
+      click_event: Some(EventHandler::new(on_click)),
       additional_classes: conditional_class,
     }
     PathChipsCard {
       PathChipsLoader {
         path_ids,
         additional_classes: Some( conditional_class.into() ),
-        chip_limit: 8,
+        chip_limit: 4,
       }
     }
   }

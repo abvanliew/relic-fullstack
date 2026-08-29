@@ -9,7 +9,17 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Ord, PartialOrd, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub enum Categorization {
+  #[default]
+  Unknown,
+  Mundane,
+  Innate,
+  Resonance,
+  Magic,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Copy, Ord, PartialOrd, Eq)]
 pub enum TrainingCost {
   Inherient,
   Keystone,
@@ -26,9 +36,9 @@ impl fmt::Display for TrainingCost {
       "{}",
       match self {
         TrainingCost::Inherient => "Inherient",
+        TrainingCost::Keystone => "Keystone",
         TrainingCost::Full => "Feature",
         TrainingCost::Half => "Minor Feature",
-        TrainingCost::Keystone => "Keystone",
         TrainingCost::Cantrip => "Cantrip",
         TrainingCost::Spell => "Spell",
       }
@@ -36,10 +46,13 @@ impl fmt::Display for TrainingCost {
   }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Default, PartialOrd, Ord, Eq)]
-#[serde(rename_all = "camelCase")]
-pub struct RelicOrdering {
-  pub category: i32,
+impl TrainingCost {
+  pub fn iter() -> impl Iterator<Item = &'static TrainingCost> {
+    return [
+      TrainingCost::Inherient, TrainingCost::Keystone, TrainingCost::Full,
+      TrainingCost::Half, TrainingCost::Cantrip, TrainingCost::Spell,
+    ].iter()
+  }
 }
 
 impl Skill {
@@ -83,7 +96,7 @@ impl Skill {
   pub fn is_path_match(&self, path_filter: &PathFilter) -> bool {
     return match (path_filter, &self.paths) {
       (PathFilter::All, _) => true,
-      (PathFilter::Single(path_id), Some(paths)) => {
+      (PathFilter::Single(path_id), Some( paths )) => {
         for path in paths.iter() {
           if path.to_string().eq(path_id) {
             return true;
@@ -120,10 +133,8 @@ impl KeywordClassified for Skill {
   fn get_keyword_ids(&self) -> HashSet<ObjectId> {
     let mut ids: HashSet<ObjectId> = HashSet::new();
     ids.extend(self.action.get_keyword_ids());
-    if let Some(sub_actions) = &self.sub_actions {
-      for action in sub_actions {
-        ids.extend(action.get_keyword_ids());
-      }
+    for action in &self.sub_actions {
+      ids.extend(action.get_keyword_ids());
     }
     return ids;
   }

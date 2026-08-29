@@ -5,7 +5,7 @@ mod paths;
 pub mod ranks;
 mod skills;
 
-pub use builder::CharacterProgression;
+pub use builder::{CharacterProgression, ConstraintSet};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum SelectionState {

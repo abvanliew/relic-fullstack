@@ -13,7 +13,8 @@ pub struct Target {
   pub size: Option<i32>,
   pub limit: Option<i32>,
   pub suffix: Option<String>,
-  pub placed: Option<bool>,
+  #[serde(default)]
+  pub placed: bool,
   #[serde(default)]
   pub any: bool,
 }
@@ -197,14 +198,14 @@ impl fmt::Display for Target {
       (TargetClass::Cone, _, Some(size), None, _, _) => {
         format!("All {} in a Cone size {size}", self.plural(),)
       },
-      (TargetClass::RadiusCorner, Some(range), Some(size), _, Some(true), _) => {
+      (TargetClass::RadiusCorner, Some(range), Some(size), _, true, _) => {
         format!("Place a radius {size} area centered on the corner of a space within range {range}")
       },
       (TargetClass::RadiusCorner, Some(range), Some(size), _, _, _) => format!(
         "All {} within a radius {size} area centered on the corner of a space within range {range}",
         self.plural(),
       ),
-      (TargetClass::RadiusSpace, Some(range), Some(size), _, Some(true), _) => {
+      (TargetClass::RadiusSpace, Some(range), Some(size), _, true, _) => {
         format!("Place a radius {size} area centered on a space within range {range}")
       },
       (TargetClass::RadiusSpace, Some(range), Some(size), _, _, _) => format!(
