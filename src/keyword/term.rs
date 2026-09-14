@@ -98,6 +98,7 @@ pub(crate) fn TermsConditions() -> Element {
   let (terms, conditions) = partitioned_terms_and_conditions(&keywords);
   return rsx! {
     StaggeredGrid {
+      class: "stg-large",
       StaggeredCell {
         additional_classes: Some( "uv-full".into() ),
         extra_height_override: Some( 8.0 ),

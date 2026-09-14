@@ -35,12 +35,12 @@ pub fn SkillCardElements(
 pub fn SkillCard(
   skill: Skill, 
   #[props(default)] display: TermDisplay, 
-  #[props(default)] title_as_link: bool,
-  #[props(default)] input: Option<Element>,
-  #[props(default)] click_event: Option<EventHandler<MouseEvent>>,
+  #[props(default)] title_as_link: bool, 
+  #[props(default)] input: Option<Element>, 
+  #[props(default)] click_event: Option<EventHandler<MouseEvent>>, 
   #[props(default)] additional_classes: Option<String>, 
-  #[props(default)] include_path_chips: bool,
-  #[props(default)] collapsed: bool,
+  #[props(default)] include_path_chips: bool, 
+  #[props(default)] collapsed: bool, 
 ) -> Element {
   let id = skill.id.to_string();
   let title = skill.title.clone();

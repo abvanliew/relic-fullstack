@@ -321,7 +321,7 @@ p {
 .uv-rank { grid-column: rank; }
 
 .fixed-title-width {
-  min-width: 104px;
+  min-width: 124px;
 }
 
 .fixed-title-width-large {
@@ -406,22 +406,22 @@ p {
 .uv-calc-box { grid-column: rank-mod / enchant-mod; }
 
 .dim-resource-chart {
-  grid-template-columns: repeat(3, max-content);
-  grid-template-areas:
-    "flow resource drain"
-    "innate anointment anointment-drain"
-    "innate animism animism-drain"
-    "innate sanguine sanguine-drain"
-    "innate rage rage-drain"
-    "resonance mastery mastery-drain"
-    "resonance channel channel-drain"
-    "resonance ki ki-drain"
-    "resonance virtuoso virtuoso-drain"
-    "magic minor-mana minor-mana-drain"
-    "magic moderate-mana moderate-mana-drain"
-    "magic major-mana major-mana-drain"
+  gap: 0px;
+  justify-items: center;
+  align-items: center;
+  grid-template-columns: 
+    [title] minmax(110px, min-content)
+    [total] min-content
+    [rank] min-content
+    [spec] min-content
   ;
 }
+
+.dim-attribute-selector {
+  grid-template-columns: repeat(3, max-content);
+}
+
+
 .uv-flow-area { grid-area: flow; }
 .uv-resource-area { grid-area: resource; }
 .uv-drain-area { grid-area: drain; }
@@ -518,13 +518,15 @@ p {
 }
 
 .section {
-  min-height: 66px;
+  min-height: 60px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   column-gap: 8px;
   row-gap: 8px;
   align-items: center;
+  border-radius: 0.6rem;
+  padding: 0.2 0.8rem;
 }
 
 .path-card {
@@ -1061,6 +1063,14 @@ p {
   }
 }
 
+.tertiary {
+  background-color: var( --tertiary-background );
+}
+
+
+.no-select {
+  user-select: none
+}
 
 .bg-warn {
   background-color: var(--muted-warn);
@@ -1092,6 +1102,7 @@ p {
 .thick { margin: 8px 0px; }
 .indent { margin-left: 12px; }
 .indent-small { margin-left: 4px; }
+.bumper-small { margin-right: 4px; }
 .bumper { margin-right: 8px; }
 .bumper-large { margin-right: 12px; }
 .bumper-xlarge { margin-right: 24px; }

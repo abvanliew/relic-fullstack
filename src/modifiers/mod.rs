@@ -59,6 +59,7 @@ pub enum ModifierClass {
   HP,
   Constituion,
   RankMax,
+  SpecializationMax,
   AttributeRank,
   CapabilityRank,
   CapabilitySpecialization,

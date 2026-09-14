@@ -17,12 +17,13 @@ pub struct Roll {
   pub capability: Option<Capability>,
 
   pub defense: Option<Defense>,
-  pub alternate_defense: Option<String>,
+  pub custom_defense: Option<String>,
 
   pub modifier: Option<Modifier>,
   pub custom_modifier: Option<String>,
 
-  pub each: Option<bool>,
+  #[serde(default)]
+  pub each: bool,
   pub custom_target: Option<String>,
   pub difficulty: Option<String>,
   pub target: Option<Target>,
@@ -71,14 +72,14 @@ impl fmt::Display for RollClass {
 
 #[component]
 pub fn RollSnippet(roll: Roll) -> Element {
-  let defense = match (&roll.defense, &roll.alternate_defense) {
+  let defense = match (&roll.defense, &roll.custom_defense) {
     (_, Some(defense)) => Some(defense.clone()),
     (Some(defense), _) => Some(defense.to_string()),
     (None, None) => None,
   };
   let roll_class = &roll.class;
   let article = match &roll.each {
-    Some(true) => "each",
+    true => "each",
     _ => "the",
   };
   return rsx! {

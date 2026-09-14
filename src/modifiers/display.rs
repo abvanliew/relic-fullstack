@@ -11,6 +11,7 @@ impl ModifierClass {
       ModifierClass::WalkingSpeed => format!("+{value} Speed"),
       ModifierClass::DashSpeed => format!("+{value} Dash"),
       ModifierClass::RankMax => format!("+{value} Maximum Attribute Rank"),
+      ModifierClass::SpecializationMax => format!("+{value} Maximum Specialization Rank"),
       ModifierClass::Feature => format!("Learn {value} features"),
       ModifierClass::MinorFeature => format!("Learn {value} minor features"),
       ModifierClass::AttributeRank => format!("+{value} Attribute Ranks"),

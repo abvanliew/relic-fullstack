@@ -58,6 +58,10 @@ impl PartialOrd for Path {
 
 impl Ord for Path {
   fn cmp(&self, other: &Self) -> Ordering {
+    match (!self.inherient).cmp(&!other.inherient) {
+      Ordering::Equal => (),
+      ord => return ord,
+    }
     match self.tier.cmp(&other.tier) {
       Ordering::Equal => (),
       ord => return ord,

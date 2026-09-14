@@ -60,8 +60,6 @@ fn adjust_for_armor(
   let Some(equiped_armor) = armor else {
     return (attributes, base_resistances, speed, 3);
   };
-  let title = equiped_armor.title.clone();
-  tracing::info!("Armor: {title}");
   let equipable = attributes.update_dodge_with_bulk(
     equiped_armor.fortitude_requirement,
     equiped_armor.bulk.unwrap_or(0),

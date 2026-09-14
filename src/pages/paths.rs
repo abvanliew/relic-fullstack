@@ -12,6 +12,7 @@ pub fn PathsPage() -> Element {
       paths.sort();
       return rsx! {
         StaggeredGrid {
+          class: "stg-large",
           PathPanelList { paths }
         }
       };
@@ -31,6 +32,7 @@ pub fn SinglePath(id: String) -> Element {
     Some(path) => {
       return rsx! {
         StaggeredGrid {
+          class: "stg-large",
           PathPanel { path }
         }
       }

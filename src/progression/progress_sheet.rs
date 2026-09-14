@@ -7,13 +7,13 @@ use crate::rules::components::Modifier;
 
 #[component]
 pub fn LevelTable(#[props(default)] highlight_level: Option<i32>,) -> Element {
-  let levels = LevelTrack::compile_level_modifiers(12);
+  let levels = LevelTrack::compile_level_modifiers(18);
   rsx! {
     div {
       class: "table-grid padded-grid alt-background-8",
       LevelHeader {}
-      for (index, (individual_level, running_total)) in levels.into_iter().enumerate() {
-        LevelRow { index, individual_level, running_total, highlight_level }
+      for (index, (net, total)) in levels.into_iter().enumerate() {
+        LevelRow { index, net, total, highlight_level }
       }
     }
   }
@@ -38,28 +38,36 @@ pub fn LevelHeader() -> Element {
 
 #[component]
 pub fn LevelRow(
-  index: usize, individual_level: ModifierSet, running_total: ModifierSet,
+  index: usize, net: ModifierSet, total: ModifierSet,
   #[props(default)] highlight_level: Option<i32>,
 ) -> Element {
   let level = index + 1;
-  let hp = individual_level.get(&ModifierClass::HP);
-  let rank_max = running_total.get(&ModifierClass::RankMax);
-  let attributes = individual_level.get(&ModifierClass::AttributeRank)
-    + individual_level.get(&ModifierClass::CapabilityRank)
-    + individual_level.get(&ModifierClass::DefenseRank);
-  let expertises = individual_level.get(&ModifierClass::ExpertiseRank);
-  let growth = individual_level.get(&ModifierClass::GrowthRanks);
-  let path_initiate_required = individual_level.get(&ModifierClass::InitiatePathRequired);
-  let path_initiate_optional = individual_level.get(&ModifierClass::InitiatePathOptional);
+  let hp = total.get(&ModifierClass::HP);
+  let hp_net = net.get(&ModifierClass::HP);
+
+  let rank_max = total.get(&ModifierClass::RankMax);
+  let attributes = total.get(&ModifierClass::AttributeRank)
+    + total.get(&ModifierClass::CapabilityRank)
+    + total.get(&ModifierClass::DefenseRank);
+  let attributes_net = net.get(&ModifierClass::AttributeRank)
+    + net.get(&ModifierClass::CapabilityRank)
+    + net.get(&ModifierClass::DefenseRank);
+  
+  let expertises = total.get(&ModifierClass::ExpertiseRank);
+  let expertises_net = net.get(&ModifierClass::ExpertiseRank);
+  let growth = total.get(&ModifierClass::GrowthRanks);
+  let growth_net = net.get(&ModifierClass::GrowthRanks);
+  let path_initiate_required = net.get(&ModifierClass::InitiatePathRequired);
+  let path_initiate_optional = net.get(&ModifierClass::InitiatePathOptional);
   let path_initiate_max = path_initiate_required + path_initiate_optional;
-  let path_initiate_running = running_total.get(&ModifierClass::InitiatePathRequired)
-    + running_total.get(&ModifierClass::InitiatePathOptional);
-  let path_journeyman_required = individual_level.get(&ModifierClass::JourneymanPathRequired);
-  let path_journeyman_running = running_total.get(&ModifierClass::JourneymanPathOptional);
-  let path_master_running = running_total.get(&ModifierClass::MasterPathOptional);
+  let path_initiate_running = total.get(&ModifierClass::InitiatePathRequired)
+    + total.get(&ModifierClass::InitiatePathOptional);
+  let path_journeyman_required = net.get(&ModifierClass::JourneymanPathRequired);
+  let path_journeyman_running = total.get(&ModifierClass::JourneymanPathOptional);
+  let path_master_running = total.get(&ModifierClass::MasterPathOptional);
   let feature =
-    individual_level.get(&ModifierClass::Feature) + path_initiate_max - path_initiate_required;
-  let minor_feature = individual_level.get(&ModifierClass::MinorFeature);
+    net.get(&ModifierClass::Feature) + path_initiate_max - path_initiate_required;
+  let minor_feature = net.get(&ModifierClass::MinorFeature);
   let mut features_choices: Vec<String> = Vec::new();
   if path_initiate_required > 0 {
     features_choices.push(format!("{path_initiate_required} Initiate Path"));
@@ -93,14 +101,14 @@ pub fn LevelRow(
     Some(target_level) => target_level == level as i32,
     None => false,
   };
-  let mid_class = if highlight { "fill-height thin-border mid-cap selected" } else {"fill-height thin-padding"};
+  let mid_class = if highlight { "fill-height thin-border mid-cap selected row gap-xsmall middle" } else {"fill-height thin-padding row gap-xsmall middle"};
   rsx! {
     div { class: if highlight { "uv-first fill-height thin-border left-cap selected" } else {"uv-first fill-height thin-padding"}, "{level}" }
-    div { class: mid_class, if level == 1 { "{hp}" } else { Modifier {value: hp} } }
+    div { class: mid_class, span { "{hp}" } if level > 1 && hp_net > 0 { Modifier { class: "small-text", value: hp_net, parenthesis: true } } }
     div { class: mid_class, "{rank_max}" }
-    div { class: mid_class, if level == 1 { "{attributes}" } else { Modifier {value: attributes} } }
-    div { class: mid_class, if level == 1 { "{expertises}" } else { Modifier {value: expertises} } }
-    div { class: mid_class, if level == 1 { "{growth}" } else { Modifier {value: growth} } }
+    div { class: mid_class, span { "{attributes}" } if level > 1 && attributes_net > 0 { Modifier { class: "small-text", value: attributes_net, parenthesis: true} } }
+    div { class: mid_class, span { "{expertises}" } if level > 1 && expertises_net > 0 { Modifier { class: "small-text", value: expertises_net, parenthesis: true} } }
+    div { class: mid_class, span { "{growth}" } if level > 1 && growth_net > 0 { Modifier { class: "small-text", value: growth_net, parenthesis: true} } }
     div { class: mid_class, "{path_initiate_running} / {path_journeyman_running} / {path_master_running}" }
     div { class: if highlight {"fill-height left thin-border right-cap selected"} else {"fill-height left thin-padding"}, "{feature_text}" }
   }

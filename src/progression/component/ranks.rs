@@ -35,10 +35,10 @@ pub struct RankSelections {
   pub warfare: RankSignal,
   pub spirit: RankSignal,
   pub manipulation: RankSignal,
-  pub tenacity: RankSignal,
   pub fortitude: RankSignal,
   pub resolve: RankSignal,
   pub insight: RankSignal,
+  pub dodge: RankSignal,
   pub expertise: Signal<Vec<(String, RankSignal)>>,
   pub anointment_pool: Signal<i32>,
   pub animism_pool: Signal<i32>,
@@ -58,10 +58,10 @@ impl Default for RankSelections {
       warfare: Default::default(),
       spirit: Default::default(),
       manipulation: Default::default(),
-      tenacity: Default::default(),
       fortitude: Default::default(),
       resolve: Default::default(),
       insight: Default::default(),
+      dodge: Default::default(),
       expertise,
       anointment_pool,
       animism_pool,
@@ -76,12 +76,13 @@ impl RankSelections {
     let rank_signal = match attribute {
       CharacterAttribute::Physique => self.physique.clone(),
       CharacterAttribute::Warfare => self.warfare.clone(),
-      CharacterAttribute::Spirit => self.spirit.clone(),
+      CharacterAttribute::Presence => self.spirit.clone(),
       CharacterAttribute::Manipulation => self.manipulation.clone(),
-      CharacterAttribute::Tenacity => self.tenacity.clone(),
       CharacterAttribute::Fortitude => self.fortitude.clone(),
       CharacterAttribute::Resolve => self.resolve.clone(),
       CharacterAttribute::Insight => self.insight.clone(),
+      CharacterAttribute::Dodge => self.dodge.clone(),
+      CharacterAttribute::Expertise(_) => RankSignal::default(),
     };
     return (rank_signal.rank, rank_signal.max);
   }
@@ -91,7 +92,7 @@ impl RankSelections {
       + (self.warfare.rank)()
       + (self.spirit.rank)()
       + (self.manipulation.rank)()
-      + (self.tenacity.rank)()
+      + (self.dodge.rank)()
       + (self.fortitude.rank)()
       + (self.resolve.rank)()
       + (self.insight.rank)();
@@ -105,7 +106,7 @@ impl RankSelections {
   }
 
   pub fn defense_max_count(&self) -> i32 {
-    return self.tenacity.max_value()
+    return self.dodge.max_value()
       + self.fortitude.max_value()
       + self.resolve.max_value()
       + self.insight.max_value();

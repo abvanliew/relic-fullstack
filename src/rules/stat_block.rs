@@ -58,9 +58,6 @@ impl AttributeRanks {
     let dodge = self.dodge.unwrap_or(0);
     let dodge_effective = max(0, dodge - bulk);
     self.dodge_effective = Some(dodge_effective);
-    tracing::info!("Dodge: {dodge}");
-    tracing::info!("Bulk: {bulk}");
-    tracing::info!("Effective: {dodge_effective}");
     return true;
   }
 

@@ -3,16 +3,17 @@ use std::fmt;
 
 use crate::progression::prelude::*;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CharacterAttribute {
   Physique,
   Warfare,
-  Spirit,
+  Presence,
   Manipulation,
-  Tenacity,
   Fortitude,
   Resolve,
   Insight,
+  Dodge,
+  Expertise(String),
 }
 
 impl fmt::Display for CharacterAttribute {
@@ -23,12 +24,13 @@ impl fmt::Display for CharacterAttribute {
       match self {
         CharacterAttribute::Physique => "Physique",
         CharacterAttribute::Warfare => "Warfare",
-        CharacterAttribute::Spirit => "Spirit",
+        CharacterAttribute::Presence => "Presence",
         CharacterAttribute::Manipulation => "Manipulation",
-        CharacterAttribute::Tenacity => "Tenacity",
         CharacterAttribute::Fortitude => "Fortitude",
         CharacterAttribute::Resolve => "Resolve",
         CharacterAttribute::Insight => "Insight",
+        CharacterAttribute::Dodge => "Dodge",
+        CharacterAttribute::Expertise(title) => title,
       }
     )
   }
@@ -39,22 +41,54 @@ impl CharacterAttribute {
     return vec![
       CharacterAttribute::Physique,
       CharacterAttribute::Warfare,
-      CharacterAttribute::Spirit,
+      CharacterAttribute::Presence,
       CharacterAttribute::Manipulation,
-      CharacterAttribute::Tenacity,
       CharacterAttribute::Fortitude,
       CharacterAttribute::Resolve,
       CharacterAttribute::Insight,
+      CharacterAttribute::Dodge,
     ];
+  }
+
+  pub fn iter<'a>() -> impl Iterator<Item = &'a CharacterAttribute> {
+    return [
+      CharacterAttribute::Physique,
+      CharacterAttribute::Warfare,
+      CharacterAttribute::Presence,
+      CharacterAttribute::Manipulation,
+      CharacterAttribute::Fortitude,
+      CharacterAttribute::Resolve,
+      CharacterAttribute::Insight,
+      CharacterAttribute::Dodge,
+    ].iter();
+  }
+
+  pub fn capability_iter<'a>() -> impl Iterator<Item = &'a CharacterAttribute> {
+    return [
+      CharacterAttribute::Physique,
+      CharacterAttribute::Warfare,
+      CharacterAttribute::Presence,
+      CharacterAttribute::Manipulation,
+    ].iter();
+  }
+
+  pub fn defense_iter<'a>() -> impl Iterator<Item = &'a CharacterAttribute> {
+    return [
+      CharacterAttribute::Fortitude,
+      CharacterAttribute::Resolve,
+      CharacterAttribute::Insight,
+      CharacterAttribute::Dodge,
+    ].iter();
   }
 
   pub fn display_as(&self) -> RankDisplay {
     return match &self {
       CharacterAttribute::Physique
       | CharacterAttribute::Warfare
-      | CharacterAttribute::Spirit
-      | CharacterAttribute::Manipulation => RankDisplay::Bonus,
-      CharacterAttribute::Tenacity
+      | CharacterAttribute::Presence
+      | CharacterAttribute::Manipulation
+      | CharacterAttribute::Expertise(_) => RankDisplay::Bonus,
+      CharacterAttribute::Dodge
       | CharacterAttribute::Fortitude
       | CharacterAttribute::Resolve
       | CharacterAttribute::Insight => RankDisplay::Defense,
@@ -65,12 +99,13 @@ impl CharacterAttribute {
     return match &self {
       CharacterAttribute::Physique
       | CharacterAttribute::Warfare
-      | CharacterAttribute::Spirit
+      | CharacterAttribute::Presence
       | CharacterAttribute::Manipulation => true,
-      CharacterAttribute::Tenacity
+      CharacterAttribute::Dodge
       | CharacterAttribute::Fortitude
       | CharacterAttribute::Resolve
-      | CharacterAttribute::Insight => false,
+      | CharacterAttribute::Insight
+      | CharacterAttribute::Expertise(_) => false,
     };
   }
 }

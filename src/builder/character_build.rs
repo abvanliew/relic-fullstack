@@ -3,6 +3,12 @@ use std::collections::{HashMap, HashSet};
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
+use super::build_common::Counter;
+
+use super::CharacterBuild;
+
+use crate::builder::LevelSelections;
+use crate::builder::build_growth::Development;
 use crate::modifiers::{ModifierClass, ModifierSet};
 use crate::path::prelude::*;
 use crate::progression::prelude::*;
@@ -49,12 +55,6 @@ pub enum SelectionStatus {
   SelectedCurrently,
 }
 
-#[derive(Debug, Clone, Default)]
-pub struct CharacterBuild {
-  current_level_index: usize,
-  level_selections: Vec<LevelSelections>,
-}
-
 impl CharacterBuild {
   fn previous_level_selections(&self) -> impl Iterator<Item = &LevelSelections> {
     let index = self.current_level_index.min(self.level_selections.len());
@@ -71,6 +71,10 @@ impl CharacterBuild {
 
   pub fn current_selection_ref(&self) -> Option<&LevelSelections> {
     return self.level_selections.get(self.current_level_index);
+  }
+
+  pub fn current_selection(&self) -> LevelSelections {
+    return self.current_selection_ref().cloned().unwrap_or_default();
   }
 
   pub fn path_selection_status(&self, path_id: &ObjectId) -> SelectionStatus {
@@ -99,15 +103,6 @@ impl CharacterBuild {
       paths.extend(selections.paths.clone());
     }
     return paths;
-  }
-
-  fn get_current_mut(&mut self) -> &mut LevelSelections {
-    if self.level_selections.len() < self.current_level_index + 1 {
-      for _ in self.level_selections.len()..=self.current_level_index {
-        self.level_selections.push(LevelSelections::default());
-      }
-    }
-    return &mut self.level_selections[self.current_level_index];
   }
 
   pub fn add_path(&mut self, path_id: ObjectId) {
@@ -154,8 +149,8 @@ impl CharacterBuild {
     let features = level_stats.get(&ModifierClass::Feature) + bonus_features;
     let minor_features = level_stats.get(&ModifierClass::MinorFeature);
     return (
-      Counter::from_max(features),
-      Counter::from_max(minor_features),
+      Counter::from_max("Features".into(), features),
+      Counter::from_max("Minor Features".into(), minor_features),
     );
   }
 
@@ -172,8 +167,8 @@ impl CharacterBuild {
     }
     let initiate_required = level_stats.get(&ModifierClass::InitiatePathRequired);
     let initiate_optional = level_stats.get(&ModifierClass::InitiatePathOptional);
-    let mut counter_required = Counter::from_max(initiate_required);
-    let mut counter_optional = Counter::from_max(initiate_optional);
+    let mut counter_required = Counter::from_max("Required".into(), initiate_required);
+    let mut counter_optional = Counter::from_max("Optional".into(),initiate_optional);
     if initiate_count <= initiate_required {
       counter_required.current += initiate_count;
     }
@@ -213,20 +208,20 @@ impl CharacterBuild {
     return counters;
   }
 
-  pub fn get_previous_trainings(&self) -> Training {
-    let mut previous_trainings = Training::default();
+  pub fn get_previous_trainings(&self) -> Development {
+    let mut previous_trainings = Development::default();
     for selections in self.previous_level_selections() {
-      previous_trainings.extend(&selections.trainings);
+      previous_trainings.extend(&selections.development);
     }
     return previous_trainings;
   }
 
-  pub fn get_current_trainings(&self) -> Training {
+  pub fn get_current_trainings(&self) -> Development {
     let mut previous_training = self.get_previous_trainings();
     let Some(level_selection) = self.current_selection_ref() else {
       return previous_training;
     };
-    previous_training.extend(&level_selection.trainings);
+    previous_training.extend(&level_selection.development);
     return previous_training;
   }
 
@@ -237,7 +232,7 @@ impl CharacterBuild {
 
   pub fn set_training(&mut self, class: &TrainingClass, value: i32) {
     let current = self.get_current_mut();
-    current.trainings.set(class, value)
+    current.development.set(class, value)
   }
 
   pub fn get_training_modifiers(&self) -> ModifierSet {
@@ -408,11 +403,11 @@ impl CharacterBuild {
       };
       let feature_type = constraint.filter.skill_filter.to_string();
       let title = match &constraint.filter.path_filter {
-        PathFilter::All => Some(feature_type),
-        PathFilter::Single(path_id) => Some(match path_map_cache.from_id(&path_id) {
+        PathFilter::All => feature_type,
+        PathFilter::Single(path_id) => match path_map_cache.from_id(&path_id) {
           Some(path) => format!("{} {feature_type}", path.title),
           None => "undefined".into(),
-        }),
+        },
       };
       let increment = constraint.filter.skill_filter.weight();
       let max = constraint.required_weight;
@@ -430,19 +425,23 @@ impl CharacterBuild {
 
     let constraint_counters = ordered_constraint_counters.into_iter().map(|(_, counter)| counter).collect();
 
-    tracing::info!("{constraints:#?}");
-    tracing::info!("{constraint_sets:#?}");
-    tracing::info!("{skill_ranges:#?}");
-
     return (skill_ranges, constraint_counters);
   }
-}
 
-#[derive(Debug, Clone, Default)]
-pub struct LevelSelections {
-  paths: HashSet<ObjectId>,
-  trainings: Training,
-  skill_ranks: SkillRanks,
+  pub fn get_current_modifiers(&self) -> ModifierSet {
+    let mut all_modifiers = ModifierSet::default();
+    all_modifiers.append(&self.get_training_modifiers());
+    all_modifiers.append(&LevelTrack::as_of(self.get_level()));
+    let SkillCache(ref skill_map_cache) = use_context();
+    let skill_ranges: SkillRanges = self.get_skill_selection_range_base();
+    for (id, range) in skill_ranges.ranges {
+      if range.current <= 0 { continue; }
+      let Some( skill ) = skill_map_cache.from_object_id(&id) else { continue; };
+      let Some( skill_modifiers) = skill.modifiers else { continue; };
+      all_modifiers.append(&skill_modifiers.multiple(range.current));
+    }
+    return all_modifiers;
+  }
 }
 
 impl LevelSelections {
@@ -457,140 +456,6 @@ impl LevelSelections {
   pub fn set_skill_ranks(&mut self, id: &ObjectId, ranks: i32) {
     self.skill_ranks.set_skill_ranks(id, ranks);
   }
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct Counter {
-  pub title: Option<String>,
-  pub increment: i32,
-  pub current: i32,
-  pub max: i32,
-}
-
-impl Default for Counter {
-  fn default() -> Self {
-    Self {
-      title: None,
-      current: 0,
-      max: 0,
-      increment: 1,
-    }
-  }
-}
-
-impl Counter {
-  pub fn from_max(max: i32) -> Self {
-    Self {
-      max,
-      ..Default::default()
-    }
-  }
-
-  pub fn effective(&self) -> (i32, i32, i32) {
-    if self.increment <=1 {
-      return (self.current, 0, self.max);
-    }
-    return (self.current / self.increment, self.current % self.increment, self.max / self.increment);
-  }
-
-  pub fn valid(&self) -> SelectionValidity {
-    if self.current < self.max {
-      return SelectionValidity::Available;
-    }
-    if self.current == self.max {
-      return SelectionValidity::Full;
-    }
-    return SelectionValidity::Invalid;
-  }
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct Training {
-  pub adept: Option<i32>,
-  pub endurance: Option<i32>,
-  pub expert: Option<i32>,
-  pub innate: Option<i32>,
-  pub resonant: Option<i32>,
-  pub magic: Option<i32>,
-}
-
-impl Training {
-  pub fn extend(&mut self, other: &Self) {
-    self.adept = optional_max(&self.adept, &other.adept);
-    self.endurance = optional_max(&self.endurance, &other.endurance);
-    self.expert = optional_max(&self.expert, &other.expert);
-    self.innate = optional_max(&self.innate, &other.innate);
-    self.resonant = optional_max(&self.resonant, &other.resonant);
-    self.magic = optional_max(&self.magic, &other.magic);
-  }
-
-  pub fn get(&self, class: &TrainingClass) -> i32 {
-    return match class {
-      TrainingClass::Adept => self.adept.unwrap_or(0),
-      TrainingClass::Endurance => self.endurance.unwrap_or(0),
-      TrainingClass::Expert => self.expert.unwrap_or(0),
-      TrainingClass::Innate => self.innate.unwrap_or(0),
-      TrainingClass::Resonance => self.resonant.unwrap_or(0),
-      TrainingClass::Magic => self.magic.unwrap_or(0),
-    };
-  }
-
-  pub fn set(&mut self, class: &TrainingClass, value: i32) {
-    match class {
-      TrainingClass::Expert => self.expert = Some(value),
-      TrainingClass::Adept => self.adept = Some(value),
-      TrainingClass::Endurance => self.endurance = Some(value),
-      TrainingClass::Innate => self.innate = Some(value),
-      TrainingClass::Resonance => self.resonant = Some(value),
-      TrainingClass::Magic => self.magic = Some(value),
-    }
-  }
-
-  pub fn sum(&self) -> i32 {
-    return self.adept.unwrap_or(0)
-      + self.endurance.unwrap_or(0)
-      + self.expert.unwrap_or(0)
-      + self.innate.unwrap_or(0)
-      + self.resonant.unwrap_or(0)
-      + self.magic.unwrap_or(0);
-  }
-
-  pub fn summary(&self) -> String {
-    let items: Vec<String> = vec![
-      option_formater("Adept".into(), &self.adept),
-      option_formater("Endurance".into(), &self.endurance),
-      option_formater("Expert".into(), &self.expert),
-      option_formater("Innate".into(), &self.innate),
-      option_formater("Resonnance".into(), &self.resonant),
-      option_formater("Magic".into(), &self.magic),
-    ]
-    .into_iter()
-    .flatten()
-    .collect();
-    return items.join(", ");
-  }
-}
-
-fn optional_max(lhs: &Option<i32>, rhs: &Option<i32>) -> Option<i32> {
-  return match (lhs, rhs) {
-    (None, None) => None,
-    (Some(value), None) => Some(*value),
-    (None, Some(value)) => Some(*value),
-    (Some(left_value), Some(right_value)) => Some(*left_value.max(right_value)),
-  };
-}
-
-fn option_formater(title: String, value: &Option<i32>) -> Option<String> {
-  return match value {
-    Some(value) => {
-      if value.eq(&0) {
-        None
-      } else {
-        Some(format!("{title} {value}"))
-      }
-    },
-    None => None,
-  };
 }
 
 #[derive(Debug, Clone, Default)]
