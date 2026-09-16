@@ -1,22 +1,20 @@
 use dioxus::prelude::*;
 
-use super::CharacterBuild;
-use super::common::{SectionBar};
 use super::build_features::FeatureGroup;
+use super::common::SectionBar;
+use super::CharacterBuild;
 
 use crate::builder::build_attributes::AttributeSelector;
+use crate::builder::build_development::GrowthGroup;
 use crate::builder::build_paths::PathGroup;
-use crate::builder::build_growth::GrowthGroup;
 use crate::progression::fixed::{MAX_LEVEL, MIN_LEVEL};
-use crate::progression::prelude::{LevelTable};
+use crate::progression::prelude::LevelTable;
 
 #[component]
 pub fn CharacterBuildPanel() -> Element {
   let build_signal = use_signal(|| CharacterBuild::default());
-  // let build_debug = build_signal().clone();
   return rsx! {
     div{ class: "column gap-large",
-      // div { "{build_debug:#?}" }
       CharacterGroup { build_signal }
       PathGroup { build_signal }
       GrowthGroup { build_signal }
@@ -30,7 +28,11 @@ pub fn CharacterBuildPanel() -> Element {
 pub fn CharacterGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
   let level = build_signal().get_level();
   let name = build_signal().get_character_name();
-  let name_display = if name.trim().is_empty() { "---".into() } else { name.clone() };
+  let name_display = if name.trim().is_empty() {
+    "---".into()
+  } else {
+    name.clone()
+  };
   rsx! {
     SectionBar {
       title: "Character",

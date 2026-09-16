@@ -6,7 +6,7 @@ use crate::progression::training::TrainingClass;
 use crate::rules::components::Modifier;
 
 #[component]
-pub fn LevelTable(#[props(default)] highlight_level: Option<i32>,) -> Element {
+pub fn LevelTable(#[props(default)] highlight_level: Option<i32>) -> Element {
   let levels = LevelTrack::compile_level_modifiers(18);
   rsx! {
     div {
@@ -27,14 +27,11 @@ pub fn LevelHeader() -> Element {
     div { class: "underline", "Rank Maximum" }
     div { class: "underline", "Attribute Ranks" }
     div { class: "underline", "Expretise Ranks" }
-    div { class: "underline", "Training Ranks" }
+    div { class: "underline", "Development Points" }
     div { class: "underline", "Maximum Paths" }
     div { class: "left underline", "Paths and Features" }
   }
 }
-
-
-
 
 #[component]
 pub fn LevelRow(
@@ -52,7 +49,7 @@ pub fn LevelRow(
   let attributes_net = net.get(&ModifierClass::AttributeRank)
     + net.get(&ModifierClass::CapabilityRank)
     + net.get(&ModifierClass::DefenseRank);
-  
+
   let expertises = total.get(&ModifierClass::ExpertiseRank);
   let expertises_net = net.get(&ModifierClass::ExpertiseRank);
   let growth = total.get(&ModifierClass::DevelopmentPoints);
@@ -65,8 +62,7 @@ pub fn LevelRow(
   let path_journeyman_required = net.get(&ModifierClass::JourneymanPathRequired);
   let path_journeyman_running = total.get(&ModifierClass::JourneymanPathOptional);
   let path_master_running = total.get(&ModifierClass::MasterPathOptional);
-  let feature =
-    net.get(&ModifierClass::Feature) + path_initiate_max - path_initiate_required;
+  let feature = net.get(&ModifierClass::Feature) + path_initiate_max - path_initiate_required;
   let minor_feature = net.get(&ModifierClass::MinorFeature);
   let mut features_choices: Vec<String> = Vec::new();
   if path_initiate_required > 0 {
@@ -101,7 +97,11 @@ pub fn LevelRow(
     Some(target_level) => target_level == level as i32,
     None => false,
   };
-  let mid_class = if highlight { "fill-height thin-border mid-cap selected row gap-xsmall middle" } else {"fill-height thin-padding row gap-xsmall middle"};
+  let mid_class = if highlight {
+    "fill-height thin-border mid-cap selected row gap-xsmall middle"
+  } else {
+    "fill-height thin-padding row gap-xsmall middle"
+  };
   rsx! {
     div { class: if highlight { "uv-first fill-height thin-border left-cap selected" } else {"uv-first fill-height thin-padding"}, "{level}" }
     div { class: mid_class, span { "{hp}" } if level > 1 && hp_net > 0 { Modifier { class: "small-text", value: hp_net, parenthesis: true } } }
@@ -115,25 +115,25 @@ pub fn LevelRow(
 }
 
 #[component]
-pub fn TrainingTables() -> Element {
+pub fn DevelopmentTables() -> Element {
   rsx! {
     div {
       class: "row-wrap",
-      TrainingTable { training_class: TrainingClass::Adept }
-      TrainingTable { training_class: TrainingClass::Endurance }
-      TrainingTable { training_class: TrainingClass::Expert }
+      DevelopmentTable { training_class: TrainingClass::Adept }
+      DevelopmentTable { training_class: TrainingClass::Endurance }
+      DevelopmentTable { training_class: TrainingClass::Expert }
     }
     div {
       class: "row-wrap",
-      TrainingTable { training_class: TrainingClass::Innate }
-      TrainingTable { training_class: TrainingClass::Resonance }
-      TrainingTable { training_class: TrainingClass::Magic }
+      DevelopmentTable { training_class: TrainingClass::Innate }
+      DevelopmentTable { training_class: TrainingClass::Resonance }
+      DevelopmentTable { training_class: TrainingClass::Magic }
     }
   }
 }
 
 #[component]
-pub fn TrainingTable(
+pub fn DevelopmentTable(
   training_class: TrainingClass, #[props(default)] highlight_rank: Option<i32>,
 ) -> Element {
   let modifier_keys = match &training_class {
@@ -179,51 +179,51 @@ pub fn TrainingTable(
   rsx! {
     div {
       class: "table-grid padded-grid {table_class}",
-      TrainingHeader { training_class }
+      DevelopmentHeader { training_class }
       for rank in 1..=12 {
-        TrainingRow { rank, training_class, modifier_keys: modifier_keys.clone(), highlight_rank: highlight_rank.clone() }
+        DevelopmentRow { rank, training_class, modifier_keys: modifier_keys.clone(), highlight_rank: highlight_rank.clone() }
       }
     }
   }
 }
 
 #[component]
-pub fn TrainingHeader(training_class: TrainingClass) -> Element {
+pub fn DevelopmentHeader(training_class: TrainingClass) -> Element {
   return match &training_class {
     TrainingClass::Adept => rsx! {
-      div { class: "uv-first underline", "Adept Rank" }
+      div { class: "uv-first underline", "Adept" }
       div { class: "underline", "HP" }
       div { class: "underline", "Capability Ranks" }
       div { class: "underline", "Capability Specialization" }
     },
     TrainingClass::Endurance => rsx! {
-      div { class: "uv-first underline", "Endurance Rank" }
+      div { class: "uv-first underline", "Endurance" }
       div { class: "underline", "HP" }
       div { class: "underline", "Defense Ranks" }
       div { class: "underline", "Defense Specialization" }
     },
     TrainingClass::Expert => rsx! {
-      div { class: "uv-first underline", "Expert Rank" }
+      div { class: "uv-first underline", "Expert" }
       div { class: "underline", "HP" }
       div { class: "underline", "Expertise Ranks" }
       div { class: "underline", "Expertise Specialization" }
     },
     TrainingClass::Innate => rsx! {
-      div { class: "uv-first underline", "Innate Rank" }
+      div { class: "uv-first underline", "Innate" }
       div { class: "underline", "HP" }
       div { class: "underline", "Innate Flow" }
       div { class: "underline", "Innate Pool" }
       div { class: "underline", "All Innate Pools" }
     },
     TrainingClass::Resonance => rsx! {
-      div { class: "uv-first underline", "Resonance Rank" }
+      div { class: "uv-first underline", "Resonance" }
       div { class: "underline", "HP" }
       div { class: "underline", "Resonance Flow" }
       div { class: "underline", "Resonance Pool" }
       div { class: "underline", "All Resonance Pools" }
     },
     TrainingClass::Magic => rsx! {
-      div { class: "uv-first underline", "Magic Rank" }
+      div { class: "uv-first underline", "Magic" }
       div { class: "underline", "Magic Flow" }
       div { class: "underline", "Minor Mana Pool" }
       div { class: "underline", "Moderate Mana Pool" }
@@ -233,7 +233,7 @@ pub fn TrainingHeader(training_class: TrainingClass) -> Element {
 }
 
 #[component]
-pub fn TrainingRow(
+pub fn DevelopmentRow(
   rank: i32, training_class: TrainingClass, modifier_keys: Vec<ModifierClass>,
   #[props(default)] highlight_rank: Option<i32>,
 ) -> Element {

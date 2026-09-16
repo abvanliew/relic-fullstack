@@ -33,8 +33,7 @@ pub enum Route {
   #[layout(Navbar)]
 
   #[route("/")] MainRules {},
-  #[route("/builder")] CharacterBuilder {},
-  #[route("/builder2")] CharacterBuildPage {},
+  #[route("/builder")] CharacterBuildPage {},
   #[route("/filter")] SkillFilterPage {},
   #[route("/keywords")] KeywordsPage {},
   #[route("/blank-sheet")] BlankSheetPage {},

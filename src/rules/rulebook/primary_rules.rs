@@ -103,7 +103,7 @@ pub fn ExampleSkills() -> Element {
   let secret_handshake = secret_handshake();
   rsx! {
     div {
-      class: "column gap-large indent float-right",
+      class: "column flow-large gap-large indent float-right",
       SkillCard { skill: ranked_boon }
       SkillCard { skill: awesome_spell }
       SkillCard { skill: secret_handshake }

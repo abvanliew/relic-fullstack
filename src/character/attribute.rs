@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use crate::progression::prelude::*;
-
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum CharacterAttribute {
   Physique,
@@ -14,6 +12,11 @@ pub enum CharacterAttribute {
   Insight,
   Dodge,
   Expertise(String),
+}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RankDisplay {
+  Bonus,
+  Defense,
 }
 
 impl fmt::Display for CharacterAttribute {
@@ -37,19 +40,6 @@ impl fmt::Display for CharacterAttribute {
 }
 
 impl CharacterAttribute {
-  pub fn ordered() -> Vec<CharacterAttribute> {
-    return vec![
-      CharacterAttribute::Physique,
-      CharacterAttribute::Warfare,
-      CharacterAttribute::Presence,
-      CharacterAttribute::Manipulation,
-      CharacterAttribute::Fortitude,
-      CharacterAttribute::Resolve,
-      CharacterAttribute::Insight,
-      CharacterAttribute::Dodge,
-    ];
-  }
-
   pub fn iter<'a>() -> impl Iterator<Item = &'a Self> {
     return [
       CharacterAttribute::Physique,
@@ -92,20 +82,6 @@ impl CharacterAttribute {
       | CharacterAttribute::Fortitude
       | CharacterAttribute::Resolve
       | CharacterAttribute::Insight => RankDisplay::Defense,
-    };
-  }
-
-  pub fn is_capacity(&self) -> bool {
-    return match &self {
-      CharacterAttribute::Physique
-      | CharacterAttribute::Warfare
-      | CharacterAttribute::Presence
-      | CharacterAttribute::Manipulation => true,
-      CharacterAttribute::Dodge
-      | CharacterAttribute::Fortitude
-      | CharacterAttribute::Resolve
-      | CharacterAttribute::Insight
-      | CharacterAttribute::Expertise(_) => false,
     };
   }
 }

@@ -9,7 +9,7 @@ mod skill;
 
 pub mod prelude {
   pub use super::signal::{
-    status_element_paths_skills_keywords, CharacterSheetCache, EnchantmentCache, EquipmentCache,
+    CharacterSheetCache, EnchantmentCache, EquipmentCache,
     KeywordCache, PathCache, SkillCache,
   };
 }

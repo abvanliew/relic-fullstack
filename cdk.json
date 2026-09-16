@@ -1,0 +1,3 @@
+{
+  "app": "uv run iac/cdk/app.py"
+}

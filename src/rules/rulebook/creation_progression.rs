@@ -1,5 +1,5 @@
 use crate::pages::QuickTerm;
-use crate::progression::prelude::{LevelTable, TrainingTables};
+use crate::progression::prelude::{LevelTable, DevelopmentTables};
 use dioxus::prelude::*;
 
 #[component]
@@ -9,7 +9,7 @@ pub fn CreationExplainer() -> Element {
     QuickStartCreation {}
     LevelChartExplainer {}
     LevelTable {}
-    TrainingTables {}
+    DevelopmentTables {}
   }
 }
 
@@ -34,10 +34,10 @@ pub fn QuickStartCreation() -> Element {
         }
       }
       li {
-        "Assign initial training rank"
+        "Assign initial Development point"
         ul {
-          li { "Each training cannot exceed a number of ranks equal to your level." }
-          li { "You cannot put points into Innate, Resonance or Magic trainings unless you are on a Path grants the corresponding Flow." }
+          li { "Each Development cannot have points exceeding your level." }
+          li { "You cannot put points into Innate, Resonance or Magic development unless you are on a Path grants the corresponding Flow." }
         }
       }
       li {
@@ -64,7 +64,7 @@ pub fn QuickStartCreation() -> Element {
 pub fn ProgressChart() -> Element {
   rsx! {
     LevelChartExplainer {}
-    TrainingTables {}
+    DevelopmentTables {}
   }
 }
 
@@ -76,7 +76,7 @@ pub fn LevelChartExplainer() -> Element {
       QuickTerm { title: "Rank Maximum", "The maximum ranks you can allocate to a given attribute or expertise." }
       QuickTerm { title: "Attribute Ranks", "The number of ranks you can spend between your capabilities and defenses. At level 1 you must spend at least 8 ranks in capabilities and 8 ranks in defenses." }
       QuickTerm { title: "Expertise Ranks", "The number of ranks you have to spend on expertise." }
-      QuickTerm { title: "Training Ranks", "The number of ranks you can spend on trainings. Each training cannot have more ranks than your current level. All characters can pick from Adept Endurance and Expert trainings. If your character is on a path that provides Innate, Resonance or Magic Flows then you can put ranks into those trainings." }
+      QuickTerm { title: "Development Points", "The number of points you can spend on development. Each development cannot have more points than your current level. All characters can pick from Adept Endurance and Expert developments. If your character is on a path that provides Innate, Resonance or Magic Flows then you can put points into those developments." }
       QuickTerm { title: "Paths and Features", "Each character must select at least one path to learn. Optionally they can choose to forgo a Feature to learn a new path. Characters are limited to a maximum number of paths they cannot learn more than what is listed." }
       QuickTerm { title: "Specializations", "Specializations increase the effective rank of an attribute or expertise, increasing them above the normal limit of ranks. Each attribute or exptertise can have a maximum of 1 specialization point per tier of the character." }
     }

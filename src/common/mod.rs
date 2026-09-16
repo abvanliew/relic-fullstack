@@ -4,7 +4,7 @@ mod wrapper;
 
 use dioxus::prelude::*;
 
-pub use input::{InputSignal, NumericInput, NumericRange};
+pub use input::{NumericInput, NumericRange};
 pub use sized::{StaggeredCell, StaggeredGrid};
 pub use wrapper::{CollapsibleHeader};
 

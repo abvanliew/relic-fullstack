@@ -9,8 +9,9 @@ pub fn Navbar() -> Element {
       Link { to: Route::MainRules {}, "Home" }
       Link { to: Route::PathsPage {}, "Paths" }
       Link { to: Route::SkillsPage {}, "Skills" }
-      Link { to: Route::CharacterBuilder {}, "Builder" }
+      Link { to: Route::CharacterBuildPage {}, "Builder" }
       Link { to: Route::CharacterSheetsPage {}, "Sheets" }
+      Link { to: Route::EquipmentPage {}, "Equipment" }
     }
     Outlet::<Route> {}
   }

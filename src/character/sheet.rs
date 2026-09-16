@@ -19,7 +19,7 @@ use crate::skill::component::SkillCardElements;
 use crate::skill::prelude::keywords_from_skills;
 use crate::Route;
 
-use super::aspects::{BodyStats, TrainingRanks};
+use super::aspects::{BodyStats, DevelopmentRanks};
 // use super::attribute::*;
 use super::expertise::ExpertiseEntry;
 use super::flow::FlowStat;
@@ -34,7 +34,7 @@ pub struct CharacterSheet {
   pub name: String,
   pub level: i32,
   pub attributes: AttributeRanks,
-  pub training: TrainingRanks,
+  pub training: DevelopmentRanks,
   pub body: BodyStats,
   pub paths: HashSet<ObjectId>,
   pub skills: Vec<ObjectId>,

@@ -5,7 +5,7 @@ use dioxus::prelude::*;
 
 use crate::builder::CharacterBuildPanel;
 use crate::character::prelude::{
-  BodyStats, CharacterSheet, FillableSheet, SheetDetails, TrainingRanks,
+  BodyStats, CharacterSheet, FillableSheet, SheetDetails, DevelopmentRanks,
 };
 use crate::rules::prelude::{AttributeRanks, ProgressChart};
 use crate::server::prelude::CharacterSheetCache;
@@ -45,7 +45,7 @@ pub fn BlankSheetPage() -> Element {
     attributes: AttributeRanks {
       ..AttributeRanks::default()
     },
-    training: TrainingRanks::default(),
+    training: DevelopmentRanks::default(),
     body: BodyStats {
       hp: 30,
       constitution: 4,

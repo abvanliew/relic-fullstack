@@ -3,7 +3,7 @@ use dioxus::prelude::*;
 use super::common::{Counter, CounterBadge, SectionBar};
 use super::CharacterBuild;
 
-use crate::progression::prelude::{ TrainingClass, TrainingTable};
+use crate::progression::prelude::{TrainingClass, DevelopmentTable};
 
 #[derive(Debug, Clone, Default)]
 pub struct Development {
@@ -181,7 +181,7 @@ pub fn TrainingSelector(
     if expanded {
       div {
         class: "uv-full",
-        TrainingTable { training_class, highlight_rank: Some( current ) }
+        DevelopmentTable { training_class, highlight_rank: Some( current ) }
       }
     }
   };

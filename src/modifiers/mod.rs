@@ -41,10 +41,6 @@ impl ModifierSet {
     }
   }
 
-  pub fn contains_key(&self, class: &ModifierClass) -> bool {
-    return self.0.contains_key(class);
-  }
-
   pub fn multiple(&self, multiplier: i32) -> Self {
     let mut new_map = self.0.clone();
     for value in new_map.values_mut() {

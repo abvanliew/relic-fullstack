@@ -6,12 +6,21 @@ use super::CharacterBuild;
 use super::common::{CounterBadge, FilterButton, SectionBar};
 
 use crate::common::{CollapsibleHeader, StaggeredCell, StaggeredGrid};
+use crate::path::prelude::SelectionFilter;
 use crate::skill::prelude::*;
 
 use crate::server::prelude::SkillCache;
 use crate::skill::component::SkillCard;
 use crate::skill::Skill;
 
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct ConstraintSet {
+  pub required_weight: i32,
+  pub selected_weight: i32,
+  pub overage_total: i32,
+  pub leeway: i32,
+  pub filters: Vec<SelectionFilter>,
+}
 
 #[component]
 pub fn FeatureGroup(mut build_signal: Signal<CharacterBuild>) -> Element {

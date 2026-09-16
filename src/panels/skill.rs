@@ -1,9 +1,10 @@
+use dioxus::prelude::*;
+
 use crate::common::StaggeredGrid;
 use crate::keyword::prelude::*;
 use crate::path::components::*;
 use crate::server::prelude::*;
 use crate::skill::component::*;
-use dioxus::prelude::*;
 
 #[component]
 pub fn SingleSkillPage(id: String) -> Element {
@@ -24,7 +25,7 @@ pub fn SingleSkillPage(id: String) -> Element {
   let path_ids = skill.paths.clone().unwrap_or_default();
   return rsx! {
     div {
-      class: "column gap-medium",
+      class: "column gap-medium flow-large",
       SkillCard { skill }
       if path_ids.len() > 0 {
         PathChipsCard {
@@ -58,7 +59,7 @@ pub fn SkillsPage() -> Element {
       if collapsed() { "Expand Skills" } else { "Collapse Skills" }
     }
     StaggeredGrid {
-      class: "stg-large",
+      class: "stg-large flow-large",
       SkillCardElements { skills, display: TermDisplay::Embeded, title_as_link: true, include_path_chips: true, collapsed: collapsed() }
     }
   };

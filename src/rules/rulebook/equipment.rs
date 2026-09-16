@@ -18,6 +18,7 @@ pub fn WeaponExplainer() -> Element {
       QuickTerm { title: "Reload", "Weapons with the reload property have to be reloaded after each use. This property lists the action required to reload the weapon. This assumes you have ammo readily at hand in a quiever or bandolier. Otherwise you will need to use an Interaction first to draw the ammo." }
       QuickTerm { title: "Bulk", "Armor has a bulk property that is applied as a penalty to your dodge ranks. This penaty can only reduce the dodge benefit from ranks to 0, cannot be negative." }
       QuickTerm { title: "Drag", "This reduces the Speed and Dash values of the wearer. Neither can be reduced below 1." }
+      QuickTerm { title: "Durable", "Attacks vs Dodge made against creatures with Durable use the creature's Fortitude (if higher than Dodge) as the threshold to confirm Critical hits. If a Shield has Durable then the creature gains it against any attack that they block." }
       QuickTerm { title: "Elemental Resistance", "Armor with Element Resistance grants resistance to a single elemental damage type in addition to its physical reistance. This element is based on the type of creature the armor is made of." }
     }
   }

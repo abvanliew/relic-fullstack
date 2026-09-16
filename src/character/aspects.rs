@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq, Clone)]
-pub struct TrainingRanks {
+pub struct DevelopmentRanks {
   pub expert: Option<i32>,
   pub adept: Option<i32>,
   pub endurance: Option<i32>,
@@ -11,7 +11,7 @@ pub struct TrainingRanks {
   pub magic: Option<i32>,
 }
 
-impl fmt::Display for TrainingRanks {
+impl fmt::Display for DevelopmentRanks {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     let mut ranks: Vec<String> = Vec::new();
     if let Some(expert) = self.expert {

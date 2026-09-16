@@ -7,10 +7,9 @@ use super::CharacterBuild;
 
 use crate::builder::common::{Counter, CounterBadge};
 use crate::builder::LevelSelections;
-use crate::character::prelude::{CharacterAttribute, Flow, StandardExpertise};
+use crate::character::prelude::{CharacterAttribute, Flow, RankDisplay, StandardExpertise};
 use crate::common::{NumericInput, NumericRange};
 use crate::modifiers::{ModifierClass, ModifierSet};
-use crate::progression::component::ranks::RankDisplay;
 use crate::progression::fixed::BASE_DEFENSE;
 use crate::rules::components::Modifier;
 use crate::skill::prelude::ResourcePool;
@@ -37,7 +36,10 @@ pub struct FreeformAttribute {
 
 impl FreeformAttribute {
   pub fn empty() -> Self {
-    Self { name: "".into(), attribute: AttributeRank::default() }
+    Self {
+      name: "".into(),
+      attribute: AttributeRank::default(),
+    }
   }
 }
 
@@ -118,7 +120,10 @@ impl AttributeRanks {
       .iter()
       .map(|expertise| expertise.attribute.specialization)
       .sum::<i32>();
-    (ranks_standard + ranks_freeform, spec_standard + spec_freeform)
+    (
+      ranks_standard + ranks_freeform,
+      spec_standard + spec_freeform,
+    )
   }
 
   pub fn set_expertise_name(&mut self, index: usize, name: String) {
@@ -127,7 +132,10 @@ impl AttributeRanks {
     }
     self.expertise_freeform[index].name = name.clone();
     let trimmed = name.trim();
-    match (index + 1 == self.expertise_freeform.len(), trimmed.is_empty()) {
+    match (
+      index + 1 == self.expertise_freeform.len(),
+      trimmed.is_empty(),
+    ) {
       (true, false) => {
         self.expertise_freeform.push(FreeformAttribute::empty());
       },
@@ -143,7 +151,9 @@ impl AttributeRanks {
     attribute.ranks = value;
   }
 
-  pub fn set_expertise_standard_specialization(&mut self, expertise: StandardExpertise, value: i32) {
+  pub fn set_expertise_standard_specialization(
+    &mut self, expertise: StandardExpertise, value: i32,
+  ) {
     let attribute = self.expertise_standard.entry(expertise).or_default();
     attribute.specialization = value;
   }
@@ -187,10 +197,14 @@ impl CharacterBuild {
 
   pub fn set_expertise_standard_ranks(&mut self, expertise: StandardExpertise, value: i32) {
     let level_selection = self.get_current_mut();
-    level_selection.attributes.set_expertise_starndard_ranks(expertise, value);
+    level_selection
+      .attributes
+      .set_expertise_starndard_ranks(expertise, value);
   }
 
-  pub fn set_expertise_standard_specialization(&mut self, expertise: StandardExpertise, value: i32) {
+  pub fn set_expertise_standard_specialization(
+    &mut self, expertise: StandardExpertise, value: i32,
+  ) {
     let level_selection = self.get_current_mut();
     level_selection
       .attributes
@@ -199,7 +213,9 @@ impl CharacterBuild {
 
   pub fn set_expertise_freeform_ranks(&mut self, index: usize, value: i32) {
     let level_selection = self.get_current_mut();
-    level_selection.attributes.set_expertise_freeform_ranks(index, value);
+    level_selection
+      .attributes
+      .set_expertise_freeform_ranks(index, value);
   }
 
   pub fn set_expertise_freeform_specialization(&mut self, index: usize, value: i32) {
@@ -211,7 +227,11 @@ impl CharacterBuild {
 
   pub fn set_resource_points(&mut self, resource: ResourcePool, value: i32) {
     let level_selection = self.get_current_mut();
-    let entry = level_selection.attributes.resources.entry(resource).or_default();
+    let entry = level_selection
+      .attributes
+      .resources
+      .entry(resource)
+      .or_default();
     *entry = value;
   }
 
@@ -338,10 +358,14 @@ impl CharacterBuild {
     let spec_max = modifiers.get(&ModifierClass::SpecializationMax);
     let (rank_leeway, spec_leeway, counters) = self.get_expertise_leeway(&modifiers);
     let level_selection = self.current_selection();
-    let expertise_standard_ranges = 
-      StandardExpertise::iter()
+    let expertise_standard_ranges = StandardExpertise::iter()
       .map(|expertise| {
-        let attribute = level_selection.attributes.expertise_standard.get(expertise).cloned().unwrap_or_default();
+        let attribute = level_selection
+          .attributes
+          .expertise_standard
+          .get(expertise)
+          .cloned()
+          .unwrap_or_default();
         let ranks = attribute.ranks;
         let spec = attribute.specialization;
         (
@@ -367,7 +391,11 @@ impl CharacterBuild {
         )
       })
       .collect();
-    return (expertise_standard_ranges, expertise_freeform_ranges, counters);
+    return (
+      expertise_standard_ranges,
+      expertise_freeform_ranges,
+      counters,
+    );
   }
 
   fn get_expertise_leeway(&self, modifiers: &ModifierSet) -> (i32, i32, Vec<Counter>) {
@@ -472,9 +500,9 @@ fn calculate_pool_ranges<'a, T: Iterator<Item = &'a (ModifierClass, ResourcePool
   flow_modifier: &ModifierClass, rank_modifier: &ModifierClass, rank_all_modifier: &ModifierClass,
   pool_iter: T,
 ) -> (
-    Vec<(Flow, i32, Vec<(ResourcePool, i32, Option<NumericRange>)>)>,
-    Vec<Counter>,
-  ) {
+  Vec<(Flow, i32, Vec<(ResourcePool, i32, Option<NumericRange>)>)>,
+  Vec<Counter>,
+) {
   let flow_size = modifiers.get(flow_modifier);
   if flow_size == 0 {
     return (Vec::new(), Vec::new());
@@ -533,7 +561,8 @@ fn calculate_pool_ranges<'a, T: Iterator<Item = &'a (ModifierClass, ResourcePool
 #[component]
 pub fn AttributeSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
   let (attribute_constraints, counters) = build_signal().get_attribute_constraints();
-  let (expertise_standard_constraints, expertise_freeform_constraints, expertise_counters) = build_signal().get_expertise_constraints();
+  let (expertise_standard_constraints, expertise_freeform_constraints, expertise_counters) =
+    build_signal().get_expertise_constraints();
   let (flows, flow_counters) = build_signal().get_flow_resource_selectors();
   return rsx! {
     SectionBar {
@@ -700,8 +729,8 @@ pub fn ExpertiseFreeformRow(
 
 #[component]
 pub fn FlowBlock(
-  mut build_signal: Signal<CharacterBuild>, 
-  flow: Flow, flow_size: i32, resource_pools: Vec<(ResourcePool, i32, Option<NumericRange>)>,
+  mut build_signal: Signal<CharacterBuild>, flow: Flow, flow_size: i32,
+  resource_pools: Vec<(ResourcePool, i32, Option<NumericRange>)>,
 ) -> Element {
   return rsx! {
     div {
@@ -717,10 +746,10 @@ pub fn FlowBlock(
 
 #[component]
 pub fn ResourceRow(
-  mut build_signal: Signal<CharacterBuild>, 
-  resource: ResourcePool, base_size: i32, range: Option<NumericRange>,
+  mut build_signal: Signal<CharacterBuild>, resource: ResourcePool, base_size: i32,
+  range: Option<NumericRange>,
 ) -> Element {
-  let total_pool = base_size + range.clone().map(|range|range.value).unwrap_or(0);
+  let total_pool = base_size + range.clone().map(|range| range.value).unwrap_or(0);
   return rsx! {
     div { class: "uv-first left", "{resource}" }
     div { "{total_pool}" }

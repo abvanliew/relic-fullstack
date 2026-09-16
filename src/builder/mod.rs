@@ -1,6 +1,6 @@
 mod build_attributes;
+mod build_development;
 mod build_features;
-mod build_growth;
 mod build_panel;
 mod build_paths;
 mod character_build;
@@ -11,10 +11,10 @@ use std::collections::HashSet;
 use bson::oid::ObjectId;
 pub use build_panel::CharacterBuildPanel;
 
-use crate::builder::build_growth::Development;
+use crate::builder::build_development::Development;
 
 use self::build_attributes::AttributeRanks;
-use self::character_build::{SkillRanks};
+use self::character_build::SkillRanks;
 
 #[derive(Debug, Clone, Default)]
 pub struct CharacterBuild {
