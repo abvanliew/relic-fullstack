@@ -276,6 +276,8 @@ pub struct Armor {
   bulk: Option<i32>,
   drag: Option<i32>,
   #[serde(default)]
+  durable: bool,
+  #[serde(default)]
   special_material: bool,
   #[serde(default)]
   elemental_resistance: bool,
@@ -337,6 +339,7 @@ pub fn ArmorEntry(armor: Armor, #[props(default)] display: EquipmentDisplay) -> 
   } else {
     None
   };
+  let durable_display= if armor.durable { Some("Durable".into()) } else { None };
   let elemental_resistance = if armor.elemental_resistance {
     Some("Elemental Resistance".to_string())
   } else {
@@ -346,6 +349,7 @@ pub fn ArmorEntry(armor: Armor, #[props(default)] display: EquipmentDisplay) -> 
     Some(weight.to_string()),
     bulk_display.clone(),
     drag_display.clone(),
+    durable_display.clone(),
     elemental_resistance.clone(),
   ]
   .into_iter()
@@ -371,6 +375,9 @@ pub fn ArmorEntry(armor: Armor, #[props(default)] display: EquipmentDisplay) -> 
         }
         if let Some( bulk_drag_display ) = bulk_drag_display {
           div { class: "uv-full", "{bulk_drag_display}" }
+        }
+        if let Some( durable_display ) = durable_display {
+          div { class: "uv-full", "{durable_display}" }
         }
       }
     },

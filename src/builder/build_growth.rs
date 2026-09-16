@@ -1,10 +1,9 @@
 use dioxus::prelude::*;
 
-use super::build_common::{Counter, CounterBadge, SectionBar};
+use super::common::{Counter, CounterBadge, SectionBar};
 use super::CharacterBuild;
 
 use crate::progression::prelude::{ TrainingClass, TrainingTable};
-
 
 #[derive(Debug, Clone, Default)]
 pub struct Development {
@@ -95,14 +94,13 @@ fn option_formater(title: String, value: &Option<i32>) -> Option<String> {
   };
 }
 
-
 #[component]
 pub fn GrowthGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
   let build = build_signal();
   let expand_signal: Signal<Option<TrainingClass>> = use_signal(|| None);
   let max = build.get_level();
-  let previous_training = build.get_previous_trainings();
-  let current_training = build.get_current_trainings();
+  let previous_training = build.get_previous_development();
+  let current_training = build.get_current_development();
   let summary = current_training.summary();
   let sum = current_training.sum();
   let total = build.get_training_ranks();
@@ -121,6 +119,9 @@ pub fn GrowthGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
       bar: rsx! {
         CounterBadge { counter }
         "{summary}"
+      },
+      explainer: rsx! {
+        div { "Each level characters gain development points which can be spent in one of six categories. These development points scale up hit points, attributes, specializations, flows and resource pools. You cannot spend more points in a give development than your current level. You can click on each one to see the table of bonuses they provide." }
       },
       div { "Bonuses: {modifiers}" }
       div {
@@ -155,7 +156,7 @@ pub fn TrainingSelector(
   let disabled = min == max_rank;
   return rsx! {
     div {
-      class: if expanded {"medium-border selected underhang align-center"} else {"thin-border minimal-background underhang align-center"},
+      class: if expanded {"medium-border selected underhang no-select align-center"} else {"thin-border minimal-background underhang no-select align-center"},
       onclick: move |event| {
         expand_signal.set(if expanded {None} else {Some(training_class.clone())});
         event.stop_propagation();

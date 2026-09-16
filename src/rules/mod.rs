@@ -26,6 +26,6 @@ pub(crate) mod prelude {
 
 mod internal {
   pub(super) use super::roll::{Outcome, OutcomeDetail, Roll, RollSnippet};
-  pub(super) use super::snippet::{RulesBlock, RulesSpippetDetail};
+  pub(super) use super::snippet::{RulesBlock, RulesSpippetDetail, rules_block_from_blurb};
   pub(super) use super::stat_block::StatBlockSnippet;
 }

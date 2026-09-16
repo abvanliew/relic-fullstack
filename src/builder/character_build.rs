@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
-use super::build_common::Counter;
+use super::common::Counter;
 
 use super::CharacterBuild;
 
@@ -208,7 +208,7 @@ impl CharacterBuild {
     return counters;
   }
 
-  pub fn get_previous_trainings(&self) -> Development {
+  pub fn get_previous_development(&self) -> Development {
     let mut previous_trainings = Development::default();
     for selections in self.previous_level_selections() {
       previous_trainings.extend(&selections.development);
@@ -216,8 +216,8 @@ impl CharacterBuild {
     return previous_trainings;
   }
 
-  pub fn get_current_trainings(&self) -> Development {
-    let mut previous_training = self.get_previous_trainings();
+  pub fn get_current_development(&self) -> Development {
+    let mut previous_training = self.get_previous_development();
     let Some(level_selection) = self.current_selection_ref() else {
       return previous_training;
     };
@@ -227,7 +227,7 @@ impl CharacterBuild {
 
   pub fn get_training_ranks(&self) -> i32 {
     let level_stats = LevelTrack::as_of(self.get_level());
-    return level_stats.get(&ModifierClass::GrowthRanks);
+    return level_stats.get(&ModifierClass::DevelopmentPoints);
   }
 
   pub fn set_training(&mut self, class: &TrainingClass, value: i32) {
@@ -236,7 +236,7 @@ impl CharacterBuild {
   }
 
   pub fn get_training_modifiers(&self) -> ModifierSet {
-    let trainings = self.get_current_trainings();
+    let trainings = self.get_current_development();
     let mut modifiers = ModifierSet::default();
     for class in TrainingClass::ordered() {
       modifiers.append(&GrowthTrack::class_at(&class, trainings.get(&class)));

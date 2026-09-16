@@ -3,7 +3,7 @@ use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
-use crate::rules::{internal::*, snippet::rules_block_from_blurb};
+use super::internal::*;
 
 pub type RuleSections = Vec<Section>;
 

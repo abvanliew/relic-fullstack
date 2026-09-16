@@ -19,7 +19,6 @@ ENV PATH="/.cargo/bin:$PATH"
 # Create the final bundle folder. Bundle with release build profile to enable optimizations.
 RUN dx bundle --web --release --debug-symbols=false
 
-
 RUN ldd /app/target/dx/relic-fullstack/release/web/relic-fullstack | \
     grep -o '/[^"]*' | \
     cut -d ' ' -f1 | \

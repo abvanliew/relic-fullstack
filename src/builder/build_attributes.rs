@@ -2,21 +2,24 @@ use std::collections::HashMap;
 
 use dioxus::prelude::*;
 
-use super::build_common::SectionBar;
+use super::common::SectionBar;
 use super::CharacterBuild;
 
-use crate::builder::build_common::{Counter, CounterBadge};
-use crate::character::prelude::CharacterAttribute;
+use crate::builder::common::{Counter, CounterBadge};
+use crate::builder::LevelSelections;
+use crate::character::prelude::{CharacterAttribute, Flow, StandardExpertise};
 use crate::common::{NumericInput, NumericRange};
 use crate::modifiers::{ModifierClass, ModifierSet};
 use crate::progression::component::ranks::RankDisplay;
 use crate::progression::fixed::BASE_DEFENSE;
 use crate::rules::components::Modifier;
 use crate::skill::prelude::ResourcePool;
+
 #[derive(Debug, Clone)]
 pub struct AttributeRanks {
   pub ranks: HashMap<CharacterAttribute, AttributeRank>,
-  pub expertise: Vec<(String, AttributeRank)>,
+  pub expertise_standard: HashMap<StandardExpertise, AttributeRank>,
+  pub expertise_freeform: Vec<FreeformAttribute>,
   pub resources: HashMap<ResourcePool, i32>,
 }
 
@@ -26,11 +29,24 @@ pub struct AttributeRank {
   pub specialization: i32,
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct FreeformAttribute {
+  pub name: String,
+  pub attribute: AttributeRank,
+}
+
+impl FreeformAttribute {
+  pub fn empty() -> Self {
+    Self { name: "".into(), attribute: AttributeRank::default() }
+  }
+}
+
 impl Default for AttributeRanks {
   fn default() -> Self {
     Self {
       ranks: Default::default(),
-      expertise: vec![("".into(), AttributeRank::default())],
+      expertise_standard: Default::default(),
+      expertise_freeform: vec![FreeformAttribute::empty()],
       resources: Default::default(),
     }
   }
@@ -82,48 +98,72 @@ impl AttributeRanks {
   }
 
   pub fn get_expertise_counts(&self) -> (i32, i32) {
-    let ranks = self
-      .expertise
+    let ranks_standard = self
+      .expertise_standard
       .iter()
-      .map(|expertise| expertise.1.ranks)
+      .map(|(_, expertise)| expertise.ranks)
       .sum::<i32>();
-    let spec = self
-      .expertise
+    let ranks_freeform = self
+      .expertise_freeform
       .iter()
-      .map(|expertise| expertise.1.specialization)
+      .map(|expertise| expertise.attribute.ranks)
       .sum::<i32>();
-    (ranks, spec)
+    let spec_standard = self
+      .expertise_standard
+      .iter()
+      .map(|(_, expertise)| expertise.specialization)
+      .sum::<i32>();
+    let spec_freeform = self
+      .expertise_freeform
+      .iter()
+      .map(|expertise| expertise.attribute.specialization)
+      .sum::<i32>();
+    (ranks_standard + ranks_freeform, spec_standard + spec_freeform)
   }
 
   pub fn set_expertise_name(&mut self, index: usize, name: String) {
-    if index > self.expertise.len() {
+    if index > self.expertise_freeform.len() {
       return;
     }
-    self.expertise[index].0 = name.clone();
+    self.expertise_freeform[index].name = name.clone();
     let trimmed = name.trim();
-    match (index + 1 == self.expertise.len(), trimmed.is_empty()) {
+    match (index + 1 == self.expertise_freeform.len(), trimmed.is_empty()) {
       (true, false) => {
-        self.expertise.push(("".into(), AttributeRank::default()));
+        self.expertise_freeform.push(FreeformAttribute::empty());
       },
       (false, true) => {
-        self.expertise.remove(index);
+        self.expertise_freeform.remove(index);
       },
       _ => (),
     }
   }
 
-  pub fn set_expertise_ranks(&mut self, index: usize, value: i32) {
-    if index > self.expertise.len() {
-      return;
-    }
-    self.expertise[index].1.ranks = value;
+  pub fn set_expertise_starndard_ranks(&mut self, expertise: StandardExpertise, value: i32) {
+    let attribute = self.expertise_standard.entry(expertise).or_default();
+    attribute.ranks = value;
   }
 
-  pub fn set_expertise_specialization(&mut self, index: usize, value: i32) {
-    if index > self.expertise.len() {
+  pub fn set_expertise_standard_specialization(&mut self, expertise: StandardExpertise, value: i32) {
+    let attribute = self.expertise_standard.entry(expertise).or_default();
+    attribute.specialization = value;
+  }
+
+  pub fn set_expertise_freeform_ranks(&mut self, index: usize, value: i32) {
+    if index > self.expertise_freeform.len() {
       return;
     }
-    self.expertise[index].1.specialization = value;
+    self.expertise_freeform[index].attribute.ranks = value;
+  }
+
+  pub fn set_expertise_freeform_specialization(&mut self, index: usize, value: i32) {
+    if index > self.expertise_freeform.len() {
+      return;
+    }
+    self.expertise_freeform[index].attribute.specialization = value;
+  }
+
+  pub fn get_resource_ranks(&self, resource: &ResourcePool) -> i32 {
+    return self.resources.get(resource).copied().unwrap_or(0);
   }
 }
 
@@ -145,14 +185,34 @@ impl CharacterBuild {
     level_selection.attributes.set_expertise_name(index, name);
   }
 
-  pub fn set_expertise_ranks(&mut self, index: usize, value: i32) {
+  pub fn set_expertise_standard_ranks(&mut self, expertise: StandardExpertise, value: i32) {
     let level_selection = self.get_current_mut();
-    level_selection.attributes.set_expertise_ranks(index, value);
+    level_selection.attributes.set_expertise_starndard_ranks(expertise, value);
   }
 
-  pub fn set_expertise_specialization(&mut self, index: usize, value: i32) {
+  pub fn set_expertise_standard_specialization(&mut self, expertise: StandardExpertise, value: i32) {
     let level_selection = self.get_current_mut();
-    level_selection.attributes.set_expertise_specialization(index, value);
+    level_selection
+      .attributes
+      .set_expertise_standard_specialization(expertise, value);
+  }
+
+  pub fn set_expertise_freeform_ranks(&mut self, index: usize, value: i32) {
+    let level_selection = self.get_current_mut();
+    level_selection.attributes.set_expertise_freeform_ranks(index, value);
+  }
+
+  pub fn set_expertise_freeform_specialization(&mut self, index: usize, value: i32) {
+    let level_selection = self.get_current_mut();
+    level_selection
+      .attributes
+      .set_expertise_freeform_specialization(index, value);
+  }
+
+  pub fn set_resource_points(&mut self, resource: ResourcePool, value: i32) {
+    let level_selection = self.get_current_mut();
+    let entry = level_selection.attributes.resources.entry(resource).or_default();
+    *entry = value;
   }
 
   fn get_current_attribute_counts(&self) -> (i32, i32) {
@@ -269,6 +329,7 @@ impl CharacterBuild {
   pub fn get_expertise_constraints(
     &self,
   ) -> (
+    Vec<(StandardExpertise, NumericRange, NumericRange)>,
     Vec<(usize, String, NumericRange, NumericRange)>,
     Vec<Counter>,
   ) {
@@ -277,23 +338,36 @@ impl CharacterBuild {
     let spec_max = modifiers.get(&ModifierClass::SpecializationMax);
     let (rank_leeway, spec_leeway, counters) = self.get_expertise_leeway(&modifiers);
     let level_selection = self.current_selection();
-    let expertise_ranges = level_selection
-      .attributes
-      .expertise
-      .iter()
-      .enumerate()
-      .map(|(index, (title, expertise))| {
-        let ranks = expertise.ranks;
-        let spec = expertise.specialization;
+    let expertise_standard_ranges = 
+      StandardExpertise::iter()
+      .map(|expertise| {
+        let attribute = level_selection.attributes.expertise_standard.get(expertise).cloned().unwrap_or_default();
+        let ranks = attribute.ranks;
+        let spec = attribute.specialization;
         (
-          index,
-          title.clone(),
+          expertise.clone(),
           NumericRange::new(0, ranks, rank_max.min(ranks + rank_leeway)),
           NumericRange::new(0, spec, spec_max.min(spec + spec_leeway)),
         )
       })
       .collect();
-    return (expertise_ranges, counters);
+    let expertise_freeform_ranges = level_selection
+      .attributes
+      .expertise_freeform
+      .iter()
+      .enumerate()
+      .map(|(index, expertise)| {
+        let ranks = expertise.attribute.ranks;
+        let spec = expertise.attribute.specialization;
+        (
+          index,
+          expertise.name.clone(),
+          NumericRange::new(0, ranks, rank_max.min(ranks + rank_leeway)),
+          NumericRange::new(0, spec, spec_max.min(spec + spec_leeway)),
+        )
+      })
+      .collect();
+    return (expertise_standard_ranges, expertise_freeform_ranges, counters);
   }
 
   fn get_expertise_leeway(&self, modifiers: &ModifierSet) -> (i32, i32, Vec<Counter>) {
@@ -318,50 +392,191 @@ impl CharacterBuild {
     }
     return (rank_leeway, spec_leeway, counters);
   }
+
+  pub fn get_innate_pool_ranges(
+    &self, modifiers: &ModifierSet, level_selection: &LevelSelections,
+  ) -> (
+    Vec<(Flow, i32, Vec<(ResourcePool, i32, Option<NumericRange>)>)>,
+    Vec<Counter>,
+  ) {
+    return calculate_pool_ranges(
+      modifiers,
+      level_selection,
+      Flow::Innate,
+      &ModifierClass::InnateFlow,
+      &ModifierClass::InnatePool,
+      &ModifierClass::InnatePoolAll,
+      ModifierClass::innate_pool_iter(),
+    );
+  }
+
+  pub fn get_resonance_pool_ranges(
+    &self, modifiers: &ModifierSet, level_selection: &LevelSelections,
+  ) -> (
+    Vec<(Flow, i32, Vec<(ResourcePool, i32, Option<NumericRange>)>)>,
+    Vec<Counter>,
+  ) {
+    return calculate_pool_ranges(
+      modifiers,
+      level_selection,
+      Flow::Resonance,
+      &ModifierClass::ResonanceFlow,
+      &ModifierClass::ResonancePool,
+      &ModifierClass::ResonancePoolAll,
+      ModifierClass::resonance_pool_iter(),
+    );
+  }
+
+  pub fn get_magic_pool_ranges(
+    &self, modifiers: &ModifierSet, level_selection: &LevelSelections,
+  ) -> (
+    Vec<(Flow, i32, Vec<(ResourcePool, i32, Option<NumericRange>)>)>,
+    Vec<Counter>,
+  ) {
+    return calculate_pool_ranges(
+      modifiers,
+      level_selection,
+      Flow::Magic,
+      &ModifierClass::MagicFlow,
+      &ModifierClass::ManaPool,
+      &ModifierClass::ManaPoolAll,
+      ModifierClass::magic_pool_iter(),
+    );
+  }
+
+  pub fn get_flow_resource_selectors(
+    &self,
+  ) -> (
+    Vec<(Flow, i32, Vec<(ResourcePool, i32, Option<NumericRange>)>)>,
+    Vec<Counter>,
+  ) {
+    let modifiers = self.get_current_modifiers();
+    let level_selection = self.current_selection();
+    let mut flows = Vec::new();
+    let mut counters = Vec::new();
+    let ranges_by_flow = [
+      self.get_innate_pool_ranges(&modifiers, &level_selection),
+      self.get_resonance_pool_ranges(&modifiers, &level_selection),
+      self.get_magic_pool_ranges(&modifiers, &level_selection),
+    ];
+    for (flow, counter) in ranges_by_flow {
+      flows.extend(flow);
+      counters.extend(counter);
+    }
+    return (flows, counters);
+  }
 }
 
-// ModifierClass::AnointmentPool
-// ModifierClass::AnimismPool
-// ModifierClass::SanguinePool
-// ModifierClass::RagePool
-// ModifierClass::InnatePool
-// ModifierClass::InnatePoolAll
-// ModifierClass::InnateFlow
-
-// ModifierClass::MasteryPool
-// ModifierClass::ChannelPool
-// ModifierClass::KiPool
-// ModifierClass::VirtuosoPool
-// ModifierClass::ResonancePool
-// ModifierClass::ResonancePoolAll
-// ModifierClass::ResonanceFlow
-
-// ModifierClass::ManaPoolMinor
-// ModifierClass::ManaPoolModerate
-// ModifierClass::ManaPoolMajor
-// ModifierClass::MagicFlow
+fn calculate_pool_ranges<'a, T: Iterator<Item = &'a (ModifierClass, ResourcePool)>>(
+  modifiers: &ModifierSet, level_selection: &LevelSelections, flow: Flow,
+  flow_modifier: &ModifierClass, rank_modifier: &ModifierClass, rank_all_modifier: &ModifierClass,
+  pool_iter: T,
+) -> (
+    Vec<(Flow, i32, Vec<(ResourcePool, i32, Option<NumericRange>)>)>,
+    Vec<Counter>,
+  ) {
+  let flow_size = modifiers.get(flow_modifier);
+  if flow_size == 0 {
+    return (Vec::new(), Vec::new());
+  }
+  let pool_ranks = modifiers.get(rank_modifier);
+  let pool_ranks_all = modifiers.get(rank_all_modifier);
+  let mut current_ranks = 0;
+  let mut pools: Vec<_> = pool_iter
+    .filter_map(|(resource_modifier, resource)| {
+      let starting_pool = modifiers.get(resource_modifier);
+      match starting_pool > 0 {
+        true => {
+          let assigned_ranks = level_selection.attributes.get_resource_ranks(resource);
+          current_ranks += assigned_ranks;
+          Some((
+            resource.to_owned(),
+            starting_pool + pool_ranks_all,
+            assigned_ranks,
+          ))
+        },
+        false => None,
+      }
+    })
+    .collect();
+  if pools.len() == 1 {
+    pools[0].1 += pool_ranks;
+    pools[0].2 = 0;
+  }
+  let counters = if pools.len() <= 1 || pool_ranks == 0 {
+    Vec::new()
+  } else {
+    vec![Counter {
+      title: flow.to_string(),
+      current: current_ranks,
+      max: pool_ranks,
+      ..Default::default()
+    }]
+  };
+  let leeway = pool_ranks - current_ranks;
+  let pool_selection_ranges: Vec<_> = pools
+    .iter()
+    .map(|(resource, base_size, ranks)| {
+      (
+        resource.clone(),
+        *base_size,
+        match counters.len() > 0 {
+          true => Some(NumericRange::new(0, *ranks, ranks + leeway)),
+          false => None,
+        },
+      )
+    })
+    .collect();
+  return (vec![(flow, flow_size, pool_selection_ranges)], counters);
+}
 
 #[component]
 pub fn AttributeSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
   let (attribute_constraints, counters) = build_signal().get_attribute_constraints();
-  let (expertise_constraints, expertise_counters) = build_signal().get_expertise_constraints();
+  let (expertise_standard_constraints, expertise_freeform_constraints, expertise_counters) = build_signal().get_expertise_constraints();
+  let (flows, flow_counters) = build_signal().get_flow_resource_selectors();
   return rsx! {
     SectionBar {
       title: "Attributes",
       bar: rsx! {
         for counter in counters { CounterBadge{ counter } }
         for counter in expertise_counters { CounterBadge{ counter } }
+        for counter in flow_counters { CounterBadge{ counter } }
+      },
+      explainer: rsx! {
+        div {
+          "You have a pool of ranks to distributed between Capabilities and Defenses. Depending on your level the number of ranks you can distribute to your attributes is capped. Depeding on your Development choices you might gain some specialization ranks. Each attribute can have at most 1 specialization rank per tier of the character. Specialization ranks counts towards attribute requirements as well granting the flat bonuses."
+        }
       },
       div {
-        class: "grid dim-resource-chart",
-        div { class: "uv-second", "Total" }
-        div { "Ranks" }
-        div { "Spec" }
+        class: "grid dim-resource-chart padded-grid",
+        div { class: "subtitle spacer left", "Capabilities" }
+        div { class: "uv-third sink", "Ranks" }
+        div { class: "sink", "Spec" }
         for (attribute, rank_range, spec_range) in attribute_constraints {
+          if attribute == CharacterAttribute::Fortitude {
+            div { class: "spacer subtitle left", "Defenses" }
+          div { class: "uv-third sink", "Ranks" }
+          div { class: "sink", "Spec" }
+          }
           AttributeRow{build_signal, attribute, rank_range, spec_range}
         }
-        for (index, title, rank_range, spec_range) in expertise_constraints {
-          ExpertiseRow {build_signal, index, title, rank_range, spec_range}
+        div { class: "spacer subtitle left", "Expertise" }
+        div { class: "uv-third sink", "Ranks" }
+        div { class: "sink", "Spec" }
+        for (expertise, rank_range, spec_range) in expertise_standard_constraints {
+          ExpertiseStandardRow {build_signal, expertise, rank_range, spec_range}
+        }
+        for (index, title, rank_range, spec_range) in expertise_freeform_constraints {
+          ExpertiseFreeformRow {build_signal, index, title, rank_range, spec_range}
+        }
+      }
+      if flows.len() > 0 {
+        div { class: "subtitle", "Flows & Resources" }
+      }
+      for (flow, flow_size, resource_pools) in flows {
+        FlowBlock {
+          build_signal, flow, flow_size, resource_pools
         }
       }
     }
@@ -370,8 +585,8 @@ pub fn AttributeSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
 
 #[component]
 pub fn RankSpecializtionRow(
-  title: Element, total: Element, rank_range: NumericRange,
-  rank_handler: Callback<i32>, spec_range: NumericRange, spec_handler: Callback<i32>,
+  title: Element, total: Element, rank_range: NumericRange, rank_handler: Callback<i32>,
+  spec_range: NumericRange, spec_handler: Callback<i32>,
 ) -> Element {
   return rsx! {
     { title }
@@ -402,7 +617,7 @@ pub fn AttributeRow(
   };
   return rsx! {
     RankSpecializtionRow {
-      title: rsx! { div { "{attribute}" } },
+      title: rsx! { div { class: "left", "{attribute}" } },
       total: match &display {
         RankDisplay::Bonus => rsx! { div { Modifier { value } } },
         RankDisplay::Defense => rsx! { div { "{value}" } },
@@ -423,17 +638,41 @@ pub fn AttributeRow(
 }
 
 #[component]
-pub fn ExpertiseRow(
-  mut build_signal: Signal<CharacterBuild>, index: usize,
-  title: String,
-  rank_range: NumericRange, spec_range: NumericRange,
+pub fn ExpertiseStandardRow(
+  mut build_signal: Signal<CharacterBuild>, expertise: StandardExpertise, rank_range: NumericRange,
+  spec_range: NumericRange,
+) -> Element {
+  let value = rank_range.value + spec_range.value;
+  return rsx! {
+    RankSpecializtionRow {
+      title: rsx! { div { "{expertise}" } },
+      total: rsx! { div { Modifier { value } } },
+      rank_range, spec_range,
+      rank_handler: move |value: i32| {
+        let mut new_build = build_signal();
+        new_build.set_expertise_standard_ranks(expertise, value);
+        build_signal.set(new_build);
+      },
+      spec_handler: move |value: i32| {
+        let mut new_build = build_signal();
+        new_build.set_expertise_standard_specialization(expertise, value);
+        build_signal.set(new_build);
+      }
+    }
+  };
+}
+
+#[component]
+pub fn ExpertiseFreeformRow(
+  mut build_signal: Signal<CharacterBuild>, index: usize, title: String, rank_range: NumericRange,
+  spec_range: NumericRange,
 ) -> Element {
   let value = rank_range.value + spec_range.value;
   return rsx! {
     RankSpecializtionRow {
       title: rsx! {
         input {
-          class: "input full",
+          class: "input full left",
           value: "{title}",
           oninput: move |event| {
             event.stop_propagation();
@@ -447,13 +686,53 @@ pub fn ExpertiseRow(
       rank_range, spec_range,
       rank_handler: move |value: i32| {
         let mut new_build = build_signal();
-        new_build.set_expertise_ranks(index, value);
+        new_build.set_expertise_freeform_ranks(index, value);
         build_signal.set(new_build);
       },
       spec_handler: move |value: i32| {
         let mut new_build = build_signal();
-        new_build.set_expertise_specialization(index, value);
+        new_build.set_expertise_freeform_specialization(index, value);
         build_signal.set(new_build);
+      }
+    }
+  };
+}
+
+#[component]
+pub fn FlowBlock(
+  mut build_signal: Signal<CharacterBuild>, 
+  flow: Flow, flow_size: i32, resource_pools: Vec<(ResourcePool, i32, Option<NumericRange>)>,
+) -> Element {
+  return rsx! {
+    div {
+      class: "grid dim-resource-chart padded-grid",
+      div { class: "highlight left", "{flow}" }
+      div { class: "highlight", "{flow_size}" }
+      for (resource, base_size, range) in resource_pools {
+        ResourceRow { build_signal, resource, base_size, range }
+      }
+    }
+  };
+}
+
+#[component]
+pub fn ResourceRow(
+  mut build_signal: Signal<CharacterBuild>, 
+  resource: ResourcePool, base_size: i32, range: Option<NumericRange>,
+) -> Element {
+  let total_pool = base_size + range.clone().map(|range|range.value).unwrap_or(0);
+  return rsx! {
+    div { class: "uv-first left", "{resource}" }
+    div { "{total_pool}" }
+    if let Some(range) = range {
+      NumericInput {
+        class: "input big-text bumper",
+        range: range,
+        value_handler: move |value: i32| {
+          let mut new_build = build_signal();
+          new_build.set_resource_points(resource.clone(), value);
+          build_signal.set(new_build);
+        }
       }
     }
   };

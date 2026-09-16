@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 use super::CharacterBuild;
-use super::build_common::{SectionBar};
+use super::common::{SectionBar};
 use super::build_features::FeatureGroup;
 
 use crate::builder::build_attributes::AttributeSelector;
@@ -22,7 +22,6 @@ pub fn CharacterBuildPanel() -> Element {
       GrowthGroup { build_signal }
       FeatureGroup { build_signal }
       AttributeSelector { build_signal }
-      EquipmentSelector { build_signal }
     }
   };
 }
@@ -30,41 +29,48 @@ pub fn CharacterBuildPanel() -> Element {
 #[component]
 pub fn CharacterGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
   let level = build_signal().get_level();
-  let mut name = use_signal(String::new);
+  let name = build_signal().get_character_name();
+  let name_display = if name.trim().is_empty() { "---".into() } else { name.clone() };
   rsx! {
     SectionBar {
       title: "Character",
       bar: rsx! {
+        "{name_display} Lvl {level}"
       },
       div {
-        class: "row compact-badge indent-small padding tertiary",
-        span { class: "highlight bumper-small", "Name" }
-        input {
-          class: "input full",
-          value: "{name}",
-          oninput: move |event| {
-            event.stop_propagation();
-            name.set(event.value());
+        class: "row-wrap",
+        div {
+          class: "middle thin-border fit-width minimal-background",
+          span { class: "highlight bumper", "Level" }
+          select {
+            class: "big-text",
+            autocomplete: "off",
+            onclick: move |event| { event.stop_propagation(); },
+            onchange: move |event| {
+              let mut new_build = build_signal().clone();
+              let new_level = event.value().parse::<i32>().ok().unwrap_or(MIN_LEVEL).max(MIN_LEVEL).min(MAX_LEVEL);
+              if new_level != level {
+                new_build.set_level(new_level);
+                build_signal.set(new_build);
+              }
+            },
+            for lvl in MIN_LEVEL..=MAX_LEVEL {
+              option { value: lvl, label: lvl, selected: level == lvl, }
+            }
           }
         }
-      }
-      div {
-        class: "compact-badge indent-small padding tertiary",
-        span { class: "highlight bumper-small", "Level" }
-        select {
-          class: "big-text",
-          autocomplete: "off",
-          onclick: move |event| { event.stop_propagation(); },
-          onchange: move |event| {
-            let mut new_build = build_signal().clone();
-            let new_level = event.value().parse::<i32>().ok().unwrap_or(MIN_LEVEL).max(MIN_LEVEL).min(MAX_LEVEL);
-            if new_level != level {
-              new_build.set_level(new_level);
+        div {
+          class: "middle thin-border fit-width minimal-background",
+          span { class: "highlight bumper", "Name" }
+          input {
+            class: "input fixed-title-width-large left",
+            value: "{name}",
+            oninput: move |event| {
+              event.stop_propagation();
+              let mut new_build = build_signal();
+              new_build.set_character_name(event.value());
               build_signal.set(new_build);
             }
-          },
-          for lvl in MIN_LEVEL..=MAX_LEVEL {
-            option { value: lvl, label: lvl, selected: level == lvl, }
           }
         }
       }

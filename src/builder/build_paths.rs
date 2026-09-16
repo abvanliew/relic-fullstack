@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
-use super::build_common::{CounterBadge, FilterButton, SectionBar, Interactible, interaction};
+use super::common::{CounterBadge, FilterButton, SectionBar, Interactible, interaction};
 use super::CharacterBuild;
 
 use crate::asset::icon::{IMG_SELECTED, IMG_UNSELECTED};
@@ -143,6 +143,6 @@ pub fn PathSelector(
 pub fn PathSelectionExplainer() -> Element {
   return rsx! {
     div { "Paths are central to each character, they provide a number of Keystone features that are granted to anyone on the path and then provide a pool of features you can choose from. These features range from Skills, Spells or additional flat bonuses." }
-    div { "Each character has to select at least one path at character creation and when starting a new tier (levels 7 and 13). You can gain additional paths up to a maximum value listed on the level chart. Picking additional Paths requires you to spent features." }
+    div { "Each character has to select at least one path at character creation and when starting a new tier (levels 7 and 13). You can gain additional paths up to a maximum value listed on the level chart. If you do not select optional paths you gain more features to spend on your other paths." }
   };
 }

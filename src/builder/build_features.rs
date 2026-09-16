@@ -3,9 +3,9 @@ use std::collections::HashSet;
 use dioxus::prelude::*;
 
 use super::CharacterBuild;
-use super::build_common::{CollapsibleSection, CounterBadge, FilterButton, SectionBar};
+use super::common::{CounterBadge, FilterButton, SectionBar};
 
-use crate::common::{StaggeredCell, StaggeredGrid};
+use crate::common::{CollapsibleHeader, StaggeredCell, StaggeredGrid};
 use crate::skill::prelude::*;
 
 use crate::server::prelude::SkillCache;
@@ -58,9 +58,9 @@ pub fn FeatureGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
       }
       for (training, skill_ranges) in partitioned_skill_ranks {
         if skill_ranges.len() > 0 {
-          CollapsibleSection {
+          CollapsibleHeader {
             class: "dotted-underline heavier slightlight",
-            section: rsx! { "{training}s" },
+            header: rsx! { "{training}s" },
             StaggeredGrid {
               class: "stg-large",
               for (skill, range) in skill_ranges {

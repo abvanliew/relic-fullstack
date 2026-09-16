@@ -50,7 +50,7 @@ impl CharacterAttribute {
     ];
   }
 
-  pub fn iter<'a>() -> impl Iterator<Item = &'a CharacterAttribute> {
+  pub fn iter<'a>() -> impl Iterator<Item = &'a Self> {
     return [
       CharacterAttribute::Physique,
       CharacterAttribute::Warfare,
@@ -63,7 +63,7 @@ impl CharacterAttribute {
     ].iter();
   }
 
-  pub fn capability_iter<'a>() -> impl Iterator<Item = &'a CharacterAttribute> {
+  pub fn capability_iter<'a>() -> impl Iterator<Item = &'a Self> {
     return [
       CharacterAttribute::Physique,
       CharacterAttribute::Warfare,
@@ -72,7 +72,7 @@ impl CharacterAttribute {
     ].iter();
   }
 
-  pub fn defense_iter<'a>() -> impl Iterator<Item = &'a CharacterAttribute> {
+  pub fn defense_iter<'a>() -> impl Iterator<Item = &'a Self> {
     return [
       CharacterAttribute::Fortitude,
       CharacterAttribute::Resolve,

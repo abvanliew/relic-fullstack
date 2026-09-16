@@ -5,7 +5,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::modifiers::prelude::Bonus;
+use crate::{modifiers::prelude::Bonus, skill::prelude::ResourcePool};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Eq, Default)]
 pub struct ModifierSet(HashMap<ModifierClass, Bonus<i32>>);
@@ -76,27 +76,60 @@ pub enum ModifierClass {
   JourneymanPathOptional,
   MasterPathRequired,
   MasterPathOptional,
-  GrowthRanks,
+  DevelopmentPoints,
   WalkingSpeed,
   DashSpeed,
-  AnointmentPool,
   AnimismPool,
-  SanguinePool,
+  AnointmentPool,
   RagePool,
+  SanguinePool,
   InnatePool,
   InnatePoolAll,
   InnateFlow,
-  MasteryPool,
   ChannelPool,
   KiPool,
+  MasteryPool,
   VirtuosoPool,
   ResonancePool,
   ResonancePoolAll,
   ResonanceFlow,
+  ManaPool,
+  ManaPoolAll,
   ManaPoolMinor,
   ManaPoolModerate,
   ManaPoolMajor,
   MagicFlow,
+}
+
+impl ModifierClass {
+  pub fn innate_pool_iter<'a>() -> impl Iterator<Item = &'a (Self, ResourcePool)> {
+    return [
+      (Self::AnimismPool, ResourcePool::Animism),
+      (Self::AnointmentPool, ResourcePool::Anointment),
+      (Self::RagePool, ResourcePool::Rage),
+      (Self::VirtuosoPool, ResourcePool::Sanguine),
+    ]
+    .iter();
+  }
+
+  pub fn resonance_pool_iter<'a>() -> impl Iterator<Item = &'a (Self, ResourcePool)> {
+    return [
+      (Self::ChannelPool, ResourcePool::Channel),
+      (Self::KiPool, ResourcePool::Ki),
+      (Self::MasteryPool, ResourcePool::Mastery),
+      (Self::VirtuosoPool, ResourcePool::Virtuoso),
+    ]
+    .iter();
+  }
+
+  pub fn magic_pool_iter<'a>() -> impl Iterator<Item = &'a (Self, ResourcePool)> {
+    return [
+      (Self::ManaPoolMinor, ResourcePool::MinorMana),
+      (Self::ManaPoolModerate, ResourcePool::ModerateMana),
+      (Self::ManaPoolMajor, ResourcePool::MajorMana),
+    ]
+    .iter();
+  }
 }
 
 pub mod prelude {

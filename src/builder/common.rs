@@ -90,7 +90,7 @@ pub fn SectionBar(
         display_section.set(!display_section());
       },
       div {
-        class: "row fixed-title-width",
+        class: "row fixed-title-width-medium",
         div { class: "heavier no-select", "{title}" }
         if explainer.is_some() {
           div {
@@ -111,25 +111,12 @@ pub fn SectionBar(
       div { class: "section", {bar} }
     }
     if display_section() {
-      if display_explainer() { {explainer.unwrap_or(rsx! {})} }
-      {children}
-    }
-  };
-}
-
-#[component]
-pub fn CollapsibleSection(class: String, section: Element, children: Element) -> Element {
-  let mut display = use_signal(|| true);
-  return rsx! {
-    div {
-      class,
-      onclick: move |event| {
-        event.stop_propagation();
-        display.set(!display());
-      },
-      {section}
-    }
-    if display() {
+      if display_explainer() {
+        div {
+          class: "column gap explainer",
+          {explainer.unwrap_or(rsx! {})}
+        }
+      }
       {children}
     }
   };
@@ -152,7 +139,7 @@ pub fn CounterBadge(counter: Counter) -> Element {
   };
   return rsx! {
     div {
-      class: "compact-badge column align-center small-text {extra_class}",
+      class: "compact-badge no-select column align-center small-text {extra_class}",
       div { "{title}" }
       div { "{term} / {max}" }
     }
@@ -171,7 +158,7 @@ where
   let selected = filter_set.contains(&value);
   return rsx! {
     div {
-      class: "row",
+      class: "row no-select",
       div {
         class: if selected { "medium-border selected" } else { "thin-border minimal-background" },
         onclick: move |event| {

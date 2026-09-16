@@ -55,8 +55,8 @@ pub fn LevelRow(
   
   let expertises = total.get(&ModifierClass::ExpertiseRank);
   let expertises_net = net.get(&ModifierClass::ExpertiseRank);
-  let growth = total.get(&ModifierClass::GrowthRanks);
-  let growth_net = net.get(&ModifierClass::GrowthRanks);
+  let growth = total.get(&ModifierClass::DevelopmentPoints);
+  let growth_net = net.get(&ModifierClass::DevelopmentPoints);
   let path_initiate_required = net.get(&ModifierClass::InitiatePathRequired);
   let path_initiate_optional = net.get(&ModifierClass::InitiatePathOptional);
   let path_initiate_max = path_initiate_required + path_initiate_optional;

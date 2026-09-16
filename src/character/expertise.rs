@@ -1,8 +1,44 @@
+use std::fmt::{Display, Formatter, Result};
+
 use crate::rules::components::Modifier;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use super::components::AttributeRow;
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum StandardExpertise {
+  Arcana,
+  Engineering,
+  History,
+  Medicine,
+  Nature,
+  Politics,
+  Religion,
+  Survival,
+}
+
+impl Display for StandardExpertise {
+  fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+    write!(f, "{:?}", self)
+  }
+}
+
+impl StandardExpertise {
+  pub fn iter<'a>() -> impl Iterator<Item = &'a Self> {
+    return [
+      Self::Arcana,
+      Self::Engineering,
+      Self::History,
+      Self::Medicine,
+      Self::Nature,
+      Self::Politics,
+      Self::Religion,
+      Self::Survival,
+    ].iter();
+  }
+}
+
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]

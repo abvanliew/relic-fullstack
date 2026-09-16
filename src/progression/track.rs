@@ -80,7 +80,7 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::CapabilityRank, 8),
       (ModifierClass::DefenseRank, 8),
       (ModifierClass::ExpertiseRank, 20),
-      (ModifierClass::GrowthRanks, 1),
+      (ModifierClass::DevelopmentPoints, 1),
       (ModifierClass::WalkingSpeed, 6),
       (ModifierClass::DashSpeed, 3),
     ]),
@@ -92,7 +92,7 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::InitiatePathOptional, 1),
       (ModifierClass::AttributeRank, 1),
       (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 2),
+      (ModifierClass::DevelopmentPoints, 2),
     ]),
     // Level 3
     ModifierSet::from_bonuses(vec![
@@ -101,8 +101,8 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::InitiatePathMax, 1),
       (ModifierClass::InitiatePathOptional, 1),
       (ModifierClass::AttributeRank, 1),
-      (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 1),
+      (ModifierClass::ExpertiseRank, 1),
+      (ModifierClass::DevelopmentPoints, 1),
     ]),
     // Level 4
     ModifierSet::from_bonuses(vec![
@@ -111,7 +111,7 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::RankMax, 1),
       (ModifierClass::AttributeRank, 2),
       (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 2),
+      (ModifierClass::DevelopmentPoints, 2),
     ]),
     // Level 5
     ModifierSet::from_bonuses(vec![
@@ -120,15 +120,15 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::MinorFeature, 1),
       (ModifierClass::AttributeRank, 1),
       (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 1),
+      (ModifierClass::DevelopmentPoints, 1),
     ]),
     // Level 6
     ModifierSet::from_bonuses(vec![
       (ModifierClass::HP, 2),
       (ModifierClass::Feature, 1),
       (ModifierClass::AttributeRank, 1),
-      (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 2),
+      (ModifierClass::ExpertiseRank, 1),
+      (ModifierClass::DevelopmentPoints, 2),
     ]),
     // Level 7
     ModifierSet::from_bonuses(vec![
@@ -140,7 +140,7 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::SpecializationMax, 1),
       (ModifierClass::AttributeRank, 2),
       (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 1),
+      (ModifierClass::DevelopmentPoints, 1),
     ]),
     // Level 8
     ModifierSet::from_bonuses(vec![
@@ -150,7 +150,7 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::MinorFeature, 1),
       (ModifierClass::AttributeRank, 1),
       (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 2),
+      (ModifierClass::DevelopmentPoints, 2),
     ]),
     // Level 9
     ModifierSet::from_bonuses(vec![
@@ -158,8 +158,8 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::JourneymanPathOptional, 1),
       (ModifierClass::Feature, 1),
       (ModifierClass::AttributeRank, 1),
-      (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 1),
+      (ModifierClass::ExpertiseRank, 1),
+      (ModifierClass::DevelopmentPoints, 1),
     ]),
     // Level 10
     ModifierSet::from_bonuses(vec![
@@ -168,7 +168,7 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::RankMax, 1),
       (ModifierClass::AttributeRank, 2),
       (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 2),
+      (ModifierClass::DevelopmentPoints, 2),
     ]),
     // Level 11
     ModifierSet::from_bonuses(vec![
@@ -177,15 +177,15 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::MinorFeature, 1),
       (ModifierClass::AttributeRank, 1),
       (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 1),
+      (ModifierClass::DevelopmentPoints, 1),
     ]),
     // Level 12
     ModifierSet::from_bonuses(vec![
       (ModifierClass::HP, 2),
       (ModifierClass::Feature, 1),
       (ModifierClass::AttributeRank, 1),
-      (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 2),
+      (ModifierClass::ExpertiseRank, 1),
+      (ModifierClass::DevelopmentPoints, 2),
     ]),
     // Level 13
     ModifierSet::from_bonuses(vec![
@@ -197,7 +197,7 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::SpecializationMax, 1),
       (ModifierClass::AttributeRank, 2),
       (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 1),
+      (ModifierClass::DevelopmentPoints, 1),
     ]),
     // Level 14
     ModifierSet::from_bonuses(vec![
@@ -207,15 +207,15 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::MinorFeature, 1),
       (ModifierClass::AttributeRank, 1),
       (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 2),
+      (ModifierClass::DevelopmentPoints, 2),
     ]),
     // Level 15
     ModifierSet::from_bonuses(vec![
       (ModifierClass::HP, 2),
       (ModifierClass::Feature, 1),
       (ModifierClass::AttributeRank, 1),
-      (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 1),
+      (ModifierClass::ExpertiseRank, 1),
+      (ModifierClass::DevelopmentPoints, 1),
     ]),
     // Level 16
     ModifierSet::from_bonuses(vec![
@@ -224,7 +224,7 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::RankMax, 1),
       (ModifierClass::AttributeRank, 2),
       (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 1),
+      (ModifierClass::DevelopmentPoints, 1),
     ]),
     // Level 17
     ModifierSet::from_bonuses(vec![
@@ -233,15 +233,15 @@ fn level_bonuses() -> ProgressSetTrack {
       (ModifierClass::MinorFeature, 1),
       (ModifierClass::AttributeRank, 1),
       (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 2),
+      (ModifierClass::DevelopmentPoints, 2),
     ]),
     // Level 18
     ModifierSet::from_bonuses(vec![
       (ModifierClass::HP, 2),
       (ModifierClass::Feature, 1),
       (ModifierClass::AttributeRank, 1),
-      (ModifierClass::ExpertiseRank, 2),
-      (ModifierClass::GrowthRanks, 1),
+      (ModifierClass::ExpertiseRank, 1),
+      (ModifierClass::DevelopmentPoints, 1),
     ]),
   ];
 }
@@ -277,25 +277,28 @@ fn endurance_growth_bonuses() -> ProgressTrack {
 fn expert_growth_bonuses() -> ProgressTrack {
   return vec![
     // Rank 1
-    vec![(ModifierClass::ExpertiseRank, 1)],
+    vec![(ModifierClass::ExpertiseRank, 2)],
     // Rank 2
-    vec![(ModifierClass::HP, 1), (ModifierClass::ExpertiseRank, 1)],
-    // Rank 3
     vec![
       (ModifierClass::HP, 1),
-      (ModifierClass::ExpertiseRank, 1),
+      (ModifierClass::ExpertiseRank, 2),
       (ModifierClass::ExpertiseSpecialization, 1),
     ],
-    // // Rank 4
-    // vec![(ModifierClass::HP, 1), (ModifierClass::ExpertiseRank, 1)],
-    // // Rank 5
-    // vec![(ModifierClass::ExpertiseRank, 1)],
-    // // Rank 6
-    // vec![
-    //   (ModifierClass::HP, 1),
-    //   (ModifierClass::ExpertiseRank, 1),
-    //   (ModifierClass::ExpertiseSpecialization, 1),
-    // ],
+    // Rank 3
+    vec![(ModifierClass::HP, 1), (ModifierClass::ExpertiseRank, 2)],
+    // Rank 4
+    vec![
+      (ModifierClass::ExpertiseRank, 2),
+      (ModifierClass::ExpertiseSpecialization, 1),
+    ],
+    // Rank 5
+    vec![(ModifierClass::HP, 1), (ModifierClass::ExpertiseRank, 2)],
+    // Rank 6
+    vec![
+      (ModifierClass::HP, 1),
+      (ModifierClass::ExpertiseRank, 2),
+      (ModifierClass::ExpertiseSpecialization, 1),
+    ],
   ];
 }
 

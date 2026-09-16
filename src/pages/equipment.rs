@@ -18,6 +18,7 @@ pub fn EnchantmentsPage() -> Element {
     div {
       class: "column gap-large",
       StaggeredGrid {
+        class: "stg-large",
         for enchantment in enchantments {
           StaggeredCell {
             EnchantmentDetails { enchantment }
@@ -70,7 +71,7 @@ pub fn EquipmentPage() -> Element {
         }
       }
       StaggeredGrid {
-        class: "staggered-medium break-before",
+        class: "stg-medium flow-medium break-before",
         for equipment in equipment_list {
           StaggeredCell {
             EquipmentCard { equipment }

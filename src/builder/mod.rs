@@ -1,10 +1,10 @@
 mod build_attributes;
-mod build_common;
 mod build_features;
 mod build_growth;
 mod build_panel;
 mod build_paths;
 mod character_build;
+mod common;
 
 use std::collections::HashSet;
 
@@ -18,6 +18,7 @@ use self::character_build::{SkillRanks};
 
 #[derive(Debug, Clone, Default)]
 pub struct CharacterBuild {
+  name: String,
   current_level_index: usize,
   level_selections: Vec<LevelSelections>,
 }
@@ -30,6 +31,14 @@ impl CharacterBuild {
       }
     }
     return &mut self.level_selections[self.current_level_index];
+  }
+
+  pub fn get_character_name(&self) -> String {
+    return self.name.clone();
+  }
+
+  pub fn set_character_name(&mut self, name: String) {
+    self.name = name;
   }
 }
 
