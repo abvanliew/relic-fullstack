@@ -6,6 +6,7 @@ use super::CharacterBuild;
 
 use crate::builder::build_attributes::AttributeSelector;
 use crate::builder::build_development::GrowthGroup;
+use crate::builder::build_equipment::EquipmentSelector;
 use crate::builder::build_paths::PathGroup;
 use crate::progression::fixed::{MAX_LEVEL, MIN_LEVEL};
 use crate::progression::prelude::LevelTable;
@@ -13,13 +14,17 @@ use crate::progression::prelude::LevelTable;
 #[component]
 pub fn CharacterBuildPanel() -> Element {
   let build_signal = use_signal(|| CharacterBuild::default());
+  let (a, b) = build_signal().get_selection_pair();
   return rsx! {
+    div { "{a:#?}"}
+    div { "{b:#?}"}
     div{ class: "column gap-large",
       CharacterGroup { build_signal }
       PathGroup { build_signal }
       GrowthGroup { build_signal }
       FeatureGroup { build_signal }
       AttributeSelector { build_signal }
+      EquipmentSelector { build_signal }
     }
   };
 }
@@ -81,13 +86,3 @@ pub fn CharacterGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
   }
 }
 
-#[component]
-pub fn EquipmentSelector(mut build_signal: Signal<CharacterBuild>) -> Element {
-  return rsx! {
-    SectionBar {
-      title: "Equipment",
-      bar: rsx! {},
-
-    }
-  };
-}

@@ -1,9 +1,11 @@
+mod card;
 mod input;
 mod sized;
 mod wrapper;
 
 use dioxus::prelude::*;
 
+pub use card::Card;
 pub use input::{NumericInput, NumericRange};
 pub use sized::{StaggeredCell, StaggeredGrid};
 pub use wrapper::{CollapsibleHeader};

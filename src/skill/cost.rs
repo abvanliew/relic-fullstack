@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+use crate::character::prelude::Flow;
+
 #[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, Hash)]
 pub enum ResourcePool {
   Anointment,
@@ -60,6 +62,22 @@ impl ResourcePool {
   pub fn with_drain(&self) -> String {
     return format!("{} ({})", self, self.drain());
   }
+
+  pub fn flow(&self) -> Flow {
+    match self {
+      ResourcePool::Anointment => Flow::Innate,
+      ResourcePool::Animism => Flow::Innate,
+      ResourcePool::Sanguine => Flow::Innate,
+      ResourcePool::Rage => Flow::Innate,
+      ResourcePool::Channel => Flow::Resonance,
+      ResourcePool::Ki => Flow::Resonance,
+      ResourcePool::Mastery => Flow::Resonance,
+      ResourcePool::Virtuoso => Flow::Resonance,
+      ResourcePool::MinorMana => Flow::Magic,
+      ResourcePool::ModerateMana => Flow::Magic,
+      ResourcePool::MajorMana => Flow::Magic,
+    }
+  }
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, PartialEq, Eq)]
@@ -117,6 +135,10 @@ impl ResourceCost {
       (_, Some(cost)) => *cost,
       _ => 0,
     }
+  }
+
+  pub fn flow(&self) -> Flow {
+    return self.resource.flow();
   }
 }
 

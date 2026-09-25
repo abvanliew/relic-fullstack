@@ -31,21 +31,14 @@ pub fn EnchantmentsPage() -> Element {
 
 #[component]
 pub fn EquipmentPage() -> Element {
-  EquipmentCache::use_context_provider();
   let EquipmentCache(ref equipment_cache) = use_context();
   if let Some(status) = equipment_cache.status_element() {
     return status;
   }
   let mut equipment_list = equipment_cache.into_vec();
   equipment_list.sort();
-  let (weapons, armors_all): (Vec<Equipment>, Vec<Equipment>) = equipment_list
-    .clone()
-    .into_iter()
-    .partition(|equipment| matches!(equipment, Equipment::Weapon(_)));
-  let armors = armors_all
-    .into_iter()
-    .filter(|equipment| !equipment.is_special_material())
-    .collect::<Vec<Equipment>>();
+  let (weapons, armors_all): (Vec<Equipment>, Vec<Equipment>) = Equipment::parition(equipment_list.clone());
+  let armors: Vec<Equipment> = armors_all.clone().into_iter().filter(|armor| !armor.is_special_material()).collect();
   return rsx! {
     div {
       class: "column gap-large",

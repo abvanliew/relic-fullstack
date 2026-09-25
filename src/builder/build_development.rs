@@ -105,7 +105,7 @@ pub fn GrowthGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
   let sum = current_training.sum();
   let total = build.get_training_ranks();
   let counter = Counter {
-    title: "Ranks".into(),
+    title: "Points".into(),
     current: sum,
     max: total,
     ..Default::default()

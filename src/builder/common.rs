@@ -5,22 +5,23 @@ use dioxus::prelude::*;
 
 use crate::builder::character_build::{SelectionStatus, SelectionValidity};
 
-pub enum Interactible {
+#[derive(Debug, Clone, PartialEq)]
+pub enum Interactable {
   Selectable,
   Deselectable,
   LockedOut,
   LockedIn,
 }
 
-pub fn interaction(state: &SelectionStatus, validity: &SelectionValidity) -> Interactible {
+pub fn interaction(state: &SelectionStatus, validity: &SelectionValidity) -> Interactable {
   return match (state, validity) {
-    (SelectionStatus::SelectedCurrently, _) => Interactible::Deselectable,
-    (SelectionStatus::SelectedPreviously, _) => Interactible::LockedIn,
+    (SelectionStatus::SelectedCurrently, _) => Interactable::Deselectable,
+    (SelectionStatus::SelectedPreviously, _) => Interactable::LockedIn,
     (SelectionStatus::Unselected, SelectionValidity::Available | SelectionValidity::Minimal) => {
-      Interactible::Selectable
+      Interactable::Selectable
     },
     (SelectionStatus::Unselected, SelectionValidity::Full | SelectionValidity::Invalid) => {
-      Interactible::LockedOut
+      Interactable::LockedOut
     },
   };
 }

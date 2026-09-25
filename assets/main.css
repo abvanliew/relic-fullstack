@@ -15,6 +15,7 @@
   --muted-warn: #666112;
   --muted-info: #045810;
   --muted-error: #5d2c2c;
+  --card-width: 600px;
 }
 
 * {
@@ -120,18 +121,22 @@ p {
 
 .flow-xsmall {
   --div-width: 160px;
+  --card-width: 160px;
 }
 
 .flow-small {
   --div-width: 240px;
+  --card-width: 240px;
 }
 
 .flow-medium {
   --div-width: 280px;
+  --card-width: 280px;
 }
 
 .flow-large {
   --div-width: 600px;
+  --card-width: 600px;
 }
 
 .auto-flow-min {
@@ -159,6 +164,17 @@ p {
 
 .card {
   width: var(--div-width);
+  height: max-content;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: [title] max-content [title-end details] 1fr [property] max-content [end];
+  grid-auto-rows: max-content;
+  grid-template-rows: max-content;
+  row-gap: 5px;
+  column-gap: 8px;
+  width: var(--card-width);
   height: max-content;
 }
 
@@ -576,7 +592,7 @@ p {
   padding: 0.55rem 0.7rem 0.7rem;
 }
 
-.card, .medium-border {
+.card, .card-grid, .medium-border {
   border: 0.2rem solid var( --main-border );
   border-radius: 0.6rem;
   padding: 0.45rem 0.6rem 0.6rem;

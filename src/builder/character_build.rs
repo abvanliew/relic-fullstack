@@ -8,7 +8,7 @@ use super::common::Counter;
 use super::CharacterBuild;
 
 use crate::builder::LevelSelections;
-use crate::builder::build_features::ConstraintSet;
+use crate::builder::build_features::{ConstraintSet, FeatureCounter};
 use crate::builder::build_development::Development;
 use crate::modifiers::{ModifierClass, ModifierSet};
 use crate::path::prelude::*;
@@ -16,30 +16,6 @@ use crate::progression::prelude::*;
 use crate::rules::prelude::*;
 use crate::server::prelude::*;
 use crate::skill::prelude::*;
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct FeatureCounter {
-  pub path_name: String,
-  pub skill_filter: SkillFilter,
-  pub weight: i32,
-}
-
-impl FeatureCounter {
-  pub fn from_constraint(constraint: &Constraint, path_name: &String) -> Self {
-    return Self {
-      path_name: match &constraint.filter.skill_filter {
-        SkillFilter::Features | SkillFilter::CoreFeatures => format!("{path_name}"),
-        SkillFilter::MinorFeatures | SkillFilter::CoreMinorFeatures => {
-          format!("{path_name} - Minors")
-        },
-        SkillFilter::Cantrips => format!("{path_name} - Cantrips"),
-        SkillFilter::Spells => format!("{path_name} - Spells"),
-      },
-      skill_filter: constraint.filter.skill_filter.clone(),
-      weight: constraint.required_weight,
-    };
-  }
-}
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum SelectionValidity {
@@ -57,53 +33,9 @@ pub enum SelectionStatus {
 }
 
 impl CharacterBuild {
-  fn previous_level_selections(&self) -> impl Iterator<Item = &LevelSelections> {
-    let index = self.current_level_index.min(self.level_selections.len());
-    return self.level_selections[..index].iter();
-  }
-
-  pub fn get_level(&self) -> i32 {
-    self.current_level_index as i32 + 1
-  }
-
-  pub fn set_level(&mut self, level: i32) {
-    self.current_level_index = (level - 1) as usize;
-  }
-
-  pub fn current_selection_ref(&self) -> Option<&LevelSelections> {
-    return self.level_selections.get(self.current_level_index);
-  }
-
-  pub fn current_selection(&self) -> LevelSelections {
-    return self.current_selection_ref().cloned().unwrap_or_default();
-  }
-
-  pub fn path_selection_status(&self, path_id: &ObjectId) -> SelectionStatus {
-    if let Some(current_selection) = self.current_selection_ref() {
-      match current_selection.paths.get(path_id) {
-        Some(_) => {
-          return SelectionStatus::SelectedCurrently;
-        },
-        _ => (),
-      }
-    };
-    return match self.get_previous_paths().get(path_id) {
-      Some(_) => SelectionStatus::SelectedPreviously,
-      None => SelectionStatus::Unselected,
-    };
-  }
-
   pub fn set_skill_ranks(&mut self, id: &ObjectId, ranks: i32) {
     let level_selections = self.get_current_mut();
     level_selections.set_skill_ranks(id, ranks);
-  }
-
-  fn get_previous_paths(&self) -> HashSet<ObjectId> {
-    let mut paths = HashSet::new();
-    for selections in self.previous_level_selections() {
-      paths.extend(selections.paths.clone());
-    }
-    return paths;
   }
 
   pub fn add_path(&mut self, path_id: ObjectId) {
@@ -567,5 +499,11 @@ impl SkillRanks {
     }
     let skill_rank = self.ranks.entry(*id).or_default();
     *skill_rank = ranks;
+  }
+
+  pub fn extend(&mut self, other: &Self) {
+    for (key, mut value) in other.ranks.clone().into_iter() {
+      self.ranks.entry(key).and_modify(|rank| *rank = *rank.max(&mut value) ).or_insert(value);
+    }
   }
 }

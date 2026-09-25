@@ -4,6 +4,7 @@ use std::fmt;
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
+use crate::character::prelude::Flow;
 use crate::rules::prelude::*;
 use crate::skill::prelude::*;
 
@@ -96,11 +97,15 @@ impl RelicAction {
     return ids;
   }
 
-  pub fn get_minimum_resource_cost(&self) -> i32 {
+  pub fn minimum_resource_cost(&self) -> i32 {
     match &self.cost {
       Some(cost) => cost.minimum_resource_cost(),
       None => 0,
     }
+  }
+
+  pub fn resource_cost_flow(&self) -> Option<Flow> {
+    return self.cost.as_ref().map(|cost| cost.flow())
   }
 }
 

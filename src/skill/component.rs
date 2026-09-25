@@ -37,7 +37,7 @@ pub fn SkillCard(
   #[props(default)] display: TermDisplay, 
   #[props(default)] title_as_link: bool, 
   #[props(default)] input: Option<Element>, 
-  #[props(default)] click_event: Option<EventHandler<MouseEvent>>, 
+  #[props(default)] onclick: Option<Callback<MouseEvent>>, 
   #[props(default)] additional_classes: Option<String>, 
   #[props(default)] include_path_chips: bool, 
   #[props(default)] collapsed: bool, 
@@ -58,30 +58,30 @@ pub fn SkillCard(
     None => "".into(),
   };
   rsx!(
-    div {
-      class: "card grid dim-keywords {extra_class}",
-      onclick: move |e| { if let Some(handler) = click_event.as_ref() { handler.call(e); } },
-      div {
-        class: "uv-title-property align-center gap",
-        if let Some( input_element ) = input {
+    Card {
+      onclick,
+      class: extra_class.clone(),
+      title_class: "align-center gap",
+      title: rsx! {
+        if let Some( input_element ) = input.clone() {
           {input_element}
         }
         div {
           class: "title",
           if title_as_link {
-            Link { to: Route::SingleSkillPage { id }, "{title}" }
+            Link { to: Route::SingleSkillPage { id: id.clone() }, "{title}" }
           } else {
             "{title}"
           }
         }
-      }
-      div { class: "uv-property",
+      },
+      property: rsx! {
         if collapsed {
-          {activation_element}
+          {activation_element.clone()}
         } else {
           div { class: "nowrap italics", "{training_requirements}" }
         }
-      }
+      },
       if let Some( description ) = opt_description {
         div { class: "uv-full", "{description}" }
       }

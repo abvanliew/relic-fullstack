@@ -1,4 +1,5 @@
 use super::Skill;
+use crate::character::prelude::Flow;
 use crate::keyword::prelude::*;
 use crate::path::prelude::*;
 use crate::rules::prelude::*;
@@ -74,8 +75,12 @@ impl Skill {
     }
   }
 
-  pub fn resource_cost(&self) -> i32 {
-    self.action.get_minimum_resource_cost()
+  pub fn minimum_resource_cost(&self) -> i32 {
+    self.action.minimum_resource_cost()
+  }
+
+  pub fn resource_cost_flow(&self) -> Option<Flow> {
+    self.action.resource_cost_flow()
   }
 
   pub fn is_ranked(&self) -> bool {

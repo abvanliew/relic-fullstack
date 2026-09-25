@@ -76,7 +76,7 @@ impl Ord for Skill {
       Ordering::Equal => (),
       ord => return ord,
     };
-    match self.resource_cost().cmp(&other.resource_cost()) {
+    match self.minimum_resource_cost().cmp(&other.minimum_resource_cost()) {
       Ordering::Equal => (),
       ord => return ord,
     }

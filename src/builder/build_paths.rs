@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
-use super::common::{CounterBadge, FilterButton, SectionBar, Interactible, interaction};
+use super::common::{CounterBadge, FilterButton, SectionBar, Interactable, interaction};
 use super::CharacterBuild;
 
 use crate::asset::icon::{IMG_SELECTED, IMG_UNSELECTED};
@@ -11,10 +11,20 @@ use crate::common::StaggeredGrid;
 use crate::path::components::PathPanel;
 use crate::skill::prelude::*;
 use crate::builder::character_build::{
- SelectionValidity,
+ SelectionStatus, SelectionValidity,
 };
 use crate::server::prelude::PathCache;
 
+impl CharacterBuild {
+  pub fn path_selection_status(&self, path_id: &ObjectId) -> SelectionStatus {
+    let level_selection = self.current_selection();
+    return match (level_selection.paths.get(path_id), self.get_previous_paths().get(path_id)) {
+      (Some(_), _) =>SelectionStatus::SelectedCurrently,
+      (_, Some(_)) => SelectionStatus::SelectedPreviously,
+      _ => SelectionStatus::Unselected,
+    };
+  }
+}
 
 #[component]
 pub fn PathGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
@@ -98,10 +108,10 @@ pub fn PathSelector(
   let more_classes = if expand { "selected" } else { "" };
   let interactible = interaction(&status, &path_validity);
   let (img_src, extra_classes, img_class) = match interactible {
-    Interactible::Selectable => (IMG_UNSELECTED, "", ""),
-    Interactible::Deselectable => (IMG_SELECTED, "", "selected-filter"),
-    Interactible::LockedOut => (IMG_UNSELECTED, "disabled", ""),
-    Interactible::LockedIn => (IMG_SELECTED, "disabled", ""),
+    Interactable::Selectable => (IMG_UNSELECTED, "", ""),
+    Interactable::Deselectable => (IMG_SELECTED, "", "selected-filter"),
+    Interactable::LockedOut => (IMG_UNSELECTED, "disabled", ""),
+    Interactable::LockedIn => (IMG_SELECTED, "disabled", ""),
   };
   return rsx! {
     div {
@@ -118,12 +128,12 @@ pub fn PathSelector(
         onclick: move |event| {
           event.stop_propagation();
           match &interactible {
-            Interactible::Selectable => {
+            Interactable::Selectable => {
               let mut new_build = build.clone();
               new_build.add_path(id);
               build_signal.set(new_build);
             },
-            Interactible::Deselectable => {
+            Interactable::Deselectable => {
               let mut new_build = build.clone();
               new_build.remove_path(&id);
               build_signal.set(new_build);

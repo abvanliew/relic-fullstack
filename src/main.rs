@@ -18,7 +18,7 @@ use dioxus::prelude::*;
 use pages::*;
 use panels::*;
 
-use crate::server::prelude::{KeywordCache, PathCache, SkillCache};
+use crate::server::prelude::{EquipmentCache, KeywordCache, PathCache, SkillCache};
 
 const FAVICON: Asset = asset!("assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("assets/main.css");
@@ -61,6 +61,7 @@ fn App() -> Element {
   KeywordCache::use_context_provider();
   SkillCache::use_context_provider();
   PathCache::use_context_provider();
+  EquipmentCache::use_context_provider();
   rsx! {
     document::Link { rel: "icon", href: FAVICON }
     document::Link { rel: "stylesheet", href: MAIN_CSS }

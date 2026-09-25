@@ -6,6 +6,7 @@ use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::character::prelude::DamageClass;
+use crate::common::Card;
 use crate::keyword::prelude::display_keywords;
 use crate::rules::prelude::{DiceGroup, DiceGroupEntry};
 
@@ -22,6 +23,25 @@ impl Equipment {
       Equipment::Weapon(_) => false,
       Equipment::Armor(armor) => armor.special_material,
     }
+  }
+
+  pub fn id(&self) -> ObjectId {
+    return match self {
+      Equipment::Weapon(weapon) => weapon.id,
+      Equipment::Armor(armor) => armor.id,
+    };
+  }
+
+  pub fn parition(equipment_list: Vec<Equipment>) -> (Vec<Equipment>, Vec<Equipment>) {
+    let (mut weapons, remaining_equipment): (Vec<Equipment>, Vec<Equipment>) = equipment_list
+      .into_iter()
+      .partition(|equipment| matches!(equipment, Equipment::Weapon(_)));
+    weapons.sort();
+    let (mut armors, _): (Vec<Equipment>, _) = remaining_equipment
+      .into_iter()
+      .partition(|equipment| matches!(equipment, Equipment::Armor(_)));
+    armors.sort();
+    return (weapons, armors);
   }
 }
 
@@ -129,10 +149,21 @@ impl Display for ReloadAction {
 }
 
 #[component]
-pub fn EquipmentCard(equipment: Equipment) -> Element {
+pub fn EquipmentCard(#[props(default, into)] class: String, 
+  #[props(default)] onclick: Option<Callback<MouseEvent>>, equipment: Equipment) -> Element {
   return match equipment {
-    Equipment::Weapon(weapon) => rsx! { WeaponEntry { weapon } },
-    Equipment::Armor(armor) => rsx! { ArmorEntry { armor } },
+    Equipment::Weapon(weapon) => rsx! { WeaponEntry { class, onclick, weapon } },
+    Equipment::Armor(armor) => rsx! { ArmorEntry { class, onclick, armor } },
+  };
+}
+
+#[component]
+pub fn EquipmentRow(#[props(default, into)] class: String, equipment: Equipment) -> Element {
+  return match equipment {
+    Equipment::Weapon(weapon) => {
+      rsx! { WeaponEntry { class, weapon, display: EquipmentDisplay::Row } }
+    },
+    Equipment::Armor(armor) => rsx! { ArmorEntry { class, armor, display: EquipmentDisplay::Row } },
   };
 }
 
@@ -144,7 +175,11 @@ pub enum EquipmentDisplay {
 }
 
 #[component]
-pub fn WeaponEntry(weapon: Weapon, #[props(default)] display: EquipmentDisplay) -> Element {
+pub fn WeaponEntry(
+  #[props(default, into)] class: String, weapon: Weapon,
+  #[props(default)] display: EquipmentDisplay,
+  #[props(default)] onclick: Option<Callback<MouseEvent>>, 
+) -> Element {
   let title = weapon.title;
   let weight_class = weapon.weight_class.to_string();
   let weapon_class = weapon.weapon_class.to_string();
@@ -224,9 +259,11 @@ pub fn WeaponEntry(weapon: Weapon, #[props(default)] display: EquipmentDisplay) 
   let characteristics_display = characteristics.join(", ");
   return match &display {
     EquipmentDisplay::Card => rsx! {
-      div {
-        class: "card grid dim-keywords",
-        div { class: "uv-full title", "{title}" }
+      Card {
+        class,
+        onclick,
+        title_class: "title",
+        title: rsx! { "{title}" },
         div { class: "uv-full",
           span { class: "highlight", "{weight_class} {weapon_class} Weapon" }
           if let Some( keywords ) = keywords {
@@ -253,14 +290,6 @@ pub fn WeaponEntry(weapon: Weapon, #[props(default)] display: EquipmentDisplay) 
       div { class: "centered", "{physique_req_display}" }
       div { "{characteristics_display}" }
     },
-  };
-}
-
-#[component]
-pub fn EquipmentRow(equipment: Equipment) -> Element {
-  return match equipment {
-    Equipment::Weapon(weapon) => rsx! { WeaponEntry { weapon, display: EquipmentDisplay::Row } },
-    Equipment::Armor(armor) => rsx! { ArmorEntry { armor, display: EquipmentDisplay::Row } },
   };
 }
 
@@ -307,6 +336,15 @@ impl PartialOrd for Armor {
   }
 }
 
+impl Armor {
+  pub fn usable(&self, fortitude: i32) -> bool {
+    return match self.fortitude_req {
+      Some(requirement) => fortitude >= requirement,
+      None => true,
+    };
+  }
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ArmorWeight {
   Light,
@@ -320,7 +358,10 @@ impl Display for ArmorWeight {
 }
 
 #[component]
-pub fn ArmorEntry(armor: Armor, #[props(default)] display: EquipmentDisplay) -> Element {
+pub fn ArmorEntry(
+  armor: Armor, #[props(default, into)] class: String, #[props(default)] display: EquipmentDisplay,
+  #[props(default)] onclick: Option<Callback<MouseEvent>>, 
+) -> Element {
   let title = armor.title;
   let armor_resistance = armor.armor;
   let fortitude_req = armor.fortitude_req;
@@ -339,7 +380,11 @@ pub fn ArmorEntry(armor: Armor, #[props(default)] display: EquipmentDisplay) -> 
   } else {
     None
   };
-  let durable_display= if armor.durable { Some("Durable".into()) } else { None };
+  let durable_display = if armor.durable {
+    Some("Durable".into())
+  } else {
+    None
+  };
   let elemental_resistance = if armor.elemental_resistance {
     Some("Elemental Resistance".to_string())
   } else {
@@ -358,9 +403,11 @@ pub fn ArmorEntry(armor: Armor, #[props(default)] display: EquipmentDisplay) -> 
   let properties_display = properties.join(", ");
   return match &display {
     EquipmentDisplay::Card => rsx! {
-      div {
-        class: "card grid dim-keywords",
-        div { class: "uv-full title", "{title}" }
+      Card {
+        class,
+        onclick,
+        title_class: "title",
+        title: rsx! { "{title}" },
         div { class: "uv-full",
           span { class: "highlight", "{weight} Armor" }
         }

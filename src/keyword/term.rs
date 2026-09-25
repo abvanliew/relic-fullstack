@@ -1,5 +1,5 @@
 use super::internal::*;
-use crate::common::{StaggeredCell, StaggeredGrid};
+use crate::common::{Card, StaggeredCell, StaggeredGrid};
 use crate::keyword::prelude::*;
 use crate::rules::prelude::*;
 use crate::server::prelude::*;
@@ -58,10 +58,12 @@ pub(crate) fn KeywordCard(keyword: Keyword) -> Element {
   let sections = keyword.sections();
   let class = keyword.class_title();
   return rsx! {
-    div {
-      class: "card thin-border grid dim-keywords",
-      div { class: "uv-title-property highlight", "{title}" }
-      div { class: "uv-property italics", "{class}" }
+    Card {
+      class: "thin-border",
+      title_class: "highlight",
+      title: rsx! { "{title}" },
+      property_class: "italics",
+      property: rsx! { "{class}" },
       div { class: "uv-full indent",
         RulesSectionSet { sections }
       }
