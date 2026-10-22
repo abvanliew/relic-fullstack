@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 
 use super::CharacterBuild;
 
-use super::common::{CounterBadge, FilterButton, SectionBar};
+use super::build_common::{CounterBadge, FilterButton, SectionBar};
 use crate::character::prelude::Flow;
 use crate::common::{CollapsibleHeader, StaggeredCell, StaggeredGrid};
 

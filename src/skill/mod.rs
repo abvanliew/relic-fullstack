@@ -58,6 +58,12 @@ impl Default for Skill {
   }
 }
 
+impl PartialOrd for Skill {
+  fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+    Some(self.cmp(other))
+  }
+}
+
 impl Ord for Skill {
   fn cmp(&self, other: &Self) -> Ordering {
     match self.tier.cmp(&other.tier) {
@@ -81,34 +87,6 @@ impl Ord for Skill {
       ord => return ord,
     }
     return self.title.cmp(&other.title);
-  }
-}
-
-impl PartialOrd for Skill {
-  fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-    Some(self.cmp(other))
-  }
-
-  fn lt(&self, other: &Self) -> bool {
-    matches!(self.partial_cmp(other), Some(Ordering::Less))
-  }
-
-  fn le(&self, other: &Self) -> bool {
-    matches!(
-      self.partial_cmp(other),
-      Some(Ordering::Less | Ordering::Equal)
-    )
-  }
-
-  fn gt(&self, other: &Self) -> bool {
-    matches!(self.partial_cmp(other), Some(Ordering::Greater))
-  }
-
-  fn ge(&self, other: &Self) -> bool {
-    matches!(
-      self.partial_cmp(other),
-      Some(Ordering::Greater | Ordering::Equal)
-    )
   }
 }
 

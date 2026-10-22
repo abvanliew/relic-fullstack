@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 use super::build_features::FeatureGroup;
-use super::common::SectionBar;
+use super::build_common::SectionBar;
 use super::CharacterBuild;
 
 use crate::builder::build_attributes::AttributeSelector;
@@ -33,11 +33,7 @@ pub fn CharacterBuildPanel() -> Element {
 pub fn CharacterGroup(mut build_signal: Signal<CharacterBuild>) -> Element {
   let level = build_signal().get_level();
   let name = build_signal().get_character_name();
-  let name_display = if name.trim().is_empty() {
-    "---".into()
-  } else {
-    name.clone()
-  };
+  let name_display = name.clone();
   rsx! {
     SectionBar {
       title: "Character",

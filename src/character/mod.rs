@@ -9,7 +9,7 @@ mod sheet;
 
 pub mod prelude {
   pub use super::aspects::{BodyStats, DevelopmentRanks};
-  pub use super::attribute::{Capability, CharacterAttribute, Defense, RankDisplay};
+  pub use super::attribute::{Capability, CharacterAbility, Defense, RankDisplay, AbilityClass};
   pub use super::components::AttributeRow;
   pub use super::expertise::StandardExpertise;
   pub use super::fillable::FillableSheet;

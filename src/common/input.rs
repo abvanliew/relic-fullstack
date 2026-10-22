@@ -23,10 +23,12 @@ pub fn NumericInput(
 ) -> Element {
   let mut dirty = use_signal(|| false); dirty();
   let (min, value, max) = range.decomp();
+  let readonly = min >= max;
+  let class = if readonly { format!("{class} disabled") } else { format!("{class}") };
   rsx! {
     input {
       type: "number",
-      class, value, min, max,
+      class, value, min, max, readonly,
       onchange: move |event| { 
         let new_value = event.value().parse::<i32>().unwrap_or_default();
         let clamped_value = new_value.clamp(min, max);
@@ -38,4 +40,3 @@ pub fn NumericInput(
     }
   }
 }
-

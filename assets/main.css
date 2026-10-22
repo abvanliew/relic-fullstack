@@ -439,6 +439,19 @@ p {
   ;
 }
 
+.dim-resource-chart-interactible {
+  gap: 0px;
+  justify-items: center;
+  align-items: center;
+  grid-template-columns: 
+    [title] minmax(110px, min-content)
+    [total] min-content
+    [rank] min-content
+    [spec] min-content
+    [button] min-content
+  ;
+}
+
 .dim-attribute-selector {
   grid-template-columns: repeat(3, max-content);
 }
@@ -447,6 +460,7 @@ p {
 .uv-flow-area { grid-area: flow; }
 .uv-resource-area { grid-area: resource; }
 .uv-drain-area { grid-area: drain; }
+.uv-button-area { grid-area: button; }
 
 .uv-innate-area { grid-area: innate; }
 .uv-anointment-area { grid-area: anointment; }
@@ -653,11 +667,12 @@ p {
 .circle {
   background-color: var(--tertiary-background);
   border-radius: 50%;
-  height: 24px;
-  width: 24px;
+  height: 24px !important;
+  width: 24px !important;
   align-items: center;
   display: flex;
   justify-content: center;
+  justify-self: start;
 }
 
 .digit-box-sum {

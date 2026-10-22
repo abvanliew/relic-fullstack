@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
-use super::common::{CounterBadge, FilterButton, SectionBar, Interactable, interaction};
+use super::build_common::{CounterBadge, FilterButton, SectionBar, Interactable, interaction};
 use super::CharacterBuild;
 
 use crate::asset::icon::{IMG_SELECTED, IMG_UNSELECTED};
@@ -19,7 +19,7 @@ impl CharacterBuild {
   pub fn path_selection_status(&self, path_id: &ObjectId) -> SelectionStatus {
     let level_selection = self.current_selection();
     return match (level_selection.paths.get(path_id), self.get_previous_paths().get(path_id)) {
-      (Some(_), _) =>SelectionStatus::SelectedCurrently,
+      (Some(_), _) => SelectionStatus::SelectedCurrently,
       (_, Some(_)) => SelectionStatus::SelectedPreviously,
       _ => SelectionStatus::Unselected,
     };
@@ -115,7 +115,7 @@ pub fn PathSelector(
   };
   return rsx! {
     div {
-      class: "card-snug minimal-background row align-center underhang {more_classes} {extra_classes}",
+      class: "card-snug minimal-background row align-center underhang no-select {more_classes} {extra_classes}",
       onclick: move |event| {
         event.stop_propagation();
         if expand {

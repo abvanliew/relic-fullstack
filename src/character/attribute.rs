@@ -1,8 +1,38 @@
+use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
-pub enum CharacterAttribute {
+use crate::{progression::fixed::BASE_DEFENSE, rules::components::Modifier};
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RankDisplay {
+  Flat,
+  Bonus,
+  Defense,
+}
+
+impl RankDisplay {
+  pub fn from_value(&self, value: i32) -> Element {
+    match &self {
+      RankDisplay::Flat => rsx! { "{value}" },
+      RankDisplay::Bonus => rsx! { div { Modifier { value } } },
+      RankDisplay::Defense => {
+        let def = value + BASE_DEFENSE;
+        rsx! { div { "{def}" } }
+      },
+    }
+  }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum AbilityClass {
+  Capability,
+  Defense,
+}
+
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum CharacterAbility {
   Physique,
   Warfare,
   Presence,
@@ -11,77 +41,70 @@ pub enum CharacterAttribute {
   Resolve,
   Insight,
   Dodge,
-  Expertise(String),
-}
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum RankDisplay {
-  Bonus,
-  Defense,
 }
 
-impl fmt::Display for CharacterAttribute {
+
+impl fmt::Display for CharacterAbility {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(
       f,
       "{}",
       match self {
-        CharacterAttribute::Physique => "Physique",
-        CharacterAttribute::Warfare => "Warfare",
-        CharacterAttribute::Presence => "Presence",
-        CharacterAttribute::Manipulation => "Manipulation",
-        CharacterAttribute::Fortitude => "Fortitude",
-        CharacterAttribute::Resolve => "Resolve",
-        CharacterAttribute::Insight => "Insight",
-        CharacterAttribute::Dodge => "Dodge",
-        CharacterAttribute::Expertise(title) => title,
+        CharacterAbility::Physique => "Physique",
+        CharacterAbility::Warfare => "Warfare",
+        CharacterAbility::Presence => "Focus",
+        CharacterAbility::Manipulation => "Manipulation",
+        CharacterAbility::Fortitude => "Fortitude",
+        CharacterAbility::Resolve => "Resolve",
+        CharacterAbility::Insight => "Insight",
+        CharacterAbility::Dodge => "Dodge",
       }
     )
   }
 }
 
-impl CharacterAttribute {
-  pub fn iter<'a>() -> impl Iterator<Item = &'a Self> {
-    return [
-      CharacterAttribute::Physique,
-      CharacterAttribute::Warfare,
-      CharacterAttribute::Presence,
-      CharacterAttribute::Manipulation,
-      CharacterAttribute::Fortitude,
-      CharacterAttribute::Resolve,
-      CharacterAttribute::Insight,
-      CharacterAttribute::Dodge,
-    ].iter();
-  }
-
+impl CharacterAbility {
   pub fn capability_iter<'a>() -> impl Iterator<Item = &'a Self> {
     return [
-      CharacterAttribute::Physique,
-      CharacterAttribute::Warfare,
-      CharacterAttribute::Presence,
-      CharacterAttribute::Manipulation,
+      CharacterAbility::Physique,
+      CharacterAbility::Warfare,
+      CharacterAbility::Presence,
+      CharacterAbility::Manipulation,
     ].iter();
   }
 
   pub fn defense_iter<'a>() -> impl Iterator<Item = &'a Self> {
     return [
-      CharacterAttribute::Fortitude,
-      CharacterAttribute::Resolve,
-      CharacterAttribute::Insight,
-      CharacterAttribute::Dodge,
+      CharacterAbility::Fortitude,
+      CharacterAbility::Resolve,
+      CharacterAbility::Insight,
+      CharacterAbility::Dodge,
     ].iter();
+  }
+
+  pub fn class(&self) -> AbilityClass {
+    return match &self {
+      CharacterAbility::Physique
+      | CharacterAbility::Warfare
+      | CharacterAbility::Presence
+      | CharacterAbility::Manipulation => AbilityClass::Capability,
+      CharacterAbility::Dodge
+      | CharacterAbility::Fortitude
+      | CharacterAbility::Resolve
+      | CharacterAbility::Insight => AbilityClass::Defense,
+    };
   }
 
   pub fn display_as(&self) -> RankDisplay {
     return match &self {
-      CharacterAttribute::Physique
-      | CharacterAttribute::Warfare
-      | CharacterAttribute::Presence
-      | CharacterAttribute::Manipulation
-      | CharacterAttribute::Expertise(_) => RankDisplay::Bonus,
-      CharacterAttribute::Dodge
-      | CharacterAttribute::Fortitude
-      | CharacterAttribute::Resolve
-      | CharacterAttribute::Insight => RankDisplay::Defense,
+      CharacterAbility::Physique
+      | CharacterAbility::Warfare
+      | CharacterAbility::Presence
+      | CharacterAbility::Manipulation => RankDisplay::Bonus,
+      CharacterAbility::Dodge
+      | CharacterAbility::Fortitude
+      | CharacterAbility::Resolve
+      | CharacterAbility::Insight => RankDisplay::Defense,
     };
   }
 }
@@ -103,8 +126,8 @@ impl fmt::Display for Capability {
       match self {
         Capability::Physique => "Physique",
         Capability::Warfare => "Warfare",
-        Capability::Spirit => "Presence",
-        Capability::Presence => "Presence",
+        Capability::Spirit => "Focus",
+        Capability::Presence => "Focus",
         Capability::Manipulation => "Manipulation",
       }
     )

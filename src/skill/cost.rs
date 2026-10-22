@@ -3,7 +3,7 @@ use std::fmt;
 
 use crate::character::prelude::Flow;
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub enum ResourcePool {
   Anointment,
   Animism,

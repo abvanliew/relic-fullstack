@@ -3,13 +3,12 @@ use std::collections::{HashMap, HashSet};
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
-use super::common::Counter;
+use super::build_common::Counter;
 
 use super::CharacterBuild;
 
 use crate::builder::LevelSelections;
 use crate::builder::build_features::{ConstraintSet, FeatureCounter};
-use crate::builder::build_development::Development;
 use crate::modifiers::{ModifierClass, ModifierSet};
 use crate::path::prelude::*;
 use crate::progression::prelude::*;
@@ -141,40 +140,9 @@ impl CharacterBuild {
     return counters;
   }
 
-  pub fn get_previous_development(&self) -> Development {
-    let mut previous_trainings = Development::default();
-    for selections in self.previous_level_selections() {
-      previous_trainings.extend(&selections.development);
-    }
-    return previous_trainings;
-  }
-
-  pub fn get_current_development(&self) -> Development {
-    let mut previous_training = self.get_previous_development();
-    let Some(level_selection) = self.current_selection_ref() else {
-      return previous_training;
-    };
-    previous_training.extend(&level_selection.development);
-    return previous_training;
-  }
-
   pub fn get_training_ranks(&self) -> i32 {
     let level_stats = LevelTrack::as_of(self.get_level());
     return level_stats.get(&ModifierClass::DevelopmentPoints);
-  }
-
-  pub fn set_training(&mut self, class: &TrainingClass, value: i32) {
-    let current = self.get_current_mut();
-    current.development.set(class, value)
-  }
-
-  pub fn get_training_modifiers(&self) -> ModifierSet {
-    let trainings = self.get_current_development();
-    let mut modifiers = ModifierSet::default();
-    for class in TrainingClass::ordered() {
-      modifiers.append(&GrowthTrack::class_at(&class, trainings.get(&class)));
-    }
-    return modifiers;
   }
 
   pub fn get_inheriet_skill_ids(&self) -> HashSet<ObjectId> {
@@ -459,6 +427,18 @@ impl SkillRanges {
       let range = self.ranges.entry(skill_id).or_default();
       range.current += ranks;
     }
+  }
+
+  pub fn get_modifiers(&self) -> ModifierSet {
+    let mut modifiers = ModifierSet::default();
+    let SkillCache(ref skill_map_cache) = use_context();
+    for (id, range) in &self.ranges {
+      if range.current <= 0 { continue; }
+      let Some( skill ) = skill_map_cache.from_object_id(&id) else { continue; };
+      let Some( skill_modifiers) = skill.modifiers else { continue; };
+      modifiers.append(&skill_modifiers.multiple(range.current));
+    }
+    return modifiers;
   }
 }
 

@@ -38,11 +38,6 @@ impl Default for Keyword {
 
 impl PartialOrd for Keyword {
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-    // match self.class.partial_cmp(&other.class) {
-    //   Some(core::cmp::Ordering::Equal) => {},
-    //   ord => return ord,
-    // }
-    // self.title.partial_cmp(&other.title)
     Some(self.cmp(other))
   }
 }

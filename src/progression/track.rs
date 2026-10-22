@@ -1,5 +1,5 @@
 use crate::modifiers::prelude::{ModifierClass, ModifierSet};
-use crate::progression::training::TrainingClass;
+use crate::progression::training::DevelopmentClass;
 
 #[derive(Debug, Clone)]
 pub struct LevelTrack;
@@ -46,16 +46,16 @@ impl GrowthTrack {
     return modifiers;
   }
 
-  pub fn class_at(class: &TrainingClass, rank: i32) -> ModifierSet {
+  pub fn class_at(class: &DevelopmentClass, rank: i32) -> ModifierSet {
     return GrowthTrack::as_of(
       rank,
       match class {
-        TrainingClass::Expert => expert_growth_bonuses(),
-        TrainingClass::Adept => adept_growth_bonuses(),
-        TrainingClass::Endurance => endurance_growth_bonuses(),
-        TrainingClass::Innate => innate_growth_bonuses(),
-        TrainingClass::Resonance => resonance_growth_bonuses(),
-        TrainingClass::Magic => magic_growth_bonuses(),
+        DevelopmentClass::Expert => expert_growth_bonuses(),
+        DevelopmentClass::Adept => adept_growth_bonuses(),
+        DevelopmentClass::Endurance => endurance_growth_bonuses(),
+        DevelopmentClass::Innate => innate_growth_bonuses(),
+        DevelopmentClass::Resonance => resonance_growth_bonuses(),
+        DevelopmentClass::Magic => magic_growth_bonuses(),
       },
     );
   }

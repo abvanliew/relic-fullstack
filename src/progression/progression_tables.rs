@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 
 use crate::modifiers::{ModifierClass, ModifierSet};
 use crate::progression::track::{GrowthTrack, LevelTrack};
-use crate::progression::training::TrainingClass;
+use crate::progression::training::DevelopmentClass;
 use crate::rules::components::Modifier;
 
 #[component]
@@ -119,52 +119,52 @@ pub fn DevelopmentTables() -> Element {
   rsx! {
     div {
       class: "row-wrap",
-      DevelopmentTable { training_class: TrainingClass::Adept }
-      DevelopmentTable { training_class: TrainingClass::Endurance }
-      DevelopmentTable { training_class: TrainingClass::Expert }
+      DevelopmentTable { development_class: DevelopmentClass::Adept }
+      DevelopmentTable { development_class: DevelopmentClass::Endurance }
+      DevelopmentTable { development_class: DevelopmentClass::Expert }
     }
     div {
       class: "row-wrap",
-      DevelopmentTable { training_class: TrainingClass::Innate }
-      DevelopmentTable { training_class: TrainingClass::Resonance }
-      DevelopmentTable { training_class: TrainingClass::Magic }
+      DevelopmentTable { development_class: DevelopmentClass::Innate }
+      DevelopmentTable { development_class: DevelopmentClass::Resonance }
+      DevelopmentTable { development_class: DevelopmentClass::Magic }
     }
   }
 }
 
 #[component]
 pub fn DevelopmentTable(
-  training_class: TrainingClass, #[props(default)] highlight_rank: Option<i32>,
+  development_class: DevelopmentClass, #[props(default)] highlight_rank: Option<i32>,
 ) -> Element {
-  let modifier_keys = match &training_class {
-    TrainingClass::Adept => vec![
+  let modifier_keys = match &development_class {
+    DevelopmentClass::Adept => vec![
       ModifierClass::HP,
       ModifierClass::CapabilityRank,
       ModifierClass::CapabilitySpecialization,
     ],
-    TrainingClass::Endurance => vec![
+    DevelopmentClass::Endurance => vec![
       ModifierClass::HP,
       ModifierClass::DefenseRank,
       ModifierClass::DefenseSpecialization,
     ],
-    TrainingClass::Expert => vec![
+    DevelopmentClass::Expert => vec![
       ModifierClass::HP,
       ModifierClass::ExpertiseRank,
       ModifierClass::ExpertiseSpecialization,
     ],
-    TrainingClass::Innate => vec![
+    DevelopmentClass::Innate => vec![
       ModifierClass::HP,
       ModifierClass::InnateFlow,
       ModifierClass::InnatePool,
       ModifierClass::InnatePoolAll,
     ],
-    TrainingClass::Resonance => vec![
+    DevelopmentClass::Resonance => vec![
       ModifierClass::HP,
       ModifierClass::ResonanceFlow,
       ModifierClass::ResonancePool,
       ModifierClass::ResonancePoolAll,
     ],
-    TrainingClass::Magic => vec![
+    DevelopmentClass::Magic => vec![
       ModifierClass::MagicFlow,
       ModifierClass::ManaPoolMinor,
       ModifierClass::ManaPoolModerate,
@@ -179,50 +179,50 @@ pub fn DevelopmentTable(
   rsx! {
     div {
       class: "table-grid padded-grid {table_class}",
-      DevelopmentHeader { training_class }
+      DevelopmentHeader { development_class }
       for rank in 1..=12 {
-        DevelopmentRow { rank, training_class, modifier_keys: modifier_keys.clone(), highlight_rank: highlight_rank.clone() }
+        DevelopmentRow { rank, development_class, modifier_keys: modifier_keys.clone(), highlight_rank: highlight_rank.clone() }
       }
     }
   }
 }
 
 #[component]
-pub fn DevelopmentHeader(training_class: TrainingClass) -> Element {
-  return match &training_class {
-    TrainingClass::Adept => rsx! {
+pub fn DevelopmentHeader(development_class: DevelopmentClass) -> Element {
+  return match &development_class {
+    DevelopmentClass::Adept => rsx! {
       div { class: "uv-first underline", "Adept" }
       div { class: "underline", "HP" }
       div { class: "underline", "Capability Ranks" }
       div { class: "underline", "Capability Specialization" }
     },
-    TrainingClass::Endurance => rsx! {
+    DevelopmentClass::Endurance => rsx! {
       div { class: "uv-first underline", "Endurance" }
       div { class: "underline", "HP" }
       div { class: "underline", "Defense Ranks" }
       div { class: "underline", "Defense Specialization" }
     },
-    TrainingClass::Expert => rsx! {
+    DevelopmentClass::Expert => rsx! {
       div { class: "uv-first underline", "Expert" }
       div { class: "underline", "HP" }
       div { class: "underline", "Expertise Ranks" }
       div { class: "underline", "Expertise Specialization" }
     },
-    TrainingClass::Innate => rsx! {
+    DevelopmentClass::Innate => rsx! {
       div { class: "uv-first underline", "Innate" }
       div { class: "underline", "HP" }
       div { class: "underline", "Innate Flow" }
       div { class: "underline", "Innate Pool" }
       div { class: "underline", "All Innate Pools" }
     },
-    TrainingClass::Resonance => rsx! {
+    DevelopmentClass::Resonance => rsx! {
       div { class: "uv-first underline", "Resonance" }
       div { class: "underline", "HP" }
       div { class: "underline", "Resonance Flow" }
       div { class: "underline", "Resonance Pool" }
       div { class: "underline", "All Resonance Pools" }
     },
-    TrainingClass::Magic => rsx! {
+    DevelopmentClass::Magic => rsx! {
       div { class: "uv-first underline", "Magic" }
       div { class: "underline", "Magic Flow" }
       div { class: "underline", "Minor Mana Pool" }
@@ -234,10 +234,10 @@ pub fn DevelopmentHeader(training_class: TrainingClass) -> Element {
 
 #[component]
 pub fn DevelopmentRow(
-  rank: i32, training_class: TrainingClass, modifier_keys: Vec<ModifierClass>,
+  rank: i32, development_class: DevelopmentClass, modifier_keys: Vec<ModifierClass>,
   #[props(default)] highlight_rank: Option<i32>,
 ) -> Element {
-  let modifiers = GrowthTrack::class_at(&training_class, rank);
+  let modifiers = GrowthTrack::class_at(&development_class, rank);
   let modifier_values = modifier_keys
     .iter()
     .map(|class| modifiers.get(class))

@@ -1,7 +1,7 @@
-use std::fmt;
+use std::fmt::{Display, Formatter, Result};
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum TrainingClass {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum DevelopmentClass {
   Adept,
   Endurance,
   Expert,
@@ -10,32 +10,21 @@ pub enum TrainingClass {
   Magic,
 }
 
-impl fmt::Display for TrainingClass {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(
-      f,
-      "{}",
-      match self {
-        TrainingClass::Adept => "Adept",
-        TrainingClass::Endurance => "Endurance",
-        TrainingClass::Expert => "Expert",
-        TrainingClass::Innate => "Innate",
-        TrainingClass::Resonance => "Resonance",
-        TrainingClass::Magic => "Magic",
-      }
-    )
+impl Display for DevelopmentClass {
+  fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+    write!(f, "{:?}", self)
   }
 }
 
-impl TrainingClass {
-  pub fn ordered() -> Vec<TrainingClass> {
-    return vec![
-      TrainingClass::Adept,
-      TrainingClass::Endurance,
-      TrainingClass::Expert,
-      TrainingClass::Innate,
-      TrainingClass::Resonance,
-      TrainingClass::Magic,
-    ];
+impl DevelopmentClass {
+  pub fn iter<'a>() -> impl Iterator<Item = &'a Self> {
+    return [
+      DevelopmentClass::Adept,
+      DevelopmentClass::Endurance,
+      DevelopmentClass::Expert,
+      DevelopmentClass::Innate,
+      DevelopmentClass::Resonance,
+      DevelopmentClass::Magic,
+    ].iter();
   }
 }

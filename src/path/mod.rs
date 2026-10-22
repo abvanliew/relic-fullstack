@@ -32,28 +32,6 @@ impl PartialOrd for Path {
   fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
     Some(self.cmp(other))
   }
-
-  fn lt(&self, other: &Self) -> bool {
-    matches!(self.partial_cmp(other), Some(Ordering::Less))
-  }
-
-  fn le(&self, other: &Self) -> bool {
-    matches!(
-      self.partial_cmp(other),
-      Some(Ordering::Less | Ordering::Equal)
-    )
-  }
-
-  fn gt(&self, other: &Self) -> bool {
-    matches!(self.partial_cmp(other), Some(Ordering::Greater))
-  }
-
-  fn ge(&self, other: &Self) -> bool {
-    matches!(
-      self.partial_cmp(other),
-      Some(Ordering::Greater | Ordering::Equal)
-    )
-  }
 }
 
 impl Ord for Path {

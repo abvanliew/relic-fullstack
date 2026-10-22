@@ -1,7 +1,7 @@
 use bson::oid::ObjectId;
 use dioxus::prelude::*;
 
-use crate::builder::common::{Interactable, SectionBar};
+use crate::builder::build_common::{Interactable, SectionBar};
 use crate::common::{CollapsibleHeader, StaggeredCell, StaggeredGrid};
 use crate::equipment::base::{Equipment, EquipmentCard};
 use crate::server::prelude::EquipmentCache;

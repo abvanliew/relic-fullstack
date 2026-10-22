@@ -48,7 +48,7 @@ impl fmt::Display for TrainingCost {
 }
 
 impl TrainingCost {
-  pub fn iter() -> impl Iterator<Item = &'static TrainingCost> {
+  pub fn iter() -> impl Iterator<Item = &'static Self> {
     return [
       TrainingCost::Inherient, TrainingCost::Keystone, TrainingCost::Full,
       TrainingCost::Half, TrainingCost::Cantrip, TrainingCost::Spell,

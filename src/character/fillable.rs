@@ -116,7 +116,7 @@ pub fn CapabilityBlock(
       AttributeHeadings {}
       CapabilityRow { title: "Physique", value: physique, table_top: true, }
       CapabilityRow { title: "Warfare", value: warfare, }
-      CapabilityRow { title: "Presence", value: spirit, }
+      CapabilityRow { title: "Focus", value: spirit, }
       CapabilityRow { title: "Manipulation", value: manipulation, }
     }
   }
